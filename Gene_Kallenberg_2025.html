@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gene Kallenberg Publications (2025)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2em;
+        }
+        .header .subtitle {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        .summary {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .summary h2 {
+            margin-top: 0;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .summary-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+        .summary-item .label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .summary-item .value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+        }
+        .publication {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .publication:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .publication-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        .publication-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin: 10px 0;
+            line-height: 1.4;
+        }
+        .publication-authors {
+            color: #555;
+            margin: 15px 0;
+            line-height: 1.6;
+            font-size: 1em;
+        }
+        .publication-authors strong {
+            color: #667eea;
+            font-weight: bold;
+            background: #f0f4ff;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .publication-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-size: 0.95em;
+        }
+        .meta-label {
+            font-weight: bold;
+            color: #444;
+        }
+        .pmid-link {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .pmid-link:hover {
+            background: #218838;
+        }
+        .faculty-list {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+        .faculty-list h3 {
+            margin-top: 0;
+            color: #667eea;
+            font-size: 1.1em;
+        }
+        .faculty-list ul {
+            columns: 3;
+            column-gap: 20px;
+            margin: 10px 0;
+        }
+        .faculty-list li {
+            margin-bottom: 5px;
+            color: #555;
+        }
+        .legend {
+            background: #fff9e6;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .legend strong {
+            color: #667eea;
+            background: #f0f4ff;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        @media print {
+            body {
+                background: white;
+            }
+            .publication {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Gene Kallenberg Publications (2025)</h1>
+        <div class="subtitle">Generated on November 20, 2025 at 10:08 AM</div>
+    </div>
+
+    <div class="summary">
+        <h2>Report Summary</h2>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <div class="label">Total Publications</div>
+                <div class="value">2</div>
+            </div>
+            <div class="summary-item">
+                <div class="label">DFM Faculty Authors</div>
+                <div class="value">4</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="legend">
+        <strong>Note:</strong> DFM faculty members are highlighted in <strong>bold with blue background</strong> in the author lists.
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #1</span>
+        <div class="publication-title">Learning health system research as a catalyst for promoting physician wellness: EHR InBasket Spring cleaning and team-based compassion practice.</div>
+        <div class="publication-authors"><strong>Ming Tai-Seale</strong>, Amanda Walker, <strong>Yuwei Cheng</strong>, Nathan Yung, Sophie Webb, Ottar Lunde, David Bazzo, <strong>Ammar Mandvi</strong>, Neal Doran, <strong>Gene Kallenberg</strong>, Christopher A Longhurst, Sidney Zisook, Thomas J Savides, Marlene Millen, Lin Liu</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>Learning health systems</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>Jan 2025</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>39822924</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/39822924/" 
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #2</span>
+        <div class="publication-title">Building a Culture of Curiosity in Family Medicine to Increase Research Capacity.</div>
+        <div class="publication-authors">Peter H Seidenberg, Kabiul Haque, Stephen Stacey, <strong>Gene Kallenberg</strong>, Bernard Ewigman</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>Journal of the American Board of Family Medicine : JABFM</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>Mar 24, 2025</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>39725463</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/39725463/" 
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
