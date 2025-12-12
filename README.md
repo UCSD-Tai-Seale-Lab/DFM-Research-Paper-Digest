@@ -1,6 +1,6 @@
 # PubMed Author Publications Query Tool
 
-A Python tool to query [PubMed](https://pubmed.ncbi.nlm.nih.gov/) for publications by specific authors from 2025.
+A Python tool to query [PubMed](https://pubmed.ncbi.nlm.nih.gov/) for publications by specific authors.
 
 ## Features
 
