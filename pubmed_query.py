@@ -16,6 +16,7 @@ class PubMedQuery:
     """Class to handle PubMed API queries."""
     
     BASE_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
+    CHUNK_SIZE: int = 100
     
     def __init__(self, email: str = None):
         """
@@ -39,12 +40,13 @@ class PubMedQuery:
         """
         # Construct search query
         search_term = f"{author_name}[Author] AND {year}[pdat]"
-        
-        # Build search URL
+
+        # Initialize search parameters
         params = {
             'db': 'pubmed',
             'term': search_term,
-            'retmax': 100,  # Maximum number of results
+            'retmax': PubMedQuery.CHUNK_SIZE,  # Maximum number of results
+            'retstart': 1,  # Starting index
             'retmode': 'xml'
         }
         
@@ -52,24 +54,38 @@ class PubMedQuery:
             params['email'] = self.email
             
         url = f"{self.BASE_URL}esearch.fcgi"
-        
-        try:
-            response = requests.get(url, params=params)
-            response.raise_for_status()
-            
-            # Parse XML response
-            root = ET.fromstring(response.content)
-            id_list = root.find('IdList')
-            
-            if id_list is not None:
-                pmids = [id_elem.text for id_elem in id_list.findall('Id')]
-                return pmids
-            else:
-                return []
-                
-        except requests.exceptions.RequestException as e:
-            print(f"Error searching PubMed: {e}")
-            return []
+        pmids: List[str] = []
+        num_pubs_retrieved: int = 0
+
+        # Request publications in chunks.
+        while True:
+            params["retstart"] = num_pubs_retrieved + 1
+
+            try:
+                response = requests.get(url, params=params)
+                response.raise_for_status()
+
+                # Parse XML response
+                root = ET.fromstring(response.content)
+                id_list = root.find('IdList')
+
+                if id_list is not None:
+                    new_pmids: List[str] = [id_elem.text for id_elem in id_list.findall('Id')]
+
+                    # Did we get them all?
+                    if len(new_pmids) == 0:
+                        break
+
+                    num_pubs_retrieved += len(new_pmids)
+                    pmids.extend(new_pmids)
+                else:
+                    break
+
+            except requests.exceptions.RequestException as e:
+                print(f"Error searching PubMed: {e}")
+                break
+
+        return pmids
     
     def fetch_publication_details(self, pmids: List[str]) -> List[Dict[str, str]]:
         """
@@ -81,42 +97,56 @@ class PubMedQuery:
         Returns:
             List of dictionaries containing publication details
         """
+        publications: List[Dict[str, str]] = []
+
         if not pmids:
-            return []
-        
-        # Join PMIDs with comma
-        id_string = ','.join(pmids)
-        
+            return publications
+
+        # Initialize parameters.
         params = {
             'db': 'pubmed',
-            'id': id_string,
+            'id': [],
             'retmode': 'xml'
         }
-        
+
         if self.email:
             params['email'] = self.email
-            
+
         url = f"{self.BASE_URL}efetch.fcgi"
-        
-        try:
-            response = requests.get(url, params=params)
-            response.raise_for_status()
-            
-            # Parse XML response
-            root = ET.fromstring(response.content)
-            publications = []
-            
-            for article in root.findall('.//PubmedArticle'):
-                pub_info = self._extract_article_info(article)
-                if pub_info:
-                    publications.append(pub_info)
-            
-            return publications
-            
-        except requests.exceptions.RequestException as e:
-            print(f"Error fetching publication details: {e}")
-            return []
-    
+
+        # Make the request in chunks.
+        num_pubs_total: int = len(pmids)
+        num_pubs_received_so_far: int = 0
+
+        while True:
+            # Establish start/stop indices for this slice.
+            index_start: int = num_pubs_received_so_far      # zero-based
+            index_end: int = min(num_pubs_total, index_start + PubMedQuery.CHUNK_SIZE)
+
+            # Join PMIDs with comma
+            id_string = ','.join(pmids[index_start:index_end])
+            params['id'] = id_string
+
+            try:
+                response = requests.get(url, params=params)
+                response.raise_for_status()
+
+                # Parse XML response
+                root = ET.fromstring(response.content)
+
+                for article in root.findall('.//PubmedArticle'):
+                    pub_info = self._extract_article_info(article)
+
+                    if pub_info:
+                        publications.append(pub_info)
+                        num_pubs_received_so_far += 1
+
+            except requests.exceptions.RequestException as e:
+                print(f"Error fetching publication details: {e}")
+                break
+
+        return publications
+
     def _extract_article_info(self, article) -> Dict[str, str]:
         """
         Extract relevant information from article XML element.
