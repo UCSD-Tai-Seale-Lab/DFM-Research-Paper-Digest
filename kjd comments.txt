@@ -4,5 +4,4 @@ Comments on Mihir's PubMed publications query tool.
 + Excellent documentation.
 + HTML output very professional!
 - Wasn't able to use query_and_report to send email: password somehow didn't work
--- Asked query_and_report for "Walker, Amanda" and it gave me 100 publications by "Andrew Walker", "Ayron Walker", "Adam Walker" etc.
 While pubmed_query shows just 6, all by Amanda Walker.

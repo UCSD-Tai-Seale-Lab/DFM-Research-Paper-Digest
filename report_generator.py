@@ -4,156 +4,119 @@ Report Generator for Faculty Publications
 Creates formatted HTML reports with highlighted faculty members
 """
 
-import sys
-from typing import List, Dict, Set
-from faculty_parser import FacultyNameParser
-from datetime import datetime
 import re
+import sys
+from datetime import datetime
+from typing import Dict, List, Set
+
+from faculty_parser import FacultyNameParser
+from faculty_list import FacultyList
 
 
 class ReportGenerator:
     """Generate publication reports with faculty highlighting."""
-    
+
     def __init__(self, faculty_list_file: str = None):
         """
         Initialize report generator.
-        
+
         Args:
             faculty_list_file: Path to faculty list file (optional)
         """
-        self.parser = FacultyNameParser()
-        self.faculty_names = set()
-        self.faculty_lastnames = set()
-        
+        self.__parser: FacultyNameParser = FacultyNameParser()
+        self.__faculty_names: FacultyList
+
         if faculty_list_file:
-            self.load_faculty_list(faculty_list_file)
-    
-    def load_faculty_list(self, faculty_list_file: str):
-        """Load faculty list from file and parse names."""
-        try:
-            with open(faculty_list_file, 'r') as f:
-                faculty_lines = [line.strip() for line in f if line.strip()]
-            
-            parsed = self.parser.parse_faculty_list(faculty_lines)
-            
-            # Store various name formats for matching
-            for faculty in parsed:
-                lastname = faculty['lastname']
-                firstname = faculty['firstname']
-                
-                # Add lastname
-                self.faculty_lastnames.add(lastname.lower())
-                
-                # Add full name variations
-                if firstname:
-                    self.faculty_names.add(f"{firstname} {lastname}".lower())
-                    self.faculty_names.add(f"{firstname[0]} {lastname}".lower())
-                    self.faculty_names.add(f"{lastname}, {firstname}".lower())
-                
-                # Add lastname-only format
-                self.faculty_names.add(lastname.lower())
-            
-            print(f"Loaded {len(parsed)} faculty members for highlighting")
-            
-        except FileNotFoundError:
-            print(f"Warning: Faculty list file not found: {faculty_list_file}")
-        except Exception as e:
-            print(f"Error loading faculty list: {e}")
-    
+            self.__faculty_names = FacultyList(faculty_list_file)
+
     def is_faculty_member(self, author_name: str) -> bool:
         """
         Check if an author is a DFM faculty member.
-        
+
         Args:
             author_name: Author name to check
-            
+
         Returns:
             True if author is faculty member
         """
-        author_lower = author_name.lower().strip()
-        
-        # Direct match
-        if author_lower in self.faculty_names:
-            return True
-        
-        # Check if lastname matches
-        # Split name and check last part
-        parts = author_name.split()
-        if parts:
-            lastname = parts[-1].lower()
-            if lastname in self.faculty_lastnames:
-                return True
-        
+        if self.__faculty_names:
+            return self.__faculty_names.is_faculty_member(author_name)
+
         return False
-    
+
     def highlight_faculty_authors(self, authors_list: List[str]) -> str:
         """
         Create HTML string with faculty members highlighted.
-        
+
         Args:
             authors_list: List of author names
-            
+
         Returns:
             HTML string with <strong> tags around faculty members
         """
         highlighted = []
-        
+
         for author in authors_list:
             if self.is_faculty_member(author):
                 highlighted.append(f"<strong>{author}</strong>")
             else:
                 highlighted.append(author)
-        
+
         return ", ".join(highlighted)
-    
-    def generate_html_report(self, publications: List[Dict], 
-                            output_file: str,
-                            title: str = "DFM Faculty Publications Report",
-                            queried_faculty: List[str] = None):
+
+    def generate_html_report(
+        self,
+        publications: List[Dict],
+        output_file: str,
+        title: str = "DFM Faculty Publications Report",
+        queried_faculty: List[str] = None,
+    ):
         """
         Generate HTML report with highlighted faculty members.
-        
+
         Args:
             publications: List of publication dictionaries
             output_file: Output HTML filename
             title: Report title
             queried_faculty: List of faculty names that were queried
         """
-        if not output_file.endswith('.html'):
-            output_file += '.html'
-        
+        if not output_file.endswith(".html"):
+            output_file += ".html"
+
         # Get unique faculty members in publications
         faculty_in_pubs = set()
+
         for pub in publications:
-            authors_list = pub.get('authors_list', [])
+            authors_list = pub.get("authors_list", [])
+
             for author in authors_list:
                 if self.is_faculty_member(author):
                     faculty_in_pubs.add(author)
-        
+
         # Generate HTML
         html = self._generate_html_content(
-            publications, 
-            title, 
-            queried_faculty,
-            faculty_in_pubs
+            publications, title, queried_faculty, faculty_in_pubs
         )
-        
+
         # Write to file
-        with open(output_file, 'w', encoding='utf-8') as f:
+        with open(output_file, "w", encoding="utf-8") as f:
             f.write(html)
-        
+
         print(f"\n{'='*80}")
         print(f"✓ HTML Report generated: {output_file}")
         print(f"  Total publications: {len(publications)}")
         print(f"  Unique DFM faculty found: {len(faculty_in_pubs)}")
         print(f"{'='*80}\n")
-    
-    def _generate_html_content(self, publications: List[Dict], 
-                               title: str,
-                               queried_faculty: List[str],
-                               faculty_in_pubs: Set[str]) -> str:
+
+    def _generate_html_content(
+        self,
+        publications: List[Dict],
+        title: str,
+        queried_faculty: List[str],
+        faculty_in_pubs: Set[str],
+    ) -> str:
         """Generate HTML content for report."""
-        
+
         # HTML header with styling
         html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -345,7 +308,7 @@ class ReportGenerator:
         <div class="subtitle">Generated on {datetime.now().strftime('%B %d, %Y at %I:%M %p')}</div>
     </div>
 """
-        
+
         # Summary section
         html += f"""
     <div class="summary">
@@ -366,13 +329,11 @@ class ReportGenerator:
         <strong>Note:</strong> DFM faculty members are highlighted in <strong>bold with blue background</strong> in the author lists.
     </div>
 """
-        
+
         # Publications
         for i, pub in enumerate(publications, 1):
-            authors_html = self.highlight_faculty_authors(
-                pub.get('authors_list', [])
-            )
-            
+            authors_html = self.highlight_faculty_authors(pub.get("authors_list", []))
+
             html += f"""
     <div class="publication">
         <span class="publication-number">Publication #{i}</span>
@@ -398,51 +359,49 @@ class ReportGenerator:
         </div>
     </div>
 """
-        
+
         # Footer
         html += """
 </body>
 </html>
 """
-        
+
         return html
 
 
 def main():
     """Demo/test function."""
     import argparse
-    
+
     parser = argparse.ArgumentParser(
-        description='Generate publication report with faculty highlighting'
+        description="Generate publication report with faculty highlighting"
     )
-    parser.add_argument('--faculty-file', required=True, help='Faculty list file')
-    parser.add_argument('--csv-file', required=True, help='Publications CSV file')
-    parser.add_argument('--output', default='report.html', help='Output HTML file')
-    parser.add_argument('--title', default='DFM Faculty Publications Report', help='Report title')
-    
+    parser.add_argument("--faculty-file", required=True, help="Faculty list file")
+    parser.add_argument("--csv-file", required=True, help="Publications CSV file")
+    parser.add_argument("--output", default="report.html", help="Output HTML file")
+    parser.add_argument(
+        "--title", default="DFM Faculty Publications Report", help="Report title"
+    )
+
     args = parser.parse_args()
-    
+
     # Load publications from CSV
     import csv
+
     publications = []
-    with open(args.csv_file, 'r', encoding='utf-8') as f:
+    with open(args.csv_file, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
             # Convert authors string to list
-            authors_str = row.get('authors', '')
-            authors_list = [a.strip() for a in authors_str.split(',')]
-            row['authors_list'] = authors_list
+            authors_str = row.get("authors", "")
+            authors_list = [a.strip() for a in authors_str.split(",")]
+            row["authors_list"] = authors_list
             publications.append(row)
-    
+
     # Generate report
     generator = ReportGenerator(args.faculty_file)
-    generator.generate_html_report(
-        publications, 
-        args.output,
-        title=args.title
-    )
+    generator.generate_html_report(publications, args.output, title=args.title)
 
 
 if __name__ == "__main__":
     main()
-
