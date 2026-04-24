@@ -1,4 +1,5 @@
 # PubMed Author Publications Query Tool
+![GitHub last commit](https://img.shields.io/github/last-commit/UCSD-Tai-Seale-Lab/DFM-Research-Paper-Digest)
 
 A Python tool to query [PubMed](https://pubmed.ncbi.nlm.nih.gov/) for publications by specific authors.
 
