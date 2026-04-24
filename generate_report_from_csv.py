@@ -3,8 +3,9 @@
 Generate HTML report from existing CSV file
 """
 
-import csv
 import argparse
+import csv
+
 from report_generator import ReportGenerator
 
 

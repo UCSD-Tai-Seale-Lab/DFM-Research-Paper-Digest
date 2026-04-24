@@ -245,5 +245,5 @@ publications = query.query_author("Smith J", year=2024)
 
 ## License
 
-This tool is provided as-is for research purposes.
+See the [LICENSE](LICENSE) file for details.
 
