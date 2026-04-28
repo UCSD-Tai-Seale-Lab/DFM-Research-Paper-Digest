@@ -195,7 +195,7 @@ python generate_report_from_csv.py your_file.csv \
 You can also use the `PubMedQuery` class in your own Python scripts:
 
 ```python
-from pubmed_query import PubMedQuery
+from src.dfm_research_paper_digest.pubmed_query import PubMedQuery
 
 # Initialize the query object
 query = PubMedQuery(email="your.email@example.com")
@@ -205,9 +205,9 @@ publications = query.query_author("Smith J", year=2025)
 
 # Access publication details
 for pub in publications:
-    print(f"Title: {pub['title']}")
-    print(f"Year: {pub['year']}")
-    print(f"PMID: {pub['pmid']}")
+	print(f"Title: {pub['title']}")
+	print(f"Year: {pub['year']}")
+	print(f"PMID: {pub['pmid']}")
 ```
 
 ## API Information
