@@ -1,7 +1,0 @@
-Comments on Mihir's PubMed publications query tool.
-
-+ Well done, modern syntax & tools.
-+ Excellent documentation.
-+ HTML output very professional!
-- Wasn't able to use query_and_report to send email: password somehow didn't work
-While pubmed_query shows just 6, all by Amanda Walker.
