@@ -4,7 +4,8 @@ Exercises query_faculty_batch.py
 
 from importlib.resources import as_file, files
 
-from src.dfm_research_paper_digest.query_faculty_batch import query_faculty_batch
+from src.dfm_research_paper_digest.query_faculty_batch import \
+    query_faculty_batch
 
 
 def test_query_faculty_batch():

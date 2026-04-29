@@ -3,11 +3,12 @@
 Faculty class
 """
 from __future__ import annotations
+
 import copy
 import logging
 from pathlib import Path
 
-from src.dfm_research_paper_digest.author import Author
+from author import Author
 
 
 class Faculty:
@@ -34,25 +35,42 @@ class Faculty:
             self.__list = [Author(f) for f in faculty_list]
         elif isinstance(faculty_list, (str, Path)):
             lines: list[str] = self.__read_faculty_list_file(faculty_list)
-            self.__list = [Author(f) for f in lines]
+
+            if lines:
+                self.__list = [Author(f) for f in lines]
+            else:
+                self.__log.error(f"Unable to find/read file {faculty_list}.")
+                return
 
         self.authors: list[Author] = copy.deepcopy(self.__list)
         self.names: list[str] = self.__names()
         self.num: int = len(self.__list)
         self.original_names: list[str] = self.__original_names()
 
-    def is_faculty(self, author: Author) -> bool:
+    def is_faculty(self, var: Author | str) -> bool:
         """
         Tests an Author to see if it matches any of our faculty members.
 
         Parameters
         ----------
-        author: Author
+        var: Author or str
 
         Returns
         -------
         match: bool
         """
+        author: Author
+
+        if isinstance(var, str):
+            author = Author(var)
+        elif isinstance(var, Author):
+            author = var
+        else:
+            self.__log.exception(
+                "Type Error: Expected 'var' to be Author object or str."
+            )
+            raise TypeError("Expected 'var' to be Author object or str.")
+
         for faculty_member in self.__list:
             if author.matches(faculty_member):
                 return True
