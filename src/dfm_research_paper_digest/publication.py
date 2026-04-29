@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 
 
 class Article:
@@ -8,6 +9,7 @@ class Article:
     Attributes:
     ----------
     authors_list
+    authors
     journal
     pmid
     publication_date
@@ -16,10 +18,10 @@ class Article:
 
     Methods
     -------
-    None
+    to_dict(fieldname)
     """
 
-    def __init__(self, pubmed_article: dict) -> None:
+    def __init__(self, pubmed_article: dict, log: logging.Logger) -> None:
 
         if pubmed_article and "MedlineCitation" in pubmed_article:
             medline_citation: dict = pubmed_article["MedlineCitation"]
@@ -31,11 +33,17 @@ class Article:
                     author_list: dict = article["AuthorList"]
 
                     if author_list and "Author" in author_list:
-                        author_names: list[str] = [
-                            ArticleAuthor(d).name for d in author_list["Author"]
-                        ]
+                        self.authors_list: list[str] = []
 
-                        self.authors_list: str = ", ".join([a for a in author_names])
+                        for name in author_list["Author"]:
+                            try:
+                                self.authors_list.append(ArticleAuthor(name, log).name)
+                            except AttributeError:
+                                log.exception(
+                                    "AttributeError: 'ArticleAuthor' object has no attribute 'name' for object created with {name}."
+                                )
+
+                        self.authors: str = ", ".join(self.authors_list)
 
                 if article and "Journal" in article:
                     journal: dict = article["Journal"]
@@ -45,7 +53,7 @@ class Article:
 
                 if article and "ArticleDate" in article:
                     publication_date: PublicationDate = PublicationDate(
-                        article["ArticleDate"]
+                        article["ArticleDate"], log
                     )
                     self.publication_date: datetime = publication_date.date
                     self.year: int = self.publication_date.year
@@ -76,7 +84,7 @@ class ArticleAuthor:
     None
     """
 
-    def __init__(self, author_dict: dict) -> None:
+    def __init__(self, author_dict: dict, log: logging.Logger) -> None:
         if author_dict and "LastName" in author_dict:
             self.LastName: str = author_dict["LastName"]
 
@@ -88,6 +96,8 @@ class ArticleAuthor:
                     self.name = (
                         self.FirstName + " " + self.Initials + " " + self.LastName
                     )
+                else:
+                    self.name = self.FirstName + " " + self.LastName
 
 
 class PMID:
@@ -103,7 +113,7 @@ class PMID:
     None
     """
 
-    def __init__(self, pmid_dict: dict) -> None:
+    def __init__(self, pmid_dict: dict, log: logging.Logger) -> None:
         self.pmids: list[str] = []
 
         if "eSearchResult" in pmid_dict:
@@ -129,7 +139,7 @@ class PublicationDate:
     None
     """
 
-    def __init__(self, pub_dict: dict) -> None:
+    def __init__(self, pub_dict: dict, log: logging.Logger) -> None:
         day: str = pub_dict["Day"]
         month: str = pub_dict["Month"]
         year: str = pub_dict["Year"]
@@ -150,7 +160,7 @@ class PubmedArticleSet:
     -------
     """
 
-    def __init__(self, response: dict):
+    def __init__(self, response: dict, log: logging.Logger):
         self.articles: list[Article] = []
 
         if response and isinstance(response, dict) and "PubmedArticleSet" in response:
@@ -161,6 +171,6 @@ class PubmedArticleSet:
 
                 if isinstance(pubmed_articles, list):
                     for pubmed_article in pubmed_articles:
-                        self.articles.append(Article(pubmed_article))
+                        self.articles.append(Article(pubmed_article, log))
                 else:
-                    self.articles.append(Article(pubmed_articles))
+                    self.articles.append(Article(pubmed_articles, log))

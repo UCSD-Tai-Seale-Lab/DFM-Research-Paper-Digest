@@ -1,5 +1,6 @@
 # PubMed Author Publications Query Tool
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)![GitHub last commit](https://img.shields.io/github/last-commit/UCSD-Tai-Seale-Lab/DFM-Research-Paper-Digest)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)
+![Pylint](./.github/badges/pylint-badge.svg?dummy=8484744)](https://github.com/psf/black)![GitHub last commit](https://img.shields.io/github/last-commit/UCSD-Tai-Seale-Lab/DFM-Research-Paper-Digest)
 
 A Python tool to query [PubMed](https://pubmed.ncbi.nlm.nih.gov/) for publications by specific authors.
 

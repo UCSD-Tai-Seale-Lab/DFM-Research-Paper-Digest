@@ -16,6 +16,7 @@ def test_author():
     assert author.middle_initial_only
     assert author.middle_initial == "V"
     assert author.original == "Igor V. Nikiforov"
+    assert author.slug == "Igor_V._Nikiforov"
 
     # Check different first names fails.
     different_author: Author = Author("Craig Nikiforov")

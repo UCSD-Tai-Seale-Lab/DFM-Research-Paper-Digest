@@ -18,8 +18,17 @@ def test_faculty(logger: logging.Logger, sample_faculty_list: list[str]):
         faculty: Faculty = Faculty(filename, logger)
         assert isinstance(faculty, Faculty)
         assert faculty.num == 3
+
+        # Try with Author object
         author: Author = Author("Tai-Seale, Ming PhD, MPH")
         assert faculty.is_faculty(author)
+
+        # And with string
+        assert faculty.is_faculty("Tai-Seale, Ming PhD, MPH")
+
+        # And how about when they're not faculty?
+        assert not faculty.is_faculty(Author("George Clooney"))
+        assert not faculty.is_faculty("George Clooney")
 
         faculty_list: list[str] = faculty.names
         assert isinstance(faculty_list, list)

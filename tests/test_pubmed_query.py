@@ -2,9 +2,10 @@
 Tests PubMedQuery class.
 """
 
-from src.dfm_research_paper_digest.pubmed_query import PubMedQuery
-from src.dfm_research_paper_digest.publication import Article
 import requests_mock
+
+from src.dfm_research_paper_digest.publication import Article
+from src.dfm_research_paper_digest.pubmed_query import PubMedQuery
 
 
 def test_author_publications(logger, fake_pmid_response, empty_pmid_response):

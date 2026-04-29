@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 from typing import Dict, List
+
 from src.dfm_research_paper_digest.publication import Article
 
 def display_publications(publications: list[Article], log: logging.Logger) -> None: ...
@@ -12,9 +13,9 @@ class PubMedQuery:
     BASE_URL: str = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
     CHUNK_SIZE: int = 100
 
-    def __init__(self, log: logging.Logger = None, email: str = None):
-        self.__log: logging.Logger = None
+    def __init__(self, email: str = None, log: logging.Logger = None):
         self.email: str = None
+        self.__log: logging.Logger = None
 
     def display_publications(publications: List[Article], log: logging.Logger): ...
     def _extract_article_info(self, article) -> Dict[str, str]: ...

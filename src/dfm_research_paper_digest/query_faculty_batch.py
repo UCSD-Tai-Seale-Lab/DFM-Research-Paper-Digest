@@ -9,11 +9,13 @@ import logging
 import sys
 import time
 from datetime import datetime
+from importlib.resources import as_file, files
 
-from src.dfm_research_paper_digest.faculty import Faculty
-from src.dfm_research_paper_digest.my_logging import setup_logging
-from src.dfm_research_paper_digest.pubmed_query import PubMedQuery
-from src.dfm_research_paper_digest.report_generator import ReportGenerator
+from faculty import Faculty
+from my_logging import setup_logging
+from publication import Article
+from pubmed_query import PubMedQuery
+from report_generator import ReportGenerator
 
 
 def export_to_csv_with_faculty(publications, filename, log: logging.Logger):
@@ -90,7 +92,7 @@ def query_faculty_batch(
     log.info("=" * 80)
 
     # Initialize PubMed query
-    query: PubMedQuery = PubMedQuery(email=email)
+    query: PubMedQuery = PubMedQuery(email=email, log=log)
 
     # Store results
     all_results: list = []
@@ -103,25 +105,18 @@ def query_faculty_batch(
         log.info(f"[{i}/{faculty.num}] Querying: {author.original}")
 
         try:
-            publications: list[dict] = query.query_author(
-                author.pubmed_style, year=year
-            )
-            matching_publications: list[dict] = []
+            articles: list[Article] = query.query_author(author.pubmed_style, year=year)
+            matching_articles: list[Article] = []
 
-            # Add faculty info to each publication
-            for pub in publications:
-                # If middle name/initial is provided but DOESN'T MATCH,
-                # then don't include this publication.
-                if author.matches(pub["authors_list"]):
-                    pub["faculty_name"] = author.original
-                    pub["faculty_lastname"] = author.last
-                    pub["faculty_firstname"] = author.first
-                    matching_publications.append(pub)
+            # Only include articles in which a faculty member is an author.
+            for article in articles:
+                if author.matches(article.authors_list):
+                    matching_articles.append(article)
 
-            faculty_results[author.original] = matching_publications
-            all_results.extend(matching_publications)
+            faculty_results[author.original] = matching_articles
+            all_results.extend(matching_articles)
 
-            log.info(f"    Found: {len(matching_publications)} publication(s)")
+            log.info(f"    Found: {len(matching_articles)} publication(s)")
 
         except Exception as e:
             log.exception(f"    Error: {e}")
@@ -144,12 +139,14 @@ def query_faculty_batch(
             faculty_results.items(), key=lambda x: len(x[1]), reverse=True
         )
         log.info("Top 10 faculty by publication count:")
+
         for name, pubs in sorted_faculty[:10]:
             log.info(f"  {len(pubs):3} - {name}")
 
     # Export to CSV if requested
-    csv_filename = None
     if output_file and all_results:
+        csv_filename: str = ""
+
         if not output_file.endswith(".csv"):
             csv_filename = output_file + ".csv"
         else:
@@ -170,13 +167,12 @@ def query_faculty_batch(
         html_filename += ".html"
 
         log.info(f"Generating HTML report: {html_filename}.")
-        report_gen = ReportGenerator(faculty_list_file)
+        report_gen = ReportGenerator(faculty)
 
         report_gen.generate_html_report(
             publications=all_results,
             output_file=html_filename,
             title=f"DFM Faculty Publications Report ({year})",
-            queried_faculty=faculty.original_names,
         )
 
     return faculty_results
@@ -198,6 +194,7 @@ Examples:
     )
 
     log: logging.Logger = setup_logging(log_filename="query_faculty_batch.log")
+    resource_path = files("data").joinpath("faculty_list.txt")
 
     parser.add_argument(
         "--year",
@@ -219,12 +216,14 @@ Examples:
         help="Output CSV filename (default: faculty_publications)",
     )
 
-    parser.add_argument(
-        "--faculty-file",
-        "-f",
-        type=str,
-        help="Text file with faculty names (one per line)",
-    )
+    with as_file(resource_path) as faculty_filename:
+        parser.add_argument(
+            "--faculty-file",
+            "-f",
+            type=str,
+            default=faculty_filename,
+            help="Text file with faculty names (one per line)",
+        )
 
     parser.add_argument(
         "--no-report", action="store_true", help="Skip HTML report generation"

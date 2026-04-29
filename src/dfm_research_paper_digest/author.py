@@ -15,12 +15,14 @@ class Author(HumanName):
 
     Attributes:
     ----------
-    first: str                      author's given name
+    first: str                  author's given name
     last: str                   author's family name
     middle: str                 author's middle name
     middle_initial:             author's middle initial
     middle_initial_only: bool   True if author's name has a middle initial but not a full name
+    original: str               name used to instantiate the object
     pubmed_style: str           Last, First format
+    slug: str                   name with spaces replaced with underscores
 
     Methods
     -------
@@ -42,7 +44,8 @@ class Author(HumanName):
             self.middle_initial_only = len(self.middle.rstrip(".")) == 1
             self.middle_initial = self.middle[0]
 
-        self.pubmed_style = self.last + ", " + self.first
+        self.pubmed_style: str = self.last + ", " + self.first
+        self.slug: str = name.replace(" ", "_").replace(",", "").replace('"', "")
 
     def __middle_names_match_where_present(self, other_name: Self) -> bool:
         """

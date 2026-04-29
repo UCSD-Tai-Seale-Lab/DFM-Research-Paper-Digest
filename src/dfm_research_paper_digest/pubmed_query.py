@@ -7,13 +7,13 @@ Queries PubMed for publications by a specific author from 2025.
 import argparse
 import logging
 import time
-import xmltodict
 from datetime import datetime
 from typing import Dict, List
 
 import requests
-from src.dfm_research_paper_digest.my_logging import setup_logging
-from src.dfm_research_paper_digest.publication import Article, PMID, PubmedArticleSet
+import xmltodict
+from my_logging import setup_logging
+from publication import PMID, Article, PubmedArticleSet
 
 
 class PubMedQuery:
@@ -33,22 +33,20 @@ class PubMedQuery:
     BASE_URL: str = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
     CHUNK_SIZE: int = 100
 
-    def __init__(self, log: logging.Logger = None, email: str = None):
+    def __init__(self, email: str = None, log: logging.Logger = None):
         """
         Initialize PubMed query tool.
 
         Args:
             email: Your email (recommended by NCBI for API usage tracking)
         """
-
+        self.email: str = email
         self.__log: logging.Logger
 
         if log:
             self.__log = log
         else:
             self.__log = setup_logging(log_filename="pubmed_query.py")
-
-        self.email: str = email
 
     def search_author_publications(
         self, author_name: str, year: int = datetime.now().year
@@ -90,7 +88,7 @@ class PubMedQuery:
                 response = requests.get(url, params=params)
                 response.raise_for_status()
                 data_dict: dict = xmltodict.parse(response.content)
-                new_pmids: list[str] = PMID(data_dict).pmids
+                new_pmids: list[str] = PMID(data_dict, self.__log).pmids
 
                 # Did we get them all?
                 if len(new_pmids) == 0:

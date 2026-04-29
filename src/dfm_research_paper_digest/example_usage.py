@@ -4,18 +4,22 @@ Example usage of the PubMed Query Tool.
 Shows how to query multiple authors programmatically.
 """
 import logging
-from pubmed_query import PubMedQuery, display_publications
+from datetime import datetime
+
 from my_logging import setup_logging
+from publication import Article
+from pubmed_query import PubMedQuery, display_publications
 
 
 def query_multiple_authors(log: logging.Logger):
     """Example: Query publications for multiple authors."""
 
     # List of authors to query
-    authors = ["Zhang Y", "Li Y", "Xie B"]
+    authors: list[str] = ["Zhang Y", "Li Y", "Xie B"]
+    year: int = datetime.now().year
 
     # Initialize query object (optionally provide email)
-    query = PubMedQuery(email="your.email@example.com", log=log)
+    query: PubMedQuery = PubMedQuery(email="your.email@example.com", log=log)
 
     # Query each author
     for author in authors:
@@ -23,35 +27,39 @@ def query_multiple_authors(log: logging.Logger):
         log.info(f"Querying author: {author}")
         log.info(f"{'='*80}")
 
-        publications = query.query_author(author, year=2025)
-        display_publications(publications)
+        publications: list[Article] = query.query_author(author, year=year)
+        display_publications(publications, log)
 
 
 def query_single_author_custom(log: logging.Logger):
     """Example: Query a single author with custom display."""
 
-    author_name = "Smith J"
+    author_name: str = "Smith J"
 
-    query = PubMedQuery(log=log)
-    publications = query.query_author(author_name, year=2025)
+    query: PubMedQuery = PubMedQuery(log=log)
+    publications: list[Article] = query.query_author(author_name, year=2025)
+    year: int = datetime.now().year
 
     # Custom display
     if publications:
-        log.info(f"\nPublications by {author_name} in 2025:")
+        log.info(f"\nPublications by {author_name} in {year}:")
+
         for pub in publications:
-            log.info(f"  - {pub['year']}: {pub['title']}")
+            log.info(f"  - {pub.year}: {pub.title}")
     else:
-        log.info(f"No publications found for {author_name} in 2025")
+        log.info(f"No publications found for {author_name} in {year}")
 
 
 def export_to_csv(log: logging.Logger):
     """Example: Export results to CSV format."""
     import csv
 
-    author_name = "Zhang Y"
+    author_name: str = "Zhang Y"
 
-    query = PubMedQuery(log=log)
-    publications = query.query_author(author_name, year=2025)
+    query: PubMedQuery = PubMedQuery(log=log)
+    publications: list[Article] = query.query_author(
+        author_name, year=datetime.now().year
+    )
 
     if publications:
         # Export to CSV
@@ -62,7 +70,17 @@ def export_to_csv(log: logging.Logger):
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
             writer.writeheader()
-            writer.writerows(publications)
+
+            # Convert list of Article objects to a dictionary with the desired keys.
+            publication_list: list = []
+
+            for article in publications:
+                new_article_dict: dict = {
+                    k: v for k, v in article.__dict__ if k in fieldnames
+                }
+                publication_list.append(new_article_dict)
+
+            writer.writerows(publication_list)
 
         log.info(f"\nExported {len(publications)} publications to {filename}")
     else:
