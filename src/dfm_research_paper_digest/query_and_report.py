@@ -18,7 +18,7 @@ from pubmed_query import PubMedQuery
 from report_generator import ReportGenerator
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(
         description="Query PubMed and generate HTML report",
         formatter_class=argparse.RawDescriptionHelpFormatter,

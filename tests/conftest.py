@@ -7,7 +7,7 @@ import xmltodict
 
 
 @pytest.fixture(name="logger")
-def logger() -> logging.Logger:
+def logger(tmp_path) -> logging.Logger:
     """
     Synthesizes a log object for testing.
 
@@ -15,14 +15,7 @@ def logger() -> logging.Logger:
     -------
     log: logging.Logger
     """
-
-    right_here: str = os.path.dirname(__file__)
-
-    if not "tests" in right_here:
-        right_here = os.path.join(right_here, "tests")
-
-    log_filename: str = os.path.join(right_here, "testing.log")
-
+    log_filename: str = os.path.join(tmp_path, "testing.log")
     logger = logging.getLogger(log_filename)
 
     # Logging to console
@@ -1616,3 +1609,8 @@ def sample_faculty_list() -> list[str]:
         "Cheng, Terri, MD",
         "Celebi, Julie, MD",
     ]
+
+
+@pytest.fixture(name="username")
+def user() -> str:
+    return os.getlogin()
