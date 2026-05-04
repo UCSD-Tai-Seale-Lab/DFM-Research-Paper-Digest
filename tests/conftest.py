@@ -534,6 +534,410 @@ def pubmed_dict(fake_pubmed_response_one_article) -> dict:
     return xmltodict.parse(fake_pubmed_response_one_article)
 
 
+@pytest.fixture(name="fake_pubmed_response_no_UCSD")
+def pubmed_response_no_UCSD() -> str:
+    response: str = """<?xml version="1.0" ?>
+<!DOCTYPE PubmedArticleSet PUBLIC "-//NLM//DTD PubMedArticle, 1st January 2025//EN" "https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_250101.dtd">
+<PubmedArticleSet>
+    <PubmedArticle>
+        <MedlineCitation Status="PubMed-not-MEDLINE" Owner="NLM">
+            <PMID Version="1">41960023</PMID>
+            <DateCompleted>
+                <Year>2026</Year>
+                <Month>04</Month>
+                <Day>10</Day>
+            </DateCompleted>
+            <DateRevised>
+                <Year>2026</Year>
+                <Month>04</Month>
+                <Day>10</Day>
+            </DateRevised>
+            <Article PubModel="Electronic-eCollection">
+                <Journal>
+                    <ISSN IssnType="Electronic">2471-1403</ISSN>
+                    <JournalIssue CitedMedium="Internet">
+                        <Volume>10</Volume>
+                        <Issue>4</Issue>
+                        <PubDate>
+                            <Year>2026</Year>
+                            <Month>Apr</Month>
+                        </PubDate>
+                    </JournalIssue>
+                    <Title>GeoHealth</Title>
+                    <ISOAbbreviation>Geohealth</ISOAbbreviation>
+                </Journal>
+                <ArticleTitle>Building Youth Capacity for Climate-Health Science: Lessons From Implementing The DataJam in Jordan.</ArticleTitle>
+                <Pagination>
+                    <StartPage>e2026GH001834</StartPage>
+                    <MedlinePgn>e2026GH001834</MedlinePgn>
+                </Pagination>
+                <ELocationID EIdType="pii" ValidYN="Y">e2026GH001834</ELocationID>
+                <ELocationID EIdType="doi" ValidYN="Y">10.1029/2026GH001834</ELocationID>
+                <Abstract>
+                    <AbstractText>Addressing impacts on human health from climate change will require engaged communities capable of co-creating actionable science. This is particularly the case in Jordan, one of the most vulnerable countries to climate change with a hot, dry climate and rapidly growing population. A key demographic for building capacity to address climate-health challenges is youth. To engage Jordanian youth in developing knowledge and skills related to climate-health science, the Global Center on Climate Change and Water Energy Food Health Systems (GC3WEFH) implemented The DataJam, an annual project-based data science learning program and competition developed in the United States. The GC3WEFH enrolled 87 students from 21 schools in The DataJam Jordan. Fifty-four students in teams of three completed 18 projects over a 2-year period while 33 students started The DataJam but did not complete a project. The aim of the intervention was to build data science capacity to address issues at the intersection of climate and health. To explore the outcomes of this intervention, we used the Consolidated Framework for Implementation Research to identify the primary determinants. This analysis revealed that the complexity of The DataJam and the work infrastructure of the implementation impacted communication across the intervention, which shaped the topics students researched and their use of data science. Importantly, the DataJam increased both the confidence and interest of students in engaging in climate change related challenges facing their communities. Therefore, The DataJam is a positive example of engaging youth through the international translation of a STEM learning program.</AbstractText>
+                    <CopyrightInformation>&#xa9; 2026. The Author(s). GeoHealth published by Wiley Periodicals LLC on behalf of American Geophysical Union.</CopyrightInformation>
+                </Abstract>
+                <AuthorList CompleteYN="Y">
+                    <Author ValidYN="Y">
+                        <LastName>Cameron</LastName>
+                        <ForeName>Judy</ForeName>
+                        <Initials>J</Initials>
+                        <AffiliationInfo>
+                            <Affiliation>University of Pittsburgh Pittsburgh PA USA.</Affiliation>
+                        </AffiliationInfo>
+                    </Author>
+                    <Author ValidYN="Y">
+                        <LastName>Salahat</LastName>
+                        <ForeName>Mohammed</ForeName>
+                        <Initials>M</Initials>
+                        <Identifier Source="ORCID">0000-0001-7180-1946</Identifier>
+                        <AffiliationInfo>
+                            <Affiliation>Department of Land Management and Environment Prince El Hassan Bin Talal Faculty of Natural Resources and Environment The Hashemite University Zarqa Jordan.</Affiliation>
+                        </AffiliationInfo>
+                    </Author>
+                    <Author ValidYN="Y">
+                        <LastName>Al-Shurafat</LastName>
+                        <ForeName>Alham</ForeName>
+                        <Initials>A</Initials>
+                        <AffiliationInfo>
+                            <Affiliation>North Carolina State University Raleigh NC USA.</Affiliation>
+                        </AffiliationInfo>
+                    </Author>
+                    <Author ValidYN="Y">
+                        <LastName>Alshneikat</LastName>
+                        <ForeName>Lamees</ForeName>
+                        <Initials>L</Initials>
+                        <Identifier Source="ORCID">0009-0007-1410-3149</Identifier>
+                        <AffiliationInfo>
+                            <Affiliation>The Hashemite University Zarqa Jordan.</Affiliation>
+                        </AffiliationInfo>
+                    </Author>
+                </AuthorList>
+                <Language>eng</Language>
+                <PublicationTypeList>
+                    <PublicationType UI="D016428">Journal Article</PublicationType>
+                </PublicationTypeList>
+                <ArticleDate DateType="Electronic">
+                    <Year>2026</Year>
+                    <Month>04</Month>
+                    <Day>08</Day>
+                </ArticleDate>
+            </Article>
+            <MedlineJournalInfo>
+                <Country>United States</Country>
+                <MedlineTA>Geohealth</MedlineTA>
+                <NlmUniqueID>101706476</NlmUniqueID>
+                <ISSNLinking>2471-1403</ISSNLinking>
+            </MedlineJournalInfo>
+            <OtherAbstract Type="plain-language-summary" Language="eng">
+                <AbstractText>Building young people's capacity to engage in science at the intersection of climate change and human health can contribute to knowledge and interventions that are more likely to be adopted and sustained. The Global Center on Climate Change and Water Energy Food Health Systems engaged Jordanian high school students using The DataJam, a project&#x2010;based data science learning program and competition developed in the United States. This study analyzed the effectiveness of The DataJam in Jordan for engaging youth in climate&#x2010;health science using data science. After showing projects tended not to focus on the intersection of climate change and health and some projects did not include data science, we employed the Consolidated Framework for Implementation Science to identify the aspects of the implementation that impacted the outcomes. We found the complexity of The DataJam and the organization of the intervention led to communication challenges throughout the process. Despite these challenges, students reported a positive experience that resulted in greater interest in climate&#x2010;health science and confidence in their ability to be engaged in their communities.</AbstractText>
+                <CopyrightInformation>&#xa9; 2026. The Author(s). GeoHealth published by Wiley Periodicals LLC on behalf of American Geophysical Union.</CopyrightInformation>
+            </OtherAbstract>
+            <KeywordList Owner="NOTNLM">
+                <Keyword MajorTopicYN="N">climate change</Keyword>
+                <Keyword MajorTopicYN="N">community engagement</Keyword>
+                <Keyword MajorTopicYN="N">health</Keyword>
+                <Keyword MajorTopicYN="N">implementation science</Keyword>
+                <Keyword MajorTopicYN="N">informal STEM</Keyword>
+                <Keyword MajorTopicYN="N">youth</Keyword>
+            </KeywordList>
+            <CoiStatement>The authors declare no conflicts of interest relevant to this study.</CoiStatement>
+        </MedlineCitation>
+        <PubmedData>
+            <History>
+                <PubMedPubDate PubStatus="received">
+                    <Year>2026</Year>
+                    <Month>1</Month>
+                    <Day>21</Day>
+                </PubMedPubDate>
+                <PubMedPubDate PubStatus="revised">
+                    <Year>2026</Year>
+                    <Month>3</Month>
+                    <Day>13</Day>
+                </PubMedPubDate>
+                <PubMedPubDate PubStatus="accepted">
+                    <Year>2026</Year>
+                    <Month>3</Month>
+                    <Day>18</Day>
+                </PubMedPubDate>
+                <PubMedPubDate PubStatus="medline">
+                    <Year>2026</Year>
+                    <Month>4</Month>
+                    <Day>10</Day>
+                    <Hour>6</Hour>
+                    <Minute>34</Minute>
+                </PubMedPubDate>
+                <PubMedPubDate PubStatus="pubmed">
+                    <Year>2026</Year>
+                    <Month>4</Month>
+                    <Day>10</Day>
+                    <Hour>6</Hour>
+                    <Minute>33</Minute>
+                </PubMedPubDate>
+                <PubMedPubDate PubStatus="entrez">
+                    <Year>2026</Year>
+                    <Month>4</Month>
+                    <Day>10</Day>
+                    <Hour>5</Hour>
+                    <Minute>38</Minute>
+                </PubMedPubDate>
+                <PubMedPubDate PubStatus="pmc-release">
+                    <Year>2026</Year>
+                    <Month>4</Month>
+                    <Day>8</Day>
+                </PubMedPubDate>
+            </History>
+            <PublicationStatus>epublish</PublicationStatus>
+            <ArticleIdList>
+                <ArticleId IdType="pubmed">41960023</ArticleId>
+                <ArticleId IdType="pmc">PMC13058814</ArticleId>
+                <ArticleId IdType="doi">10.1029/2026GH001834</ArticleId>
+                <ArticleId IdType="pii">GH270132</ArticleId>
+            </ArticleIdList>
+            <ReferenceList>
+                <Reference>
+                    <Citation>Al&#x2010;Addous, M. , Bdour, M. , Alnaief, M. , Rabaiah, S. , &amp; Schweimanns, N. (2023). Water resources in Jordan: A review of current challenges and future opportunities. Water, 15(21), 3729. 10.3390/w15213729</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.3390/w15213729</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Beier, P. , Hansen, L. J. , Halbrecht, L. , &amp; Behar, D. (2016). A how&#x2010;to guide for coproduction of actionable science. Conservation Letters, 10(3), 288&#x2013;296. 10.1111/conl.12300</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1111/conl.12300</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Chambers, J. M. , Wyborn, C. , Ryan, M. E. , Reid, R. S. , Riechers, M. , Serban, A. , et&#xa0;al. (2021). Six modes of co&#x2010;production for sustainability. Nature Sustainability, 4(11), 983&#x2013;996. 10.1038/s41893-021-00755-x</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1038/s41893-021-00755-x</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Clark, W. C. , van Kerkhoff, L. , Lebel, L. , &amp; Gallopin, G. C. (2016). Crafting usable knowledge for sustainable development. Sustainability Science, 113(17), 4570&#x2013;4578. 10.1073/pnas.1601266113</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1073/pnas.1601266113</ArticleId>
+                        <ArticleId IdType="pmc">PMC4855559</ArticleId>
+                        <ArticleId IdType="pubmed">27091979</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Clemens, V. , von Hirschhausen, E. , &amp; Fegert, J. M. (2022). Report of the intergovernmental panel on climate change: Implications for the mental health policy of children and adolescents in Europe&#x2014;A scoping review. European Child &amp; Adolescent Psychiatry, 31(5), 701&#x2013;713. 10.1007/s00787-020-01615-3</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1007/s00787-020-01615-3</ArticleId>
+                        <ArticleId IdType="pmc">PMC9142437</ArticleId>
+                        <ArticleId IdType="pubmed">32845381</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Culha, D. (2016). Applying competition&#x2010;based learning to agile software engineering. Computer Applications in Engineering Education, 24, 382&#x2013;387. 10.1002/cae.21716</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1002/cae.21716</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Damschroder, L. J. , Aron, D. C. , Keith, R. E. , Kirsh, S. R. , Alexander, J. A. , &amp; Lowery, J. C. (2009). Fostering implementation of health services research findings into practice: A consolidated framework for advancing implementation science. Implementation Science, 4(1), 50. 10.1186/1748-5908-4-50</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1186/1748-5908-4-50</ArticleId>
+                        <ArticleId IdType="pmc">PMC2736161</ArticleId>
+                        <ArticleId IdType="pubmed">19664226</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Desiderio, E. , Garcia&#x2010;Herrero, L. , Hall, D. , Pertot, I. , Segre, A. , &amp; Vittuari, M. (2024). From youth engagement to policy insights: Identifying and testing food systems' sustainability indicators. Environmental Science &amp; Policy, 155, 103718. 10.1016/j.envsci.2024.103718</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1016/j.envsci.2024.103718</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Fuster, M. , Dimond, E. , Handley, M. A. , Rose, D. , Stoecker, C. , Knapp, M. , et&#xa0;al. (2023). Evaluating the outcomes and implementation determinants of interventions co&#x2010;developed using human&#x2010;centered design to promote healthy eating in restaurants: An application of the consolidated framework for implementation research. Frontiers in Public Health, 11, 1150790. 10.3389/fpubh.2023.1150790</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.3389/fpubh.2023.1150790</ArticleId>
+                        <ArticleId IdType="pmc">PMC10233011</ArticleId>
+                        <ArticleId IdType="pubmed">37275479</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>
+
+Gasparri, G.
+, 
+Omrani, O. E.
+, 
+Hinton, R.
+, 
+Imbago, D.
+, 
+Lakhani, H.
+, 
+Mohan, A.
+, et&#xa0;al. (2021). Children, adolescents, and youth pioneering a human rights&#x2010;based approach to climate change. Health and Human Rights Journal, 23(2), 95&#x2013;108. https://pubmed.ncbi.nlm.nih.gov/34966228/
+</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pmc">PMC8694303</ArticleId>
+                        <ArticleId IdType="pubmed">34966228</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>
+Generation Unlimited
+. (2025). Green rising: Mobilizing millions of young people to protect their communities from the climate crisis. Retrieved from https://www.generationunlimited.org/green&#x2010;rising
+</Citation>
+                </Reference>
+                <Reference>
+                    <Citation>Gerlak, A. K. , Guido, Z. , Owen, G. , McGoffin, M. S. R. , Louder, E. , Davies, J. , et&#xa0;al. (2023). Stakeholder engagement in the co&#x2010;production of knowledge for environmental decision&#x2010;making. World Development, 170, 106336. 10.1016/j.worlddev.2023.106336</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1016/j.worlddev.2023.106336</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Haqqi, S. , Soorjamurthi, S. , Macdonald, B. , Begandy, C. , Cameron, J. , Pirollo, B. , et al. (2018). DataJam: Introducing high school students to data science. In ITiCSE 2018: Proceedings of the 23rd Annual ACM Conference on Innovation and Technology in Computer Science Education (p.&#xa0;387). 10.1145/3197091.3205812</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1145/3197091.3205812</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Harvey, B. , Cochrane, L. , &amp; Van Epp, M. (2019). Charting knowledge co&#x2010;production pathways in climate and development. Environmental Policy and Governance, 29(2), 107&#x2013;117. 10.1002/eet.1834</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1002/eet.1834</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Harvey, B. , Huang, Y. , Araujo, J. , Vincent, K. , Roux, J. , Rouhaud, E. , &amp; Visman, E. (2021). Mobilizing climate information for decision&#x2010;making in Africa: Contrasting user&#x2010;centered and knowledge&#x2010;centered approaches. Frontiers in Climate, 2, 589282. 10.3389/fclim.2020.589282</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.3389/fclim.2020.589282</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Kerins, C. , McHugh, S. , McSharry, J. , Reardon, C. M. , Hayes, C. , Perry, I. J. , et&#xa0;al. (2020). Barriers and facilitators to implementation of menu labelling interventions from a food service industry perspective: A mixed methods systematic review. International Journal of Behavioral Nutrition and Physical Activity, 17(1), 48. 10.1186/s12966-020-00948-1</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1186/s12966-020-00948-1</ArticleId>
+                        <ArticleId IdType="pmc">PMC7161210</ArticleId>
+                        <ArticleId IdType="pubmed">32295647</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Khosravi, M. , Mojtabaeian, S. M. , &amp; Sarvestani, M. A. (2024). A systematic review on the outcomes of climate change in the Middle&#x2010;Eastern countries: The catastrophes of Yemen and Syria. Environmental Health Insights, 18, 11786302241302270. 10.1177/11786302241302270</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1177/11786302241302270</ArticleId>
+                        <ArticleId IdType="pmc">PMC11645776</ArticleId>
+                        <ArticleId IdType="pubmed">39679384</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Kirk, M. A. , Kelley, C. , Yankey, N. , Birken, S. A. , Abadie, B. , &amp; Damschroder, L. (2016). A systematic review of the use of the Consolidated Framework for Implementation Research. Implementation Science, 11(1), 72. 10.1186/s13012-016-0437-z</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1186/s13012-016-0437-z</ArticleId>
+                        <ArticleId IdType="pmc">PMC4869309</ArticleId>
+                        <ArticleId IdType="pubmed">27189233</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Lee, Y. , &amp; Lee, B. (2024). Developing career&#x2010;related skills through project&#x2010;based learning. Studies in Educational Evaluation, 83, 101378. 10.1016/j.stueduc.2024.101378</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1016/j.stueduc.2024.101378</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Mach, K. J. , Lemos, M. C. , Meadow, A. M. , Wyborn, C. , Klenk, N. , Arnott, J. C. , et&#xa0;al. (2020). Actionable knowledge and the art of engagement. Current Opinion in Environmental Sustainability, 42, 30&#x2013;37. 10.1016/j.cosust.2020.01.002</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1016/j.cosust.2020.01.002</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Malafaia, C. , Diogenes&#x2010;Lima, J. , Pereira, B. , Macedo, E. , &amp; Menezes, I. (2024). Collaborative climate labs: A youth&#x2010;led methodology for co&#x2010;creating community responses to climate change. Research in Education, 121(2), 192&#x2013;216. 10.1177/00345237241288407</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1177/00345237241288407</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Maslin, M. , Ramnath, R. D. , Welsh, G. I. , &amp; Sisodiya, S. M. (2025). Understanding the health impacts of the climate crisis. Future Healthcare Journal, 12(1), 100240. 10.1016/j.fhj.2025.100240</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1016/j.fhj.2025.100240</ArticleId>
+                        <ArticleId IdType="pmc">PMC11998295</ArticleId>
+                        <ArticleId IdType="pubmed">40236934</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Neira, M. , Erguler, K. , Ahmady&#x2010;Birgani, H. , Al&#x2010;Hmoud, N. D. , Fears, R. , Gogos, C. , et&#xa0;al. (2023). Climate change and human health in the Eastern Mediterranean and Middle East: Literature review, research priorities and policy suggestions. Environmental Research, 216(2), 114537. 10.1016/j.envres.2022.114537</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1016/j.envres.2022.114537</ArticleId>
+                        <ArticleId IdType="pmc">PMC9729515</ArticleId>
+                        <ArticleId IdType="pubmed">36273599</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Parth, S. , Schickl, M. , Oberauer, K. , Kuish, S. , Deisenrieder, V. , Liebhaber, N. , et al. (2024). Teenagers performing research on climate change education in a fully integrated design&#x2010;based research setting. International Journal of Science Education, 46(10), 978&#x2013;1000. 10.1080/09500693.2023.2268295</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1080/09500693.2023.2268295</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Reed, M. S. (2008). Stakeholder participation for environmental management: A literature review. Biological Conservation, 141(10), 2417&#x2013;2431. 10.1016/j.biocon.2008.07.014</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1016/j.biocon.2008.07.014</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Sanson, A. V. , Van Hoorn, J. , &amp; Burke, S. E. L. (2019). Responding to the impacts of the climate crisis on children and youth. Child Development Perspectives, 13(4), 201&#x2013;207. 10.1111/cdep.12342</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1111/cdep.12342</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Stavrianakis, K. , Nielsen, J. A. E. , &amp; Morrison, Z. (2025). Climate change projects and youth engagement: Empowerment and contested knowledge. Sustainability, 17(16), 7556. 10.3390/su17167556</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.3390/su17167556</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Talley, J. L. , Schneider, J. , &amp; Lindquist, E. (2016). A simplified approach to stakeholder engagement in natural resource management: The Five&#x2010;Feature Framework. Ecology &amp; Society, 21(4), 38. 10.5751/ES-08830-210438</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.5751/ES-08830-210438</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Thew, H. (2018). Youth participation and agency in the United Nations framework convention on climate change. International Environmental Agreements: Politics, Law, and Economics, 18(3), 369&#x2013;389. 10.1007/s10784-018-9392-2</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1007/s10784-018-9392-2</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Thew, H. , Middlemiss, L. , &amp; Paavola, J. (2020). &#x201c;Youth is not a political position&#x201d;: Exploring justice claims&#x2010;making in UN Climate Change Negotiations. Global Environmental Change, 61, 102036. 10.1016/j.gloenvcha.2020.102036</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1016/j.gloenvcha.2020.102036</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Tilt, J. , Babbar&#x2010;Sebens, M. , Ramadas, M. , Kolagani, N. , &amp; Naren, U. S. (2024). Participatory framing of a conceptual decision model for a hyperlocalized food, energy, and water nexus: A case study in adaptive management of rural water systems in India. Journal of Water Resources Planning and Management, 150(4), 1&#x2013;13. 10.1061/JWRMD5.WRENG-6154</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1061/JWRMD5.WRENG-6154</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Trott, C. D. , Weinberg, A. E. , Frame, S. M. , Jean&#x2010;Pierre, P. , &amp; Even, T. L. (2023). Civic science education for youth&#x2010;driven water security: A behavioral development approach to strengthening climate resilience. International Journal of Behavioral Development, 48(2), 145&#x2013;155. 10.1177/01650254231188661</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.1177/01650254231188661</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Worker, S. M. , Espinoza, D. , Kok, C. M. , Neas, S. , &amp; Smith, M. H. (2023). Youth participatory action research: Integrating science learning and civic engagement. California Agriculture, 77(2), 74&#x2013;82. 10.3733/ca.2023a0009</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="doi">10.3733/ca.2023a0009</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+            </ReferenceList>
+        </PubmedData>
+    </PubmedArticle>
+</PubmedArticleSet>"""
+    return response
+
+
+@pytest.fixture(name="fake_pubmed_dict_no_UCSD")
+def pubmed_dict_no_UCSD(fake_pubmed_response_no_UCSD) -> dict:
+    return xmltodict.parse(fake_pubmed_response_no_UCSD)
+
+
 @pytest.fixture(name="fake_pubmed_response_two_articles")
 def pubmed_response_two_articles() -> str:
     return """<?xml version="1.0" ?>

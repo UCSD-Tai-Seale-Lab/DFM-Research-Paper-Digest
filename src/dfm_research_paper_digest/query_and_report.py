@@ -6,16 +6,9 @@ Query PubMed and generate HTML report in one command
 import argparse
 import getpass
 import logging
+import sys
 from datetime import datetime
 from importlib.resources import as_file, files
-
-from author import Author
-from email_sender import EmailSender
-from faculty import Faculty
-from my_logging import setup_logging
-from publication import Article
-from pubmed_query import PubMedQuery
-from report_generator import ReportGenerator
 
 
 def main(argv=None):
@@ -40,12 +33,27 @@ Examples:
   %(prog)s "Ming Tai-Seale" --send-email --email-to recipient@email.com --email-from your@gmail.com --email-format html
         """,
     )
+    from dfm_research_paper_digest import (
+        Article,
+        Author,
+        Faculty,
+        PubMedQuery,
+        ReportGenerator,
+        setup_logging,
+    )
+    from dfm_research_paper_digest.email_sender import EmailSender
 
-    log: logging.Logger = setup_logging(log_filename="query_and_report.log")
+    resource_path_log = files("logs").joinpath("query_and_report.log")
+
+    with as_file(resource_path_log) as log_filename:
+        log: logging.Logger = setup_logging(log_filename=log_filename)
+
     resource_path = files("data").joinpath("faculty_list.txt")
 
     parser.add_argument(
-        "author", help='Author name to search (e.g., "Tai-Seale M", "Kallenberg G")'
+        "author",
+        type=str,
+        help='Author name to search (e.g., "Tai-Seale M", "Kallenberg G")',
     )
 
     parser.add_argument(
@@ -99,7 +107,7 @@ Examples:
         help="Email provider (default: gmail)",
     )
 
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     # Parse author name to PubMed format.
     author: Author = Author(args.author)

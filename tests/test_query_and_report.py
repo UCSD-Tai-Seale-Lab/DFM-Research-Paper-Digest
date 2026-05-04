@@ -1,7 +1,7 @@
 from dfm_research_paper_digest.query_and_report import main
 
 
-def test_query_and_report(user):
+def test_query_and_report(username):
     main(
         [
             "Ming Tai-Seale",
@@ -16,7 +16,9 @@ def test_query_and_report(user):
         [
             "Gene Kallenberg",
             "--send-email",
-            f"--email-to {user}@ucsd.edu",
-            f"--email-from {user}@ucsd.edu",
+            "--email-to",
+            f"{username}@ucsd.edu",
+            "--email-from",
+            f"{username}@ucsd.edu",
         ]
     )

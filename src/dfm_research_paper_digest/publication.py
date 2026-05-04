@@ -1,5 +1,6 @@
-from datetime import datetime
 import logging
+from datetime import datetime
+import dfm_research_paper_digest
 
 
 class Article:
@@ -9,6 +10,7 @@ class Article:
     Attributes:
     ----------
     authors_list
+    author_names_list
     authors
     journal
     pmid
@@ -18,7 +20,7 @@ class Article:
 
     Methods
     -------
-    to_dict(fieldname)
+    is_author_ucsd_affiliated()
     """
 
     def __init__(self, pubmed_article: dict, log: logging.Logger) -> None:
@@ -33,17 +35,28 @@ class Article:
                     author_list: dict = article["AuthorList"]
 
                     if author_list and "Author" in author_list:
-                        self.authors_list: list[str] = []
+                        self.authors_list: list[dfm_research_paper_digest.Author] = []
+                        self.author_names_list: list[str] = []
 
                         for name in author_list["Author"]:
                             try:
-                                self.authors_list.append(ArticleAuthor(name, log).name)
+                                # Create an Author object.
+                                author: dfm_research_paper_digest.Author = (
+                                    ArticleAuthor(name, log).as_author()
+                                )
+                                self.authors_list.append(author)
+
+                                # Also maintain a list of string author names.
+                                self.author_names_list.append(author.pubmed_style)
+
                             except AttributeError:
                                 log.exception(
                                     "AttributeError: 'ArticleAuthor' object has no attribute 'name' for object created with {name}."
                                 )
 
-                        self.authors: str = ", ".join(self.authors_list)
+                        self.authors: str = ", ".join(
+                            [au.original for au in self.authors_list]
+                        )
 
                 if article and "Journal" in article:
                     journal: dict = article["Journal"]
@@ -67,6 +80,22 @@ class Article:
                 if pmid_dict and "#text" in pmid_dict:
                     self.pmid: str = pmid_dict["#text"]
 
+    def is_author_ucsd_affiliated(self, author_name: str) -> bool:
+        """
+            Checks that the author is affiliated with UCSD (according to the article).
+
+        Args:
+            author_name: str
+
+        Returns
+        -------
+        bool
+        """
+        matching_Author: dfm_research_paper_digest.Author = next(
+            (a for a in self.authors_list if a.matches(author_name)), None
+        )
+        return matching_Author.is_ucsd()
+
 
 class ArticleAuthor:
     """
@@ -74,9 +103,10 @@ class ArticleAuthor:
 
     Attributes:
     ----------
-    FirstName
-    LastName
-    Initials
+    affiliation
+    initials
+    first_name
+    last_name
     name
 
     Methods
@@ -85,19 +115,45 @@ class ArticleAuthor:
     """
 
     def __init__(self, author_dict: dict, log: logging.Logger) -> None:
+        self.affiliation: str = ""
+        self.first_name: str = ""
+        self.initials: str = ""
+        self.last_name: str = ""
+        self.name: str = ""
+
         if author_dict and "LastName" in author_dict:
-            self.LastName: str = author_dict["LastName"]
+            self.last_name = author_dict["LastName"]
 
             if "ForeName" in author_dict:
-                self.FirstName: str = author_dict["ForeName"]
+                self.first_name = author_dict["ForeName"]
 
                 if "Initials" in author_dict:
-                    self.Initials: str = author_dict["Initials"]
+                    self.initials = author_dict["Initials"]
                     self.name = (
-                        self.FirstName + " " + self.Initials + " " + self.LastName
+                        self.first_name + " " + self.initials + " " + self.last_name
                     )
                 else:
-                    self.name = self.FirstName + " " + self.LastName
+                    self.name = self.first_name + " " + self.last_name
+
+                if "AffiliationInfo" in author_dict:
+                    affiliation_dict: dict = author_dict["AffiliationInfo"]
+
+                    if affiliation_dict and "Affiliation" in affiliation_dict:
+                        self.affiliation = affiliation_dict["Affiliation"]
+
+    def as_author(self) -> dfm_research_paper_digest.Author:
+        """
+            Create an Author object.
+
+        Returns
+        -------
+        author: Author
+        """
+        author: dfm_research_paper_digest.Author = dfm_research_paper_digest.Author(
+            self.name
+        )
+        author.add_affiliation(self.affiliation)
+        return author
 
 
 class PMID:

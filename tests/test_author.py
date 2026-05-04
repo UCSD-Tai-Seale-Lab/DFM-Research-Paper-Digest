@@ -2,7 +2,7 @@
 Tests Author class.
 """
 
-from src.dfm_research_paper_digest.author import Author
+from dfm_research_paper_digest.author import Author
 
 
 def test_author():
@@ -49,6 +49,17 @@ def test_author():
     # Last, first name style
     assert isinstance(author.pubmed_style, str)
     assert author.pubmed_style == "Nikiforov, Igor"
+
+
+def test_author_affiliation():
+    """Exercises adding/using author affiliation."""
+    author: Author = Author("Igor V. Nikiforov")
+    assert isinstance(author, Author)
+    author.add_affiliation("University of Technology of Troyes")
+    assert not author.is_ucsd()
+    author = Author("Adam A. Able")
+    author.add_affiliation("University of California San Diego")
+    assert author.is_ucsd()
 
 
 def test_matching_list():

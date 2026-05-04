@@ -11,12 +11,6 @@ import time
 from datetime import datetime
 from importlib.resources import as_file, files
 
-from faculty import Faculty
-from my_logging import setup_logging
-from publication import Article
-from pubmed_query import PubMedQuery
-from report_generator import ReportGenerator
-
 
 def export_to_csv_with_faculty(publications, filename, log: logging.Logger):
     """Export publications with faculty information to CSV."""
@@ -81,8 +75,19 @@ def query_faculty_batch(
     Returns:
         Dictionary with faculty names as keys and their publications as values
     """
+    from dfm_research_paper_digest import (
+        Article,
+        Faculty,
+        PubMedQuery,
+        ReportGenerator,
+        setup_logging,
+    )
+
     if not log:
-        log = setup_logging(log_filename="query_faculty_batch.log")
+        resource_path = files("logs").joinpath("query_faculty_batch.log")
+
+        with as_file(resource_path) as log_filename:
+            log = setup_logging(log_filename=log_filename)
 
     # Parse faculty names.
     faculty: Faculty = Faculty(faculty_list_file, log)
@@ -167,7 +172,7 @@ def query_faculty_batch(
         html_filename += ".html"
 
         log.info(f"Generating HTML report: {html_filename}.")
-        report_gen = ReportGenerator(faculty)
+        report_gen = ReportGenerator(faculty, log)
 
         report_gen.generate_html_report(
             publications=all_results,
@@ -178,7 +183,7 @@ def query_faculty_batch(
     return faculty_results
 
 
-def main():
+def main(argv=None):
     """Main function with CLI interface."""
     parser = argparse.ArgumentParser(
         description="Batch query PubMed for multiple faculty members",
@@ -192,6 +197,7 @@ Examples:
   %(prog)s --email your@email.com --output results
         """,
     )
+    from dfm_research_paper_digest import setup_logging
 
     log: logging.Logger = setup_logging(log_filename="query_faculty_batch.log")
     resource_path = files("data").joinpath("faculty_list.txt")
@@ -229,7 +235,7 @@ Examples:
         "--no-report", action="store_true", help="Skip HTML report generation"
     )
 
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if not args.faculty_file:
         log.error("Error: No faculty names provided")

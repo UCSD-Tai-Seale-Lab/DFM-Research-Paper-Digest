@@ -8,12 +8,12 @@ import argparse
 import logging
 import time
 from datetime import datetime
-from typing import Dict, List
+from importlib.resources import as_file, files
 
 import requests
 import xmltodict
-from my_logging import setup_logging
-from publication import PMID, Article, PubmedArticleSet
+
+from dfm_research_paper_digest import PMID, Article, PubmedArticleSet
 
 
 class PubMedQuery:
@@ -40,17 +40,22 @@ class PubMedQuery:
         Args:
             email: Your email (recommended by NCBI for API usage tracking)
         """
+        from dfm_research_paper_digest import setup_logging
+
         self.email: str = email
         self.__log: logging.Logger
 
-        if log:
-            self.__log = log
-        else:
-            self.__log = setup_logging(log_filename="pubmed_query.py")
+        if not log:
+            resource_path = files("logs").joinpath("pubmed_query.py")
+
+            with as_file(resource_path) as log_filename:
+                self.__log = setup_logging(log_filename=log_filename)
+
+        self.__log = log
 
     def search_author_publications(
         self, author_name: str, year: int = datetime.now().year
-    ) -> List[str]:
+    ) -> list[str]:
         """
         Search for publication IDs by author and year.
 
@@ -59,7 +64,7 @@ class PubMedQuery:
             year: Publication year (default: 2025)
 
         Returns:
-            List of PubMed IDs (PMIDs)
+            list of PubMed IDs (PMIDs)
         """
         # Construct search query
         search_term = f"{author_name}[Author] AND {year}[pdat]"
@@ -77,7 +82,7 @@ class PubMedQuery:
             params["email"] = self.email
 
         url = f"{self.BASE_URL}esearch.fcgi"
-        pmids: List[str] = []
+        pmids: list[str] = []
         num_pubs_retrieved: int = 0
 
         # Request publications in chunks.
@@ -103,17 +108,20 @@ class PubMedQuery:
 
         return pmids
 
-    def fetch_publication_details(self, pmids: List[str]) -> List[Article]:
+    def fetch_publication_details(
+        self, pmids: list[str], author_name: str
+    ) -> list[Article]:
         """
         Fetch publication details for given PMIDs.
 
         Args:
-            pmids: List of PubMed IDs
+            pmids: list of PubMed IDs
+            author_name: str
 
         Returns:
-            List of Article objects
+            list of Article objects
         """
-        publications: List[Article] = []
+        publications: list[Article] = []
 
         if not pmids:
             return publications
@@ -137,6 +145,11 @@ class PubMedQuery:
 
             # Join PMIDs with comma
             id_string = ",".join(pmids[index_start:index_end])
+
+            # No more PMIDs means we're done.
+            if len(id_string) == 0:
+                break
+
             params["id"] = id_string
 
             try:
@@ -144,12 +157,16 @@ class PubMedQuery:
                 response.raise_for_status()
 
                 data_dict: dict = xmltodict.parse(response.content)
-                pubmed_articleset: PubmedArticleSet = PubmedArticleSet(data_dict)
+                pubmed_articleset: PubmedArticleSet = PubmedArticleSet(
+                    data_dict, self.__log
+                )
                 articles: list[Article] = pubmed_articleset.articles
 
                 for article in articles:
-                    publications.append(article)
                     num_pubs_received_so_far += 1
+
+                    if article.is_author_ucsd_affiliated(author_name):
+                        publications.append(article)
 
             except requests.exceptions.RequestException as e:
                 self.__log.exception(f"Error fetching publication details: {e}")
@@ -159,7 +176,7 @@ class PubMedQuery:
 
     def query_author(
         self, author_name: str, year: int = datetime.now().year
-    ) -> List[Article]:
+    ) -> list[Article]:
         """
         Complete query for author publications.
 
@@ -168,7 +185,7 @@ class PubMedQuery:
             year: Publication year (default: 2025)
 
         Returns:
-            List of Article objects
+            list of Article objects
         """
         self.__log.info(
             f"\nSearching PubMed for publications by '{author_name}' from {year}..."
@@ -187,7 +204,7 @@ class PubMedQuery:
         # NCBI recommends max 3 requests per second
         time.sleep(0.34)
 
-        publications = self.fetch_publication_details(pmids)
+        publications = self.fetch_publication_details(pmids, author_name)
 
         return publications
 
@@ -326,14 +343,14 @@ Examples:
 
 
 def export_to_csv(
-    publications: List[Article], filename: str, log: logging.Logger
+    publications: list[Article], filename: str, log: logging.Logger
 ) -> None:
     """
         Export publications to CSV file.
 
     Parameters
     ----------
-    publications: List[Article]
+    publications: list[Article]
     filename: str
     log: logging.Logger
 

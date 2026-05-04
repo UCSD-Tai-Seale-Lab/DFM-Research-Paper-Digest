@@ -5,10 +5,10 @@ Shows how to query multiple authors programmatically.
 """
 import logging
 from datetime import datetime
+from importlib.resources import as_file, files
 
-from my_logging import setup_logging
-from publication import Article
-from pubmed_query import PubMedQuery, display_publications
+from dfm_research_paper_digest import (Article, PubMedQuery,
+                                       display_publications)
 
 
 def query_multiple_authors(log: logging.Logger):
@@ -89,7 +89,12 @@ def export_to_csv(log: logging.Logger):
 
 if __name__ == "__main__":
 
-    log: logging.Logger = setup_logging("example_usage.log")
+    from dfm_research_paper_digest import setup_logging
+
+    resource_path = files("logs").joinpath("example_usage.log")
+
+    with as_file(resource_path) as log_filename:
+        log: logging.Logger = setup_logging(log_filename=log_filename)
 
     # Run the examples
     log.info("Example 1: Query multiple authors")

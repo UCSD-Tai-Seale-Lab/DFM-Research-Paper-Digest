@@ -4,19 +4,40 @@ Exercises query_faculty_batch.py
 
 from importlib.resources import as_file, files
 
-from src.dfm_research_paper_digest.query_faculty_batch import \
-    query_faculty_batch
+from dfm_research_paper_digest.query_faculty_batch import main
 
 
-def test_query_faculty_batch():
-    resource_path = files("src.dfm_research_paper_digest.data").joinpath(
-        "faculty_list.txt"
-    )
+def test_query_faculty_batch(username):
+    resource_path = files("data").joinpath("sample_faculty_list.txt")
 
-    with as_file(resource_path) as filename:
-        query_faculty_batch(
-            faculty_list_file=filename,
-            year=2026,
-            email="kjdelaney@health.ucsd.edu",
-            output_file="results",
+    with as_file(resource_path) as faculty_filename:
+        main(
+            [
+                "--faculty-file",
+                str(faculty_filename),
+                "--year",
+                "2026",
+                "--email",
+                f"{username}@ucsd.edu",
+                "--output",
+                r"C:\Family Medicine\Publication Output\results\results",
+            ]
+        )
+
+
+def test_run_query_faculty_batch(username):
+    resource_path = files("data").joinpath("faculty_list.txt")
+
+    with as_file(resource_path) as faculty_filename:
+        main(
+            [
+                "--faculty-file",
+                str(faculty_filename),
+                "--year",
+                "2026",
+                "--email",
+                f"{username}@ucsd.edu",
+                "--output",
+                r"C:\Family Medicine\Publication Output\results\results",
+            ]
         )
