@@ -7,8 +7,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
-from faculty import Faculty
-from publication import Article
+from dfm_research_paper_digest import Article, Faculty
 
 
 class ReportGenerator:
@@ -256,7 +255,7 @@ class ReportGenerator:
 """
         # Publications
         for i, pub in enumerate(publications, 1):
-            authors_html: str = self.__highlight_faculty_authors(pub.authors_list)
+            authors_html: str = self.__highlight_faculty_authors(pub.author_names_list)
 
             html += f"""
     <div class="publication">
@@ -314,7 +313,7 @@ class ReportGenerator:
         for pub in publications:
             for author in pub.authors_list:
                 if self.__faculty.is_faculty(author):
-                    faculty_in_pubs.append(author)
+                    faculty_in_pubs.append(author.original)
 
         # Generate HTML
         html: str = self.__generate_html_content(publications, title, faculty_in_pubs)
@@ -351,4 +350,4 @@ class ReportGenerator:
             else:
                 highlighted.append(author)
 
-        return ", ".join(highlighted)
+        return "; ".join(highlighted)

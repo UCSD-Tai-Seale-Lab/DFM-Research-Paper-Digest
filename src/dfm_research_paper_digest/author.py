@@ -15,6 +15,7 @@ class Author(HumanName):
 
     Attributes:
     ----------
+    affiliation: str            organization
     first: str                  author's given name
     last: str                   author's family name
     middle: str                 author's middle name
@@ -35,6 +36,7 @@ class Author(HumanName):
         """
         super().__init__(name, **kwargs)
 
+        self.affiliation: str = ""
         self.middle_initial_only: bool = False
         self.middle_initial: str = ""
         self.original: str = name
@@ -46,6 +48,31 @@ class Author(HumanName):
 
         self.pubmed_style: str = self.last + ", " + self.first
         self.slug: str = name.replace(" ", "_").replace(",", "").replace('"', "")
+
+    def add_affiliation(self, affiliation: str) -> None:
+        """
+            Allows external method to append affiliation info.
+
+        Parameters
+        ----------
+        affiliation: str
+        """
+        self.affiliation = affiliation
+
+    def is_ucsd(self) -> bool:
+        """
+            Checks to see if affiliation is present AND looks like "UCSD" or "University of California San Diego"
+
+        Returns
+        -------
+        affiliated_with_ucsd: bool
+        """
+        affiliation_cleaned: str = self.affiliation.replace(".", "").replace(",", "")
+        return (
+            "UCSD" in affiliation_cleaned
+            or "University of California San Diego" in affiliation_cleaned
+            or "UC San Diego" in affiliation_cleaned
+        )
 
     def __middle_names_match_where_present(self, other_name: Self) -> bool:
         """

@@ -1,9 +1,11 @@
-from datetime import datetime
 import logging
+from datetime import datetime
+import dfm_research_paper_digest
 
 class Article:
     def __init__(self, pubmed_article: dict, log: logging.Logger):
-        self.authors_list: list[str] = []
+        self.authors_list: list[dfm_research_paper_digest.Author] = []
+        self.author_names_list: list[str] = []
         self.authors: str = ""
         self.journal: str = ""
         self.pmid: str = ""
@@ -11,12 +13,17 @@ class Article:
         self.title: str = ""
         self.year: int = 0
 
+    def is_author_ucsd_affiliated(self, author: str) -> bool: ...
+
 class ArticleAuthor:
     def __init__(self, author_dict: dict, log: logging.Logger) -> None:
-        self.FirstName: str = ""
-        self.LastName: str = ""
-        self.Initials: str = ""
+        self.affiliation: str = ""
+        self.first_name: str = ""
+        self.last_name: str = ""
+        self.initials: str = ""
         self.name: str = ""
+
+    def as_author(self) -> dfm_research_paper_digest.Author: ...
 
 class PMID:
     def __init__(self, pmid_dict: dict, log: logging.Logger) -> None:

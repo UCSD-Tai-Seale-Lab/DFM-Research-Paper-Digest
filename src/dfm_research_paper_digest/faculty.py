@@ -8,7 +8,7 @@ import copy
 import logging
 from pathlib import Path
 
-from author import Author
+from dfm_research_paper_digest import Author
 
 
 class Faculty:

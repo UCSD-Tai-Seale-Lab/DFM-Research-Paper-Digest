@@ -1,4 +1,4 @@
 import logging.handlers
-from typing import Union
+from pathlib import Path
 
-def setup_logging(log_filename: Union[str, None] = ...) -> logging.Logger: ...
+def setup_logging(log_filename: str | Path | None = ...) -> logging.Logger: ...

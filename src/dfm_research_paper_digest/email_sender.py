@@ -12,9 +12,9 @@ from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from importlib.resources import as_file, files
 
-from my_logging import setup_logging
-from publication import Article
+from dfm_research_paper_digest import Article
 
 
 class EmailSender:
@@ -45,12 +45,17 @@ class EmailSender:
             use_tls: Use TLS encryption (default: True)
             provider: Email provider shortcut ('gmail', 'outlook', 'yahoo', 'ucsd')
         """
+        from dfm_research_paper_digest import setup_logging
+
         self.__smtp_port: int = 587
         self.__smtp_server: str
         self.__use_tls: bool = True
 
         if not log:
-            log = setup_logging(log_filename="email_sender.log")
+            resource_path = files("logs").joinpath("email_sender.log")
+
+            with as_file(resource_path) as log_filename:
+                log = setup_logging(log_filename=log_filename)
 
         self.__log = log
 
