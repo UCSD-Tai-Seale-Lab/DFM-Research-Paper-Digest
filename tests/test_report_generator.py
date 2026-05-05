@@ -7,9 +7,7 @@ from src.dfm_research_paper_digest.report_generator import ReportGenerator
 
 
 def test_report_generator(fake_pubmed_dict_two_articles, logger):
-    resource_path = files("src.dfm_research_paper_digest.data").joinpath(
-        "faculty_list.txt"
-    )
+    resource_path = files("cl").joinpath("faculty_list.txt")
 
     with as_file(resource_path) as filename:
         faculty: Faculty = Faculty(filename, logger)

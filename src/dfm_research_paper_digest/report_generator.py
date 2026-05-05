@@ -7,7 +7,9 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
-from dfm_research_paper_digest import Article, Faculty
+from metapub import PubMedArticle, PubMedAuthor
+
+from dfm_research_paper_digest import Faculty, PubMedQuery
 
 
 class ReportGenerator:
@@ -35,7 +37,7 @@ class ReportGenerator:
 
     def __generate_html_content(
         self,
-        publications: list[Article],
+        publications: list[PubMedArticle],
         title: str,
         faculty_in_pubs: list[str],
     ) -> str:
@@ -255,7 +257,7 @@ class ReportGenerator:
 """
         # Publications
         for i, pub in enumerate(publications, 1):
-            authors_html: str = self.__highlight_faculty_authors(pub.author_names_list)
+            authors_html: str = self.__highlight_faculty_authors(pub.author_list)
 
             html += f"""
     <div class="publication">
@@ -292,7 +294,7 @@ class ReportGenerator:
 
     def generate_html_report(
         self,
-        publications: list[Article],
+        publications: list[PubMedArticle],
         output_file: str,
         title: str = "DFM Faculty Publications Report",
     ):
@@ -311,9 +313,9 @@ class ReportGenerator:
         faculty_in_pubs: list[str] = []
 
         for pub in publications:
-            for author in pub.authors_list:
+            for author in pub.author_list:
                 if self.__faculty.is_faculty(author):
-                    faculty_in_pubs.append(author.original)
+                    faculty_in_pubs.append(f"{author.fore_name} {author.last_name}")
 
         # Generate HTML
         html: str = self.__generate_html_content(publications, title, faculty_in_pubs)
@@ -332,12 +334,12 @@ class ReportGenerator:
         self.__log.info(f"  Unique DFM faculty found: {len(faculty_in_pubs)}")
         self.__log.info(f"{'='*80}\n")
 
-    def __highlight_faculty_authors(self, authors_list: list[str]) -> str:
+    def __highlight_faculty_authors(self, authors_list: list[PubMedAuthor]) -> str:
         """
         Create HTML string with faculty members highlighted.
 
         Args:
-            authors_list: list of author names
+            authors_list: list of PubMedAuthor objects
 
         Returns:
             HTML string with <strong> tags around faculty members
@@ -345,9 +347,13 @@ class ReportGenerator:
         highlighted: list = []
 
         for author in authors_list:
-            if self.__faculty.is_faculty(author):
-                highlighted.append(f"<strong>{author}</strong>")
-            else:
-                highlighted.append(author)
+            nice_name: str = f"{author.fore_name} {author.last_name}"
 
-        return "; ".join(highlighted)
+            if self.__faculty.is_faculty(author) and PubMedQuery.is_ucsd_affiliated(
+                author
+            ):
+                highlighted.append(f"<strong>{nice_name}</strong>")
+            else:
+                highlighted.append(nice_name)
+
+        return ", ".join(highlighted)

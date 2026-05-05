@@ -8,9 +8,12 @@ import copy
 import logging
 from pathlib import Path
 
-from dfm_research_paper_digest import Author
+from metapub import PubMedAuthor
+
+from dfm_research_paper_digest import Author  # pylint: disable=import-error
 
 
+# pylint: disable=too-few-public-methods
 class Faculty:
     """
     Holds a list of Author objects & allows modules to ask whether
@@ -23,7 +26,6 @@ class Faculty:
     Methods
     -------
     is_faculty(): bool
-    names(): list[str]
     """
 
     # Can create from existing hard-coded list, a filename or a Path object.
@@ -47,13 +49,13 @@ class Faculty:
         self.num: int = len(self.__list)
         self.original_names: list[str] = self.__original_names()
 
-    def is_faculty(self, var: Author | str) -> bool:
+    def is_faculty(self, var: Author | PubMedAuthor | str) -> bool:
         """
         Tests an Author to see if it matches any of our faculty members.
 
         Parameters
         ----------
-        var: Author or str
+        var: Author or PubMedAuthor or str
 
         Returns
         -------
@@ -65,6 +67,8 @@ class Faculty:
             author = Author(var)
         elif isinstance(var, Author):
             author = var
+        elif isinstance(var, PubMedAuthor):
+            author = Author(f"{var.fore_name} {var.last_name}")
         else:
             self.__log.exception(
                 "Type Error: Expected 'var' to be Author object or str."
@@ -122,7 +126,7 @@ class Faculty:
         try:
             faculty_lines: list[str]
 
-            with open(file, "r") as f:
+            with open(file, "r", encoding="utf-8") as f:
                 faculty_lines = [line.strip() for line in f if line.strip()]
 
             self.__log.info(
@@ -135,3 +139,5 @@ class Faculty:
             self.__log.error(f"Warning: Faculty list file not found: {file}.")
         except Exception as e:
             self.__log.exception(f"Error loading faculty list: {e}.")
+
+        return []
