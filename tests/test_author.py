@@ -51,17 +51,6 @@ def test_author():
     assert author.pubmed_style == "Nikiforov, Igor"
 
 
-def test_author_affiliation():
-    """Exercises adding/using author affiliation."""
-    author: Author = Author("Igor V. Nikiforov")
-    assert isinstance(author, Author)
-    author.add_affiliation("University of Technology of Troyes")
-    assert not author.is_ucsd()
-    author = Author("Adam A. Able")
-    author.add_affiliation("University of California San Diego")
-    assert author.is_ucsd()
-
-
 def test_matching_list():
     """Exercises matching an Author against a list."""
     # List of Authors

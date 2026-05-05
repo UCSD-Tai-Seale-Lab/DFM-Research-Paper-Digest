@@ -1,0 +1,2 @@
+[MASTER]
+init-hook='import sys; sys.path.append("./dfm_research_paper_digest")'

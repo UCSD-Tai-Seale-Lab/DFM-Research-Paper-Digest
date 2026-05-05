@@ -3,7 +3,9 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
-from src.dfm_research_paper_digest.author import Author
+from metapub import PubMedAuthor
+
+from src.dfm_research_paper_digest.author import Author  # pylint: disable=import-error
 
 class Faculty:
     # Can create from existing hard-coded list, a filename or a Path object.
@@ -16,6 +18,6 @@ class Faculty:
         self.original_names: list[str] = None
 
     def __read_faculty_list_file(self, file: str | Path) -> list[str]: ...
-    def is_faculty(self, author: Author | str) -> bool: ...
+    def is_faculty(self, author: Author | PubMedAuthor | str) -> bool: ...
     def __names(self) -> list[str]: ...
     def __original_names(self) -> list[str]: ...

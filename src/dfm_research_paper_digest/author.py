@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from typing import Self
 
+from metapub import PubMedAuthor
 from nameparser import HumanName
 
 
@@ -27,7 +28,8 @@ class Author(HumanName):
 
     Methods
     -------
-    matches()                   Tests if two authors match, allowing for middle name/initial ambiguity
+    matches()                   Tests if two authors match,
+                                 allowing for middle name/initial ambiguity
     """
 
     def __init__(self, name: str, **kwargs):
@@ -48,31 +50,6 @@ class Author(HumanName):
 
         self.pubmed_style: str = self.last + ", " + self.first
         self.slug: str = name.replace(" ", "_").replace(",", "").replace('"', "")
-
-    def add_affiliation(self, affiliation: str) -> None:
-        """
-            Allows external method to append affiliation info.
-
-        Parameters
-        ----------
-        affiliation: str
-        """
-        self.affiliation = affiliation
-
-    def is_ucsd(self) -> bool:
-        """
-            Checks to see if affiliation is present AND looks like "UCSD" or "University of California San Diego"
-
-        Returns
-        -------
-        affiliated_with_ucsd: bool
-        """
-        affiliation_cleaned: str = self.affiliation.replace(".", "").replace(",", "")
-        return (
-            "UCSD" in affiliation_cleaned
-            or "University of California San Diego" in affiliation_cleaned
-            or "UC San Diego" in affiliation_cleaned
-        )
 
     def __middle_names_match_where_present(self, other_name: Self) -> bool:
         """
@@ -105,41 +82,48 @@ class Author(HumanName):
         -------
         match: bool
         """
-        if self.middle:
-            if other_name.middle:
-                if self.middle == other_name.middle:
-                    return True
-                elif (
-                    self.middle_initial_only
-                    and self.middle_initial == other_name.middle_initial
-                ):
-                    return True
-                elif (
-                    other_name.middle_initial_only
-                    and self.middle_initial == other_name.middle_initial
-                ):
-                    return True
-            else:
-                return True
-        else:
+        if not self.middle:
+            return True
+
+        if not other_name.middle:
+            return True
+
+        if self.middle == other_name.middle:
+            return True
+
+        if (
+            self.middle_initial_only
+            and self.middle_initial == other_name.middle_initial
+        ):
+            return True
+
+        if (
+            other_name.middle_initial_only
+            and self.middle_initial == other_name.middle_initial
+        ):
             return True
 
         return False
 
-    def matches(self, other_name: Self | str | list[Self] | list[str]) -> bool:
+    def matches(
+        self,
+        other_name: (
+            Self | PubMedAuthor | str | list[Self] | list[PubMedAuthor] | list[str]
+        ),
+    ) -> bool:
         """
         Tests matching of first, last and (if present) middle names.
         If other_name is a list of Authors, returns True if ANY match self.
 
         Parameters
         ----------
-        other_name: Author or list[Author] or list[str]
+        other_name: Author, PubMedAuthor, str or list of those
 
         Returns
         -------
         match: bool
         """
-        # Is it a LIST (of either str or Author)
+        # Is it a LIST (of either str or Author or PubMedAuthor)
         if isinstance(other_name, list):
             for name in other_name:
                 if self.matches(name):
@@ -150,6 +134,13 @@ class Author(HumanName):
         # Is it a STR?
         if isinstance(other_name, str):
             return self.matches(Author(other_name))
+
+        if isinstance(other_name, PubMedAuthor):
+            # Create a new Author object & use that.
+            other_author: Author = Author(
+                other_name.fore_name + " " + other_name.last_name
+            )
+            return self.matches(other_author)
 
         # It's an Author.
         return (

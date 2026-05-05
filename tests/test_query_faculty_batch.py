@@ -20,11 +20,12 @@ def test_query_faculty_batch(username):
                 "--email",
                 f"{username}@ucsd.edu",
                 "--output",
-                r"C:\Family Medicine\Publication Output\results\results",
+                r"C:\Family Medicine\Publication Output\results\test_results",
             ]
         )
 
 
+# @pytest.mark.skip(reason="Not really a test.")
 def test_run_query_faculty_batch(username):
     resource_path = files("data").joinpath("faculty_list.txt")
 
@@ -38,6 +39,6 @@ def test_run_query_faculty_batch(username):
                 "--email",
                 f"{username}@ucsd.edu",
                 "--output",
-                r"C:\Family Medicine\Publication Output\results\results",
+                r"C:\Family Medicine\Publication Output\results\batch_results",
             ]
         )

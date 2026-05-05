@@ -4,14 +4,96 @@ Query PubMed and generate HTML report in one command
 """
 
 import argparse
-import getpass
 import logging
-import sys
+import os
 from datetime import datetime
 from importlib.resources import as_file, files
 
+from metapub import PubMedArticle
+
+from dfm_research_paper_digest import Author, Faculty, PubMedQuery, ReportGenerator
+
+
+def query_and_report(
+    author: Author,
+    contact_email: str,
+    faculty_list_file: str = None,
+    log: logging.Logger = None,
+    output_file: str = None,
+    year: int = datetime.now().year,
+) -> None:
+    """
+        Lets us generate report for one researcher.
+
+    Parameters
+    ----------
+    author: Author
+    contact_email: str
+    faculty_list_file: str
+    log: logging.Logger
+    output_file: str
+    year: int
+    """
+
+    # Query PubMed
+    log.info("=" * 80)
+    log.info(f"Querying PubMed for: {author.original}")
+    if author.pubmed_style != author.original:
+        log.info(f"PubMed search format: {author.pubmed_style}")
+    log.info(f"Year: {year}")
+    log.info("=" * 80)
+
+    pubmed_query: PubMedQuery = PubMedQuery(log=log, email=contact_email)
+    articles: list[PubMedArticle] = pubmed_query.query_by_author(
+        author_name=author.pubmed_style, year=year
+    )
+
+    if not articles:
+        log.info(f"\n❌ No publications found for '{author.original}' in {year}.")
+
+        if author.pubmed_style != author.original:
+            log.info(f"   (Searched PubMed as: {author.pubmed_style})")
+        return
+
+    log.info(f"\n✓ Found {len(articles)} publication(s)")
+
+    # Generate HTML report
+    if output_file:
+        html_filename = (
+            output_file if output_file.endswith(".html") else f"{output_file}.html"
+        )
+    else:
+        # Auto-generate filename from author name
+        html_filename = f"{author.slug}_{year}.html"
+
+    faculty: Faculty = Faculty(faculty_list_file, log)
+    generator: ReportGenerator = ReportGenerator(faculty, log)
+
+    # Create title
+    title: str = f"{author.original} Publications ({year})"
+
+    generator.generate_html_report(
+        publications=articles,
+        output_file=html_filename,
+        title=title,
+    )
+
+    log.info("✅ Report generated successfully!")
+    log.info(f"📄 Open {html_filename} in your browser")
+
 
 def main(argv=None):
+    """
+        Callable from command line.
+
+    Parameters
+    ----------
+    argv
+
+    Returns
+    -------
+
+    """
     parser = argparse.ArgumentParser(
         description="Query PubMed and generate HTML report",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -25,28 +107,15 @@ Examples:
   # With options
   %(prog)s "Wu J" --year 2024
   %(prog)s "Ming Tai-Seale" --output ming_report
-  
-  # Send via email (text summary in body)
-  %(prog)s "Gene Kallenberg" --send-email --email-to recipient@email.com --email-from your@gmail.com
-  
-  # Send with HTML attachment
-  %(prog)s "Ming Tai-Seale" --send-email --email-to recipient@email.com --email-from your@gmail.com --email-format html
         """,
     )
-    from dfm_research_paper_digest import (
-        Article,
-        Author,
-        Faculty,
-        PubMedQuery,
-        ReportGenerator,
-        setup_logging,
-    )
-    from dfm_research_paper_digest.email_sender import EmailSender
+    from dfm_research_paper_digest import Author, setup_logging
 
     resource_path_log = files("logs").joinpath("query_and_report.log")
+    log: logging.Logger
 
     with as_file(resource_path_log) as log_filename:
-        log: logging.Logger = setup_logging(log_filename=log_filename)
+        log = setup_logging(log_filename=log_filename)
 
     resource_path = files("data").joinpath("faculty_list.txt")
 
@@ -65,14 +134,18 @@ Examples:
     )
 
     parser.add_argument(
-        "--email", "-e", type=str, help="Your email (optional, recommended by NCBI)"
-    )
-
-    parser.add_argument(
         "--output",
         "-o",
         type=str,
         help="Output HTML filename (default: auto-generated from author name)",
+    )
+
+    parser.add_argument(
+        "--email",
+        "-e",
+        type=str,
+        default=f"{os.getlogin()}@health.ucsd.edu",
+        help="Your email (recommended by NCBI)",
     )
 
     with as_file(resource_path) as faculty_filename:
@@ -84,128 +157,19 @@ Examples:
             help="Faculty list file for highlighting (default: faculty_list.txt)",
         )
 
-    # Email options
-    parser.add_argument(
-        "--send-email", action="store_true", help="Send report via email"
-    )
-
-    parser.add_argument("--email-to", type=str, help="Recipient email address")
-
-    parser.add_argument("--email-from", type=str, help="Your email address")
-
-    parser.add_argument(
-        "--email-format",
-        choices=["text", "html"],
-        default="text",
-        help="Email format: text (summary in body) or html (attached report) - default: text",
-    )
-
-    parser.add_argument(
-        "--email-provider",
-        choices=["gmail", "outlook", "yahoo", "ucsd"],
-        default="gmail",
-        help="Email provider (default: gmail)",
-    )
-
     args = parser.parse_args(argv)
 
     # Parse author name to PubMed format.
     author: Author = Author(args.author)
 
-    # Query PubMed
-    log.info("=" * 80)
-    log.info(f"Querying PubMed for: {author.original}")
-    if author.pubmed_style != author.original:
-        log.info(f"PubMed search format: {author.pubmed_style}")
-    log.info(f"Year: {args.year}")
-    log.info("=" * 80)
-
-    query: PubMedQuery = PubMedQuery(email=args.email, log=log)
-    publications: list[Article] = query.query_author(
-        author.pubmed_style, year=args.year
+    query_and_report(
+        author=author,
+        contact_email=args.email,
+        faculty_list_file=args.faculty_file,
+        log=log,
+        output_file=args.output,
+        year=args.year,
     )
-
-    if not publications:
-        log.info(f"\n❌ No publications found for '{author.original}' in {args.year}.")
-        if author.pubmed_style != author.original:
-            log.info(f"   (Searched PubMed as: {author.pubmed_style})")
-        return
-
-    log.info(f"\n✓ Found {len(publications)} publication(s)")
-
-    # Generate HTML report
-    if args.output:
-        html_filename = (
-            args.output if args.output.endswith(".html") else f"{args.output}.html"
-        )
-    else:
-        # Auto-generate filename from author name
-        html_filename = f"{author.slug}_{args.year}.html"
-
-    faculty: Faculty = Faculty(args.faculty_file, log)
-    generator: ReportGenerator = ReportGenerator(faculty, log)
-
-    # Create title
-    title: str = f"{author.original} Publications ({args.year})"
-
-    # Count DFM faculty
-    faculty_count = len(
-        set(
-            author
-            for pub in publications
-            for author in pub.authors_list
-            if faculty.is_faculty(author)
-        )
-    )
-
-    generator.generate_html_report(
-        publications=publications,
-        output_file=html_filename,
-        title=title,
-    )
-
-    log.info(f"✅ Report generated successfully!")
-    log.info(f"📄 Open {html_filename} in your browser")
-
-    # Send email if requested
-    if args.send_email:
-        if not args.email_to or not args.email_from:
-            log.error(
-                "❌ Error: --email-to and --email-from are required when using --send-email"
-            )
-            return
-
-        log.info("\n" + "=" * 80)
-        log.info("Sending email...")
-        log.info("=" * 80)
-
-        # Get password securely
-        password: str = getpass.getpass(f"Enter password for {args.email_from}: ")
-
-        sender: EmailSender = EmailSender(provider=args.email_provider, log=log)
-
-        try:
-            if args.email_format == "html":
-                sender.send_html_report(
-                    html_file=html_filename,
-                    to_email=args.email_to,
-                    from_email=args.email_from,
-                    password=password,
-                    author_name=author.original,
-                    year=args.year,
-                )
-            else:  # text
-                sender.send_text_summary(
-                    publications=publications,
-                    to_email=args.email_to,
-                    from_email=args.email_from,
-                    password=password,
-                    author_name=author.original,
-                    year=args.year,
-                    faculty_count=faculty_count,
-                )
-        except Exception as e:
-            log.exception(f"❌ Error sending email: {e}")
 
 
 if __name__ == "__main__":

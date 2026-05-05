@@ -6,58 +6,20 @@ Queries PubMed for publications from multiple faculty members
 
 import argparse
 import logging
+import os
 import sys
 import time
 from datetime import datetime
 from importlib.resources import as_file, files
 
-
-def export_to_csv_with_faculty(publications, filename, log: logging.Logger):
-    """Export publications with faculty information to CSV."""
-    import csv
-
-    if not publications:
-        log.info("No publications to export.")
-        return
-
-    try:
-        # Add URL field and prepare data for CSV
-        for pub in publications:
-            if "url" not in pub:
-                pub["url"] = f"https://pubmed.ncbi.nlm.nih.gov/{pub['pmid']}/"
-
-        with open(filename, "w", newline="", encoding="utf-8") as csvfile:
-            # Don't include authors_list in CSV (it's for HTML report only)
-            fieldnames = [
-                "faculty_name",
-                "faculty_lastname",
-                "faculty_firstname",
-                "title",
-                "authors",
-                "journal",
-                "year",
-                "date",
-                "pmid",
-                "url",
-            ]
-            writer = csv.DictWriter(
-                csvfile, fieldnames=fieldnames, extrasaction="ignore"
-            )
-
-            writer.writeheader()
-            writer.writerows(publications)
-
-        log.info(f"✓ Successfully exported {len(publications)} publication(s) to CSV")
-    except Exception as e:
-        log.info(f"Error exporting to CSV: {e}")
+from metapub import PubMedArticle
 
 
 def query_faculty_batch(
     year=datetime.now().year,
-    email=None,
+    contact_email=None,
     output_file=None,
     faculty_list_file=None,
-    generate_report=True,
     log: logging.Logger = None,
 ):
     """
@@ -66,17 +28,15 @@ def query_faculty_batch(
     Args:
         faculty_list: List of faculty names in format "Lastname, Firstname, Qualification"
         year: Publication year (default: 2025)
-        email: Optional email for NCBI API
+        contact_email: Optional email for NCBI API
         output_file: Optional CSV filename for output
         faculty_list_file: Path to faculty list file (for report generation)
-        generate_report: Whether to generate HTML report (default: True)
         log: logging.Logger object (default: None, in which case we create our own)
 
     Returns:
         Dictionary with faculty names as keys and their publications as values
     """
     from dfm_research_paper_digest import (
-        Article,
         Faculty,
         PubMedQuery,
         ReportGenerator,
@@ -97,7 +57,7 @@ def query_faculty_batch(
     log.info("=" * 80)
 
     # Initialize PubMed query
-    query: PubMedQuery = PubMedQuery(email=email, log=log)
+    query: PubMedQuery = PubMedQuery(email=contact_email, log=log)
 
     # Store results
     all_results: list = []
@@ -110,18 +70,12 @@ def query_faculty_batch(
         log.info(f"[{i}/{faculty.num}] Querying: {author.original}")
 
         try:
-            articles: list[Article] = query.query_author(author.pubmed_style, year=year)
-            matching_articles: list[Article] = []
-
-            # Only include articles in which a faculty member is an author.
-            for article in articles:
-                if author.matches(article.authors_list):
-                    matching_articles.append(article)
-
-            faculty_results[author.original] = matching_articles
-            all_results.extend(matching_articles)
-
-            log.info(f"    Found: {len(matching_articles)} publication(s)")
+            articles: list[PubMedArticle] = query.query_by_author(
+                author.pubmed_style, year=year
+            )
+            faculty_results[author.original] = articles
+            all_results.extend(articles)
+            log.info(f"    Found: {len(articles)} publication(s)")
 
         except Exception as e:
             log.exception(f"    Error: {e}")
@@ -148,20 +102,8 @@ def query_faculty_batch(
         for name, pubs in sorted_faculty[:10]:
             log.info(f"  {len(pubs):3} - {name}")
 
-    # Export to CSV if requested
-    if output_file and all_results:
-        csv_filename: str = ""
-
-        if not output_file.endswith(".csv"):
-            csv_filename = output_file + ".csv"
-        else:
-            csv_filename = output_file
-
-        log.info(f"Exporting to CSV: {csv_filename}")
-        export_to_csv_with_faculty(all_results, csv_filename, log)
-
     # Generate HTML report if requested
-    if generate_report and all_results and faculty_list_file:
+    if all_results and faculty_list_file:
         html_filename = (
             output_file.replace(".csv", "")
             if output_file
@@ -199,7 +141,12 @@ Examples:
     )
     from dfm_research_paper_digest import setup_logging
 
-    log: logging.Logger = setup_logging(log_filename="query_faculty_batch.log")
+    resource_path_log = files("logs").joinpath("query_faculty_batch.log")
+    log: logging.Logger
+
+    with as_file(resource_path_log) as log_filename:
+        log = setup_logging(log_filename=log_filename)
+
     resource_path = files("data").joinpath("faculty_list.txt")
 
     parser.add_argument(
@@ -211,7 +158,11 @@ Examples:
     )
 
     parser.add_argument(
-        "--email", "-e", type=str, help="Your email (recommended by NCBI)"
+        "--email",
+        "-e",
+        type=str,
+        default=f"{os.getlogin()}@health.ucsd.edu",
+        help="Your email (recommended by NCBI)",
     )
 
     parser.add_argument(
@@ -244,10 +195,9 @@ Examples:
     # Query faculty
     query_faculty_batch(
         year=args.year,
-        email=args.email,
+        contact_email=args.email,
         output_file=args.output,
         faculty_list_file=args.faculty_file,
-        generate_report=not args.no_report,
         log=log,
     )
 

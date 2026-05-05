@@ -3,6 +3,7 @@
 PubMed Author Publications Query Tool
 Queries PubMed for publications by a specific author from 2025.
 """
+from __future__ import annotations
 
 import argparse
 import logging
@@ -10,10 +11,9 @@ import time
 from datetime import datetime
 from importlib.resources import as_file, files
 
-import requests
-import xmltodict
+from metapub import PubMedArticle, PubMedAuthor, PubMedFetcher
 
-from dfm_research_paper_digest import PMID, Article, PubmedArticleSet
+import dfm_research_paper_digest  # pyline: disable=import-error
 
 
 class PubMedQuery:
@@ -26,12 +26,8 @@ class PubMedQuery:
 
     Methods
     -------
-    fetch_publication_details()
-    search_author_publications()
+    query_by_author()
     """
-
-    BASE_URL: str = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
-    CHUNK_SIZE: int = 100
 
     def __init__(self, email: str = None, log: logging.Logger = None):
         """
@@ -40,9 +36,10 @@ class PubMedQuery:
         Args:
             email: Your email (recommended by NCBI for API usage tracking)
         """
-        from dfm_research_paper_digest import setup_logging
+        from dfm_research_paper_digest import (
+            setup_logging,  # pylint: disable=import-error
+        )
 
-        self.email: str = email
         self.__log: logging.Logger
 
         if not log:
@@ -52,8 +49,120 @@ class PubMedQuery:
                 self.__log = setup_logging(log_filename=log_filename)
 
         self.__log = log
+        self.__fetch: PubMedFetcher = PubMedFetcher(email=email)
 
-    def search_author_publications(
+    def __fetch_publication_details(
+        self, pmids: list[str], author_name: str
+    ) -> list[PubMedArticle]:
+        """
+        Fetch publication details for given PMIDs.
+
+        Args:
+            pmids: list of PubMed IDs
+            author_name: str
+
+        Returns:
+            list of PubMedArticle objects
+        """
+        articles: list[PubMedArticle] = []
+
+        if not pmids:
+            return articles
+
+        requested_author: dfm_research_paper_digest.Author = (
+            dfm_research_paper_digest.Author(author_name)
+        )
+
+        for pmid in pmids:
+            article: PubMedArticle = self.__fetch.article_by_pmid(pmid)
+            # NCBI recommends max 3 requests per second
+            time.sleep(0.34)
+
+            # Which PubMedAuthor object matches the author
+            # for whom we requested a list of publications?
+            matching_author: PubMedAuthor = next(
+                a for a in article.author_list if requested_author.matches(a)
+            )
+
+            if matching_author and PubMedQuery.is_ucsd_affiliated(matching_author):
+                articles.append(article)
+
+        return articles
+
+    @staticmethod
+    def is_ucsd_affiliated(var: list[str] | PubMedAuthor) -> bool:
+        """
+            Checks to see if affiliation is present
+            AND looks like "UCSD" or "University of California San Diego"
+
+        Args:
+            var: list[str] or PubMedAuthor
+
+        Returns
+        -------
+        affiliated_with_ucsd: bool
+        """
+        affiliations: list[str]
+
+        if isinstance(var, PubMedAuthor):
+            affiliations = var.affiliations
+        elif isinstance(var, list) and isinstance(var[0], str):
+            affiliations = var
+        else:
+            raise TypeError(
+                f"Expected either PubMedAuthor object or list[str], but received {type(var)}."
+            )
+
+        if any("UCSD" in affil for affil in affiliations):
+            return True
+
+        if any("University of California San Diego" in affil for affil in affiliations):
+            return True
+
+        if any(
+            "University of California, San Diego" in affil for affil in affiliations
+        ):
+            return True
+
+        if any("UC San Diego" in affil for affil in affiliations):
+            return True
+
+        return False
+
+    def query_by_author(
+        self, author_name: str, year: int = datetime.now().year
+    ) -> list[PubMedArticle]:
+        """
+        Complete query for author publications.
+
+        Args:
+            author_name: Name of the author
+            year: Publication year (default: 2025)
+
+        Returns:
+            list of PubMedArticle objects
+        """
+        self.__log.info(
+            f"\nSearching PubMed for publications by '{author_name}' from {year}..."
+        )
+
+        # Step 1: Search for PMIDs
+        pmids: list[str] = self.__search_author_publications(author_name, year)
+
+        if not pmids:
+            self.__log.info(f"No publications found for '{author_name}' in {year}.")
+            return []
+
+        self.__log.info(f"Found {len(pmids)} publication(s).")
+
+        # Step 2: Fetch publication details
+        publications: list[PubMedArticle] = self.__fetch_publication_details(
+            pmids, author_name
+        )
+
+        return publications
+
+    def __search_author_publications(
         self, author_name: str, year: int = datetime.now().year
     ) -> list[str]:
         """
@@ -68,148 +177,13 @@ class PubMedQuery:
         """
         # Construct search query
         search_term = f"{author_name}[Author] AND {year}[pdat]"
-
-        # Initialize search parameters
-        params = {
-            "db": "pubmed",
-            "term": search_term,
-            "retmax": PubMedQuery.CHUNK_SIZE,  # Maximum number of results
-            "retstart": 1,  # Starting index
-            "retmode": "xml",
-        }
-
-        if self.email:
-            params["email"] = self.email
-
-        url = f"{self.BASE_URL}esearch.fcgi"
-        pmids: list[str] = []
-        num_pubs_retrieved: int = 0
-
-        # Request publications in chunks.
-        while True:
-            params["retstart"] = num_pubs_retrieved + 1
-
-            try:
-                response = requests.get(url, params=params)
-                response.raise_for_status()
-                data_dict: dict = xmltodict.parse(response.content)
-                new_pmids: list[str] = PMID(data_dict, self.__log).pmids
-
-                # Did we get them all?
-                if len(new_pmids) == 0:
-                    break
-
-                num_pubs_retrieved += len(new_pmids)
-                pmids.extend(new_pmids)
-
-            except requests.exceptions.RequestException as e:
-                self.__log.error(f"Error searching PubMed: {e}")
-                break
-
+        pmids: list[str] = self.__fetch.pmids_for_query(search_term)
         return pmids
 
-    def fetch_publication_details(
-        self, pmids: list[str], author_name: str
-    ) -> list[Article]:
-        """
-        Fetch publication details for given PMIDs.
 
-        Args:
-            pmids: list of PubMed IDs
-            author_name: str
-
-        Returns:
-            list of Article objects
-        """
-        publications: list[Article] = []
-
-        if not pmids:
-            return publications
-
-        # Initialize parameters.
-        params = {"db": "pubmed", "id": [], "retmode": "xml"}
-
-        if self.email:
-            params["email"] = self.email
-
-        url = f"{self.BASE_URL}efetch.fcgi"
-
-        # Make the request in chunks.
-        num_pubs_total: int = len(pmids)
-        num_pubs_received_so_far: int = 0
-
-        while True:
-            # Establish start/stop indices for this slice.
-            index_start: int = num_pubs_received_so_far  # zero-based
-            index_end: int = min(num_pubs_total, index_start + PubMedQuery.CHUNK_SIZE)
-
-            # Join PMIDs with comma
-            id_string = ",".join(pmids[index_start:index_end])
-
-            # No more PMIDs means we're done.
-            if len(id_string) == 0:
-                break
-
-            params["id"] = id_string
-
-            try:
-                response = requests.get(url, params=params)
-                response.raise_for_status()
-
-                data_dict: dict = xmltodict.parse(response.content)
-                pubmed_articleset: PubmedArticleSet = PubmedArticleSet(
-                    data_dict, self.__log
-                )
-                articles: list[Article] = pubmed_articleset.articles
-
-                for article in articles:
-                    num_pubs_received_so_far += 1
-
-                    if article.is_author_ucsd_affiliated(author_name):
-                        publications.append(article)
-
-            except requests.exceptions.RequestException as e:
-                self.__log.exception(f"Error fetching publication details: {e}")
-                break
-
-        return publications
-
-    def query_author(
-        self, author_name: str, year: int = datetime.now().year
-    ) -> list[Article]:
-        """
-        Complete query for author publications.
-
-        Args:
-            author_name: Name of the author
-            year: Publication year (default: 2025)
-
-        Returns:
-            list of Article objects
-        """
-        self.__log.info(
-            f"\nSearching PubMed for publications by '{author_name}' from {year}..."
-        )
-
-        # Step 1: Search for PMIDs
-        pmids = self.search_author_publications(author_name, year)
-
-        if not pmids:
-            self.__log.info(f"No publications found for '{author_name}' in {year}.")
-            return []
-
-        self.__log.info(f"Found {len(pmids)} publication(s).")
-
-        # Step 2: Fetch publication details
-        # NCBI recommends max 3 requests per second
-        time.sleep(0.34)
-
-        publications = self.fetch_publication_details(pmids, author_name)
-
-        return publications
-
-
-def display_publications(publications: list[Article], log: logging.Logger) -> None:
+def display_publications(
+    publications: list[PubMedArticle], log: logging.Logger
+) -> None:
     """
         Display publications in a formatted manner.
 
@@ -232,7 +206,7 @@ def display_publications(publications: list[Article], log: logging.Logger) -> No
 
     for i, pub in enumerate(publications, 1):
         log.info(f"{i}. {pub.title}")
-        log.info(f"   Authors: {pub.authors_list}")
+        log.info(f"   Authors: {pub.authors_str}")
         log.info(f"   Journal: {pub.journal}")
         log.info(f"   Year: {pub.year}")
         log.info(f"   PMID: {pub.pmid}")
@@ -253,7 +227,7 @@ Examples:
   %(prog)s "Zhang Y" "Li Y" "Xie B"  # Query multiple authors
         """,
     )
-    log = setup_logging(log_filename="pubmed_query.log")
+    log = dfm_research_paper_digest.setup_logging(log_filename="pubmed_query.log")
 
     parser.add_argument(
         "authors",
@@ -303,11 +277,11 @@ Examples:
 
     for author_name in args.authors:
         log.info("=" * 80)
-        log.info(f"PubMed Author Publications Query Tool")
+        log.info("PubMed Author Publications Query Tool")
         log.info("=" * 80)
 
         # Query PubMed
-        publications = query.query_author(author_name, year=args.year)
+        publications = query.query_by_author(author_name, year=args.year)
 
         # Display or collect results
         if args.output == "text":
@@ -343,7 +317,7 @@ Examples:
 
 
 def export_to_csv(
-    publications: list[Article], filename: str, log: logging.Logger
+    publications: list[PubMedArticle], filename: str, log: logging.Logger
 ) -> None:
     """
         Export publications to CSV file.
