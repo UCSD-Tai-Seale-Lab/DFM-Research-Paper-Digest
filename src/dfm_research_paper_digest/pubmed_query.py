@@ -44,7 +44,7 @@ class PubMedQuery:
         self.__log: logging.Logger
 
         if not log:
-            resource_path = files("logs").joinpath("pubmed_query.py")
+            resource_path = files("logs").joinpath("pubmed_query.log")
 
             with as_file(resource_path) as log_filename:
                 self.__log = setup_logging(log_filename=log_filename)
@@ -67,9 +67,6 @@ class PubMedQuery:
         """
         articles: list[PubMedArticle] = []
 
-        if not pmids:
-            return articles
-
         requested_author: dfm_research_paper_digest.Author = (
             dfm_research_paper_digest.Author(author_name)
         )
@@ -91,13 +88,13 @@ class PubMedQuery:
         return articles
 
     @staticmethod
-    def is_ucsd_affiliated(var: list[str] | PubMedAuthor) -> bool:
+    def is_ucsd_affiliated(var: list[str] | PubMedAuthor | str) -> bool:
         """
             Checks to see if affiliation is present
             AND looks like "UCSD" or "University of California San Diego"
 
         Args:
-            var: list[str] or PubMedAuthor
+            var: list[str] or PubMedAuthor or str
 
         Returns
         -------
@@ -106,13 +103,24 @@ class PubMedQuery:
         if isinstance(var, PubMedAuthor):
             return PubMedQuery.is_ucsd_affiliated(var.affiliations)
 
-        affiliations: list[str]
+        affiliations: list[str] = []
 
-        if isinstance(var, list) and isinstance(var[0], str):
-            affiliations = var
+        if isinstance(var, list):
+            # If NO affliation, then we can't swear they're affiliated.
+            if len(var) == 0:
+                return False
+
+            if isinstance(var[0], str):
+                affiliations = var
+            else:
+                raise TypeError(
+                    f"Affiliations expected to be a list of str, not {type(var[0])}."
+                )
+        elif isinstance(var, str):
+            affiliations = [var]
         else:
             raise TypeError(
-                f"Expected either PubMedAuthor object or list[str], but received {type(var)}."
+                f"Expected either PubMedAuthor object, list[str] or str, but received {type(var)}."
             )
 
         ucsd_keywords: list[str] = [
@@ -210,7 +218,7 @@ def display_publications(
         log.info(f"   URL: https://pubmed.ncbi.nlm.nih.gov/{pub.pmid}/")
 
 
-def main():
+def main(argv=None):
     """Main function to run the PubMed query tool."""
     # Set up argument parser
     parser = argparse.ArgumentParser(
@@ -247,24 +255,8 @@ Examples:
         help="Publication year to search (default: 2025)",
     )
 
-    parser.add_argument(
-        "--output",
-        "-o",
-        type=str,
-        choices=["text", "csv"],
-        default="text",
-        help="Output format: text or csv (default: text)",
-    )
-
-    parser.add_argument(
-        "--filename",
-        "-f",
-        type=str,
-        help="Custom output filename for CSV (only used with --output csv)",
-    )
-
     # Parse arguments
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     # Create query object
     query = PubMedQuery(email=args.email, log=log)
@@ -281,13 +273,7 @@ Examples:
         publications = query.query_by_author(author_name, year=args.year)
 
         # Display or collect results
-        if args.output == "text":
-            display_publications(publications, log)
-        else:
-            all_results.extend(publications)
-            log.info(
-                f"Retrieved {len(publications)} publication(s) for '{author_name}'"
-            )
+        display_publications(publications, log)
 
         # Add delay between queries if multiple authors
         if len(args.authors) > 1 and author_name != args.authors[-1]:

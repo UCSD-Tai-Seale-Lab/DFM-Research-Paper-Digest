@@ -9,14 +9,21 @@ import os
 from datetime import datetime
 from importlib.resources import as_file, files
 
+import pytest
 from metapub import PubMedArticle
 
-from dfm_research_paper_digest import Author, Faculty, PubMedQuery, ReportGenerator
+from dfm_research_paper_digest import (
+    Author,
+    Faculty,
+    PubMedQuery,
+    ReportGenerator,
+    setup_logging,
+)
 
 
 def query_and_report(
     author: Author,
-    contact_email: str,
+    contact_email: str = None,
     faculty_list_file: str = None,
     log: logging.Logger = None,
     output_file: str = None,
@@ -34,6 +41,12 @@ def query_and_report(
     output_file: str
     year: int
     """
+
+    if not log:
+        resource_path = files("logs").joinpath("query_and_report.log")
+
+        with as_file(resource_path) as log_filename:
+            log = setup_logging(log_filename=log_filename)
 
     # Query PubMed
     log.info("=" * 80)
@@ -126,21 +139,6 @@ Examples:
     )
 
     parser.add_argument(
-        "--year",
-        "-y",
-        type=int,
-        default=datetime.now().year,
-        help="Publication year (default: current year)",
-    )
-
-    parser.add_argument(
-        "--output",
-        "-o",
-        type=str,
-        help="Output HTML filename (default: auto-generated from author name)",
-    )
-
-    parser.add_argument(
         "--email",
         "-e",
         type=str,
@@ -156,6 +154,21 @@ Examples:
             default=faculty_filename,
             help="Faculty list file for highlighting (default: faculty_list.txt)",
         )
+
+    parser.add_argument(
+        "--output",
+        "-o",
+        type=str,
+        help="Output HTML filename (default: auto-generated from author name)",
+    )
+
+    parser.add_argument(
+        "--year",
+        "-y",
+        type=int,
+        default=datetime.now().year,
+        help="Publication year (default: current year)",
+    )
 
     args = parser.parse_args(argv)
 
@@ -173,4 +186,4 @@ Examples:
 
 
 if __name__ == "__main__":
-    main()
+    print("Hello from `query_and_report.py`")  # pragma: no cover

@@ -1,5 +1,6 @@
 # PubMed Author Publications Query Tool
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)
+![Coverage Status](./.github/badges/coverage-badge.svg?dummy=8484744)
 ![Pylint](./.github/badges/pylint-badge.svg?dummy=8484744)](https://github.com/psf/black)![GitHub last commit](https://img.shields.io/github/last-commit/UCSD-Tai-Seale-Lab/DFM-Research-Paper-Digest)
 
 A Python tool to query [PubMed](https://pubmed.ncbi.nlm.nih.gov/) for publications by specific authors.
@@ -57,19 +58,13 @@ python pubmed_query.py "Zhang Y" "Li Y" "Xie B"
 
 # Query different year
 python pubmed_query.py "Smith J" --year 2024
-
-# Export to CSV (auto-generated filename)
-python pubmed_query.py "Ming Tai-Seale" --output csv
-
-# Export to CSV with custom filename
-python pubmed_query.py "Ming Tai-Seale" --output csv --filename my_results
 ```
 
 ### Command Line Options
 
 ```
-usage: pubmed_query.py [-h] [--email EMAIL] [--year YEAR] [--output {text,csv}]
-                       [--filename FILENAME] authors [authors ...]
+usage: pubmed_query.py [-h] [--email EMAIL] [--year YEAR]
+                       authors [authors ...]
 
 positional arguments:
   authors               Author name(s) to search for
@@ -78,23 +73,6 @@ optional arguments:
   -h, --help           Show help message and exit
   --email, -e EMAIL    Your email address (optional, recommended by NCBI)
   --year, -y YEAR      Publication year to search (default: 2025)
-  --output, -o {text,csv}
-                       Output format: text or csv (default: text)
-  --filename, -f FILENAME
-                       Custom output filename for CSV
-```
-
-### CSV Export Format
-
-When using `--output csv`, the file will contain the following columns:
-- **title**: Publication title
-- **authors**: List of authors (first 3 + "et al." if more)
-- **journal**: Journal name
-- **year**: Publication year
-- **pmid**: PubMed ID
-- **url**: Direct link to the PubMed article
-
-The CSV file can be opened in Excel, Google Sheets, or any spreadsheet application.
 
 ### Example Output
 
@@ -157,21 +135,9 @@ python query_faculty_batch.py --faculty-file faculty_list.txt --email your@email
 
 ### Batch Query Output
 
-Running batch queries generates **TWO output files**:
+Running batch queries generates an HTML file:
 
-#### 1. CSV File (`output_name.csv`)
-Includes columns for faculty tracking:
-- `faculty_name`: Original faculty name from input file
-- `faculty_lastname`: Parsed last name
-- `faculty_firstname`: Parsed first name (empty for edge cases like Tai-Seale)
-- `title`: Publication title
-- `authors`: Complete list of ALL authors (no truncation)
-- `journal`: Journal name
-- `year`: Publication year
-- `pmid`: PubMed ID
-- `url`: Direct PubMed link
-
-#### 2. HTML Report (`output_name.html`)
+#### HTML Report (`output_name.html`)
 Beautiful, formatted report featuring:
 - **✨ Highlighted DFM Faculty**: Authors who are DFM faculty members appear in **bold with blue background**
 - **Complete Author Lists**: ALL authors displayed (no "et al.")
@@ -179,17 +145,6 @@ Beautiful, formatted report featuring:
 - **Clickable PubMed Links**: Direct links to each publication
 - **Responsive Design**: Works perfectly on desktop, tablet, and mobile
 - **Print-Friendly**: Optimized formatting for printing
-
-### Generate Report from Existing CSV
-
-If you already have a CSV file and want to generate just the HTML report:
-
-```bash
-python generate_report_from_csv.py your_file.csv \
-  --faculty-file faculty_list.txt \
-  --output report.html \
-  --title "My Custom Report Title"
-```
 
 ### Programmatic Usage
 
@@ -206,9 +161,9 @@ publications = query.query_author("Smith J", year=2025)
 
 # Access publication details
 for pub in publications:
-	print(f"Title: {pub['title']}")
-	print(f"Year: {pub['year']}")
-	print(f"PMID: {pub['pmid']}")
+	print(f"Title: {pub.title}")
+	print(f"Year: {pub.year}")
+	print(f"PMID: {pub.pmid}")
 ```
 
 ## API Information
