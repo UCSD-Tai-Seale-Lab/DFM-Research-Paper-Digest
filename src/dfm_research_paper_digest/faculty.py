@@ -44,8 +44,8 @@ class Faculty:
             if lines:
                 self.__list = [Author(f) for f in lines]
             else:
-                self.__log.error(f"Unable to find/read file {faculty_list}.")
-                return
+                self.__log.exception(f"Unable to find/read file {faculty_list}.")
+                raise FileNotFoundError(f"Unable to open file {faculty_list}.")
 
         self.authors: list[Author] = copy.deepcopy(self.__list)
         self.names: list[str] = self.__names()

@@ -16,11 +16,11 @@ from metapub import PubMedArticle
 
 
 def query_faculty_batch(
-    year=datetime.now().year,
-    contact_email=None,
-    output_file=None,
-    faculty_list_file=None,
+    contact_email: str = None,
+    faculty_list_file: str = None,
     log: logging.Logger = None,
+    output_file: str = None,
+    year: int = datetime.now().year,
 ):
     """
     Query PubMed for multiple faculty members and combine results.
@@ -149,27 +149,11 @@ Examples:
     resource_path = files("data").joinpath("faculty_list.txt")
 
     parser.add_argument(
-        "--year",
-        "-y",
-        type=int,
-        default=datetime.now().year,
-        help="Publication year (default: current year)",
-    )
-
-    parser.add_argument(
         "--email",
         "-e",
         type=str,
         default=f"{os.getlogin()}@health.ucsd.edu",
         help="Your email (recommended by NCBI)",
-    )
-
-    parser.add_argument(
-        "--output",
-        "-o",
-        type=str,
-        default="faculty_publications",
-        help="Output CSV filename (default: faculty_publications)",
     )
 
     with as_file(resource_path) as faculty_filename:
@@ -182,7 +166,19 @@ Examples:
         )
 
     parser.add_argument(
-        "--no-report", action="store_true", help="Skip HTML report generation"
+        "--output",
+        "-o",
+        type=str,
+        default="faculty_publications.html",
+        help="Output filename (default: faculty_publications.html)",
+    )
+
+    parser.add_argument(
+        "--year",
+        "-y",
+        type=int,
+        default=datetime.now().year,
+        help="Publication year (default: current year)",
     )
 
     args = parser.parse_args(argv)
@@ -193,13 +189,13 @@ Examples:
 
     # Query faculty
     query_faculty_batch(
-        year=args.year,
         contact_email=args.email,
-        output_file=args.output,
         faculty_list_file=args.faculty_file,
         log=log,
+        output_file=args.output,
+        year=args.year,
     )
 
 
 if __name__ == "__main__":
-    main()
+    main()  # pragma: no cover

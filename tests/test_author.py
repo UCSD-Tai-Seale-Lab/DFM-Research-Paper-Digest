@@ -46,6 +46,12 @@ def test_author():
     assert author.matches("Igor Vladimir Nikiforov")
     assert author
 
+    # Check matching of full middle names.
+    assert different_pub_author.matches("Igor Igorovich Nikiforov")
+
+    # Check matching of full middle name vs. other name initial only.
+    assert different_pub_author.matches("Igor I. Nikiforov")
+
     # Last, first name style
     assert isinstance(author.pubmed_style, str)
     assert author.pubmed_style == "Nikiforov, Igor"
