@@ -3,7 +3,7 @@
 Batch Faculty Publications Query
 Queries PubMed for publications from multiple faculty members
 """
-
+# pylint: disable=import-error, import-outside-toplevel
 import argparse
 import logging
 import os
@@ -26,12 +26,11 @@ def query_faculty_batch(
     Query PubMed for multiple faculty members and combine results.
 
     Args:
-        faculty_list: List of faculty names in format "Lastname, Firstname, Qualification"
-        year: Publication year (default: 2025)
         contact_email: Optional email for NCBI API
-        output_file: Optional CSV filename for output
         faculty_list_file: Path to faculty list file (for report generation)
         log: logging.Logger object (default: None, in which case we create our own)
+        output_file: Optional CSV filename for output
+        year: Publication year (default: current year)
 
     Returns:
         Dictionary with faculty names as keys and their publications as values

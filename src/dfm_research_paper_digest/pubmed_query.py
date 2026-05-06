@@ -3,6 +3,7 @@
 PubMed Author Publications Query Tool
 Queries PubMed for publications by a specific author from 2025.
 """
+# pylint: disable=import-error, import-outside-toplevel
 from __future__ import annotations
 
 import argparse
@@ -13,7 +14,7 @@ from importlib.resources import as_file, files
 
 from metapub import PubMedArticle, PubMedAuthor, PubMedFetcher
 
-import dfm_research_paper_digest  # pyline: disable=import-error
+import dfm_research_paper_digest
 
 
 class PubMedQuery:
@@ -37,7 +38,7 @@ class PubMedQuery:
             email: Your email (recommended by NCBI for API usage tracking)
         """
         from dfm_research_paper_digest import (
-            setup_logging,  # pylint: disable=import-error
+            setup_logging,
         )
 
         self.__log: logging.Logger
@@ -102,32 +103,28 @@ class PubMedQuery:
         -------
         affiliated_with_ucsd: bool
         """
+        if isinstance(var, PubMedAuthor):
+            return PubMedQuery.is_ucsd_affiliated(var.affiliations)
+
         affiliations: list[str]
 
-        if isinstance(var, PubMedAuthor):
-            affiliations = var.affiliations
-        elif isinstance(var, list) and isinstance(var[0], str):
+        if isinstance(var, list) and isinstance(var[0], str):
             affiliations = var
         else:
             raise TypeError(
                 f"Expected either PubMedAuthor object or list[str], but received {type(var)}."
             )
 
-        if any("UCSD" in affil for affil in affiliations):
-            return True
+        ucsd_keywords: list[str] = [
+            "UCSD",
+            "University of California San Diego",
+            "University of California, San Diego",
+            "UC San Diego",
+        ]
 
-        if any("University of California San Diego" in affil for affil in affiliations):
-            return True
-
-        if any(
-            "University of California, San Diego" in affil for affil in affiliations
-        ):
-            return True
-
-        if any("UC San Diego" in affil for affil in affiliations):
-            return True
-
-        return False
+        return any(
+            keyword in affil for affil in affiliations for keyword in ucsd_keywords
+        )
 
     def query_by_author(
         self, author_name: str, year: int = datetime.now().year
@@ -295,73 +292,6 @@ Examples:
         # Add delay between queries if multiple authors
         if len(args.authors) > 1 and author_name != args.authors[-1]:
             time.sleep(0.5)
-
-    # Export to CSV if requested
-    if args.output == "csv":
-        if all_results:
-            # Use custom filename or create one based on author(s)
-            if args.filename:
-                filename = (
-                    args.filename
-                    if args.filename.endswith(".csv")
-                    else f"{args.filename}.csv"
-                )
-            elif len(args.authors) == 1:
-                author_slug = args.authors[0].replace(" ", "_").replace(",", "")
-                filename = f"{author_slug}_{args.year}.csv"
-            else:
-                filename = f"multiple_authors_{args.year}.csv"
-            export_to_csv(all_results, filename, log)
-        else:
-            log.info("\nNo publications found to export.")
-
-
-def export_to_csv(
-    publications: list[PubMedArticle], filename: str, log: logging.Logger
-) -> None:
-    """
-        Export publications to CSV file.
-
-    Parameters
-    ----------
-    publications: list[Article]
-    filename: str
-    log: logging.Logger
-
-    Returns
-    -------
-
-    """
-    import csv
-
-    if not publications:
-        log.info("No publications to export.")
-        return
-
-    try:
-        # Add URL field to each publication
-        for pub in publications:
-            if not hasattr(pub, "url"):
-                pub.url = f"https://pubmed.ncbi.nlm.nih.gov/{pub.pmid}/"
-
-        with open(filename, "w", newline="", encoding="utf-8") as csvfile:
-            fieldnames = ["title", "authors", "journal", "year", "date", "pmid", "url"]
-            writer = csv.DictWriter(
-                csvfile, fieldnames=fieldnames, extrasaction="ignore"
-            )
-
-            writer.writeheader()
-
-            for publication in publications:
-                writer.writerow(vars(publication))
-
-        log.info(f"\n{'='*80}")
-        log.info(
-            f"✓ Successfully exported {len(publications)} publication(s) to: {filename}"
-        )
-        log.info(f"{'='*80}")
-    except Exception as e:
-        log.exception(f"Error exporting to CSV: {e}")
 
 
 if __name__ == "__main__":
