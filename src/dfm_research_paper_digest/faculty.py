@@ -21,7 +21,10 @@ class Faculty:
 
     Attributes:
     ----------
+    authors: list[Author]
+    names: list[str]
     num: int
+    original_names: list[str]
 
     Methods
     -------

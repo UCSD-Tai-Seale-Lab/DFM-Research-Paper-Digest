@@ -5,14 +5,12 @@ Tests Faculty class.
 import logging
 from importlib.resources import as_file, files
 
-from src.dfm_research_paper_digest.author import Author
-from src.dfm_research_paper_digest.faculty import Faculty
+from dfm_research_paper_digest import Author
+from dfm_research_paper_digest import Faculty
 
 
 def test_faculty(logger: logging.Logger, sample_faculty_list: list[str]):
-    resource_path = files("src.dfm_research_paper_digest.data").joinpath(
-        "sample_faculty.txt"
-    )
+    resource_path = files("data").joinpath("sample_faculty_list.txt")
 
     with as_file(resource_path) as filename:
         faculty: Faculty = Faculty(filename, logger)

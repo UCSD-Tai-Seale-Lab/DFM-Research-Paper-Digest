@@ -2,7 +2,7 @@
 """
 Query PubMed and generate HTML report in one command
 """
-
+# pylint: disable=import-error, import-outside-toplevel
 import argparse
 import logging
 import os
@@ -109,7 +109,7 @@ Examples:
   %(prog)s "Ming Tai-Seale" --output ming_report
         """,
     )
-    from dfm_research_paper_digest import Author, setup_logging
+    from dfm_research_paper_digest import setup_logging
 
     resource_path_log = files("logs").joinpath("query_and_report.log")
     log: logging.Logger

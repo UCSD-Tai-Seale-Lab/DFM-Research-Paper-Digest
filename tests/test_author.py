@@ -2,7 +2,7 @@
 Tests Author class.
 """
 
-from dfm_research_paper_digest.author import Author
+from dfm_research_paper_digest import Author
 
 
 def test_author():

@@ -3,6 +3,7 @@
 Report Generator for Faculty Publications
 Creates formatted HTML reports with highlighted faculty members
 """
+# pylint: disable=import-error, import-outside-toplevel, too-few-public-methods
 import logging
 from datetime import datetime
 from pathlib import Path
@@ -278,7 +279,7 @@ class ReportGenerator:
                 <span>{pub.pmid}</span>
             </div>
             <div class="meta-item">
-                <a href="{f'https://pubmed.ncbi.nlm.nih.gov/{pub.pmid}/'}" 
+                <a href="{f'https://pubmed.ncbi.nlm.nih.gov/{pub.pmid}/'}"
                    class="pmid-link" target="_blank">View on PubMed</a>
             </div>
         </div>
