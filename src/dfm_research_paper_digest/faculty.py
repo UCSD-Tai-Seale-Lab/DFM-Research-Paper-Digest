@@ -126,15 +126,13 @@ class Faculty:
         -------
         lines: list[str]
         """
-        try:
-            faculty_lines: list[str]
+        faculty_lines: list[str]
 
+        try:
             with open(file, "r", encoding="utf-8") as f:
                 faculty_lines = [line.strip() for line in f if line.strip()]
 
-            self.__log.info(
-                f"Loaded {len(faculty_lines)} faculty members for highlighting."
-            )
+            self.__log.info(f"Loaded {len(faculty_lines)} faculty members.")
 
             return faculty_lines
 

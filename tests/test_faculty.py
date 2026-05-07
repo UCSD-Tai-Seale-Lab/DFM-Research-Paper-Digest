@@ -4,7 +4,7 @@ Tests Faculty class.
 
 import logging
 from importlib.resources import as_file, files
-from unittest.mock import mock_open, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -70,6 +70,12 @@ def test_faculty_pathological_I(logger: logging.Logger):
 
 
 def test_faculty_pathological_II(logger: logging.Logger):
+    with patch("builtins.open", side_effect=Exception("Access Denied")):
+        with pytest.raises(Exception):
+            faculty: Faculty = Faculty("not a real file.txt", logger)
+
+
+def test_faculty_pathological_III(logger: logging.Logger):
     resource_path = files("data").joinpath("sample_faculty_list.txt")
 
     with as_file(resource_path) as filename:
@@ -79,12 +85,3 @@ def test_faculty_pathological_II(logger: logging.Logger):
 
         with pytest.raises(TypeError):
             faculty.is_faculty(79)
-
-
-def test_faculty_pathological_III(logger: logging.Logger):
-    resource_path = files("tests").joinpath("malformed_faculty_list.txt")
-
-    with as_file(resource_path) as filename:
-        with patch("builtins.open", side_effect=IOError("Corrupted File")):
-            with pytest.raises(Exception):
-                faculty: Faculty = Faculty(filename, logger)

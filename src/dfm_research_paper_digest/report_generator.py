@@ -307,8 +307,6 @@ class ReportGenerator:
             output_file: Output HTML filename
             title: Report title
         """
-        if not output_file.endswith(".html"):
-            output_file += ".html"
 
         # Get unique faculty members in publications
         faculty_in_pubs: list[str] = []

@@ -76,6 +76,9 @@ def test_affiliation():
     # Exercise str input.
     assert PubMedQuery.is_ucsd_affiliated("University of California, San Diego")
 
-    # Force exception.
+    # Force exceptions.
     with pytest.raises(TypeError):
         PubMedQuery.is_ucsd_affiliated(1979)
+
+    with pytest.raises(TypeError):
+        PubMedQuery.is_ucsd_affiliated([1979])

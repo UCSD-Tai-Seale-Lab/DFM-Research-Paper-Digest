@@ -7,12 +7,18 @@ Queries PubMed for publications from multiple faculty members
 import argparse
 import logging
 import os
-import sys
 import time
 from datetime import datetime
 from importlib.resources import as_file, files
 
 from metapub import PubMedArticle
+
+from dfm_research_paper_digest import (
+    Faculty,
+    PubMedQuery,
+    ReportGenerator,
+    setup_logging,
+)
 
 
 def query_faculty_batch(
@@ -35,13 +41,6 @@ def query_faculty_batch(
     Returns:
         Dictionary with faculty names as keys and their publications as values
     """
-    from dfm_research_paper_digest import (
-        Faculty,
-        PubMedQuery,
-        ReportGenerator,
-        setup_logging,
-    )
-
     if not log:
         resource_path = files("logs").joinpath("query_faculty_batch.log")
 
@@ -59,9 +58,47 @@ def query_faculty_batch(
     query: PubMedQuery = PubMedQuery(email=contact_email, log=log)
 
     # Store results
-    all_results: list = []
-    faculty_results: dict = {}
+    all_results: list[PubMedArticle] = __assemble_article_list__(
+        query, faculty, year, log
+    )
+
+    # Generate HTML report.
+    if output_file:
+        html_filename: str = (
+            output_file if output_file.endswith(".html") else f"{output_file}.html"
+        )
+    else:
+        # Auto-generate filename.
+        html_filename = f"faculty_{year}.html"
+
+    log.info(f"Generating HTML report: {html_filename}.")
+    report_gen: ReportGenerator = ReportGenerator(faculty, log)
+    report_gen.generate_html_report(
+        publications=all_results,
+        output_file=html_filename,
+        title=f"DFM Faculty Publications Report ({year})",
+    )
+
+
+def __assemble_article_list__(
+    query: PubMedQuery, faculty: Faculty, year: int, log: logging.Logger
+) -> list[PubMedArticle]:
+    """
+        Runs query for each author & assembles list of articles.
+
+    Parameters
+    ----------
+    query: PubMedQuery object
+    faculty: Faculty object
+    year: int
+    log: logging.Logger
+
+    Returns
+    -------
+    articles: list[PubMedArticle]
+    """
     i: int = 0
+    all_results: list[PubMedArticle] = []
 
     # Query each faculty member
     for author in faculty.authors:
@@ -72,13 +109,11 @@ def query_faculty_batch(
             articles: list[PubMedArticle] = query.query_by_author(
                 author.pubmed_style, year=year
             )
-            faculty_results[author.original] = articles
             all_results.extend(articles)
             log.info(f"    Found: {len(articles)} publication(s)")
 
         except Exception as e:
             log.exception(f"    Error: {e}")
-            faculty_results[author.original] = []
 
         # Rate limiting: NCBI recommends max 3 requests per second
         if i < faculty.num:
@@ -91,37 +126,7 @@ def query_faculty_batch(
     log.info(f"Total faculty queried: {faculty.num}")
     log.info(f"Total publications found: {len(all_results)}")
 
-    # Faculty with most publications
-    if faculty_results:
-        sorted_faculty = sorted(
-            faculty_results.items(), key=lambda x: len(x[1]), reverse=True
-        )
-        log.info("Top 10 faculty by publication count:")
-
-        for name, pubs in sorted_faculty[:10]:
-            log.info(f"  {len(pubs):3} - {name}")
-
-    # Generate HTML report if requested
-    if all_results and faculty_list_file:
-        html_filename = (
-            output_file.replace(".csv", "")
-            if output_file
-            else "faculty_publications_report"
-        )
-        if html_filename.endswith(".csv"):
-            html_filename = html_filename[:-4]
-        html_filename += ".html"
-
-        log.info(f"Generating HTML report: {html_filename}.")
-        report_gen = ReportGenerator(faculty, log)
-
-        report_gen.generate_html_report(
-            publications=all_results,
-            output_file=html_filename,
-            title=f"DFM Faculty Publications Report ({year})",
-        )
-
-    return faculty_results
+    return all_results
 
 
 def main(argv=None):
@@ -138,15 +143,11 @@ Examples:
   %(prog)s --email your@email.com --output results
         """,
     )
-    from dfm_research_paper_digest import setup_logging
-
     resource_path_log = files("logs").joinpath("query_faculty_batch.log")
     log: logging.Logger
 
     with as_file(resource_path_log) as log_filename:
         log = setup_logging(log_filename=log_filename)
-
-    resource_path = files("data").joinpath("faculty_list.txt")
 
     parser.add_argument(
         "--email",
@@ -155,6 +156,8 @@ Examples:
         default=f"{os.getlogin()}@health.ucsd.edu",
         help="Your email (recommended by NCBI)",
     )
+
+    resource_path = files("data").joinpath("faculty_list.txt")
 
     with as_file(resource_path) as faculty_filename:
         parser.add_argument(
@@ -182,10 +185,6 @@ Examples:
     )
 
     args = parser.parse_args(argv)
-
-    if not args.faculty_file:
-        log.error("Error: No faculty names provided")
-        sys.exit(1)
 
     # Query faculty
     query_faculty_batch(
