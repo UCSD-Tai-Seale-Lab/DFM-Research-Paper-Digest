@@ -110,12 +110,12 @@ class PubMedQuery:
             if len(var) == 0:
                 return False
 
-            if isinstance(var[0], str):
-                affiliations = var
-            else:
+            if not isinstance(var[0], str):
                 raise TypeError(
                     f"Affiliations expected to be a list of str, not {type(var[0])}."
                 )
+
+            affiliations = var
         elif isinstance(var, str):
             affiliations = [var]
         else:
@@ -262,8 +262,6 @@ Examples:
     query = PubMedQuery(email=args.email, log=log)
 
     # Process each author
-    all_results = []
-
     for author_name in args.authors:
         log.info("=" * 80)
         log.info("PubMed Author Publications Query Tool")
@@ -281,4 +279,4 @@ Examples:
 
 
 if __name__ == "__main__":
-    main()
+    main()  # pragma: no cover

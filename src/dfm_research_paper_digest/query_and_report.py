@@ -6,10 +6,10 @@ Query PubMed and generate HTML report in one command
 import argparse
 import logging
 import os
+from dataclasses import dataclass
 from datetime import datetime
 from importlib.resources import as_file, files
 
-import pytest
 from metapub import PubMedArticle
 
 from dfm_research_paper_digest import (
@@ -21,25 +21,42 @@ from dfm_research_paper_digest import (
 )
 
 
+@dataclass
+class DataRequestDetails:
+    """
+    Package for encapsulating request for PubMedQuery
+    """
+
+    author: Author
+    faculty_file: str
+    year: int = datetime.now().year
+
+    def __init__(
+        self, author: Author, faculty_file: str, year: int = datetime.now().year
+    ):
+        self.author = author
+        self.faculty_file = faculty_file
+        self.year = year
+
+
 def query_and_report(
-    author: Author,
     contact_email: str = None,
-    faculty_list_file: str = None,
     log: logging.Logger = None,
     output_file: str = None,
-    year: int = datetime.now().year,
+    data_request: DataRequestDetails = None,
 ) -> None:
     """
         Lets us generate report for one researcher.
 
     Parameters
     ----------
-    author: Author
     contact_email: str
-    faculty_list_file: str
     log: logging.Logger
     output_file: str
-    year: int
+    data_request: DataRequestDetails
+        .author: Author
+        .faculty_file: str
+        ,year: int
     """
 
     if not log:
@@ -48,21 +65,26 @@ def query_and_report(
         with as_file(resource_path) as log_filename:
             log = setup_logging(log_filename=log_filename)
 
+    author: Author = data_request.author
+
     # Query PubMed
     log.info("=" * 80)
     log.info(f"Querying PubMed for: {author.original}")
     if author.pubmed_style != author.original:
         log.info(f"PubMed search format: {author.pubmed_style}")
-    log.info(f"Year: {year}")
+    log.info(f"Year: {data_request.year}")
     log.info("=" * 80)
 
     pubmed_query: PubMedQuery = PubMedQuery(log=log, email=contact_email)
     articles: list[PubMedArticle] = pubmed_query.query_by_author(
-        author_name=author.pubmed_style, year=year
+        author_name=author.pubmed_style, year=data_request.year
     )
 
     if not articles:
-        log.info(f"\n❌ No publications found for '{author.original}' in {year}.")
+        log.info(
+            "\n❌ No publications found for "
+            f"'{author.original}' in {data_request.year}."
+        )
 
         if author.pubmed_style != author.original:
             log.info(f"   (Searched PubMed as: {author.pubmed_style})")
@@ -77,13 +99,13 @@ def query_and_report(
         )
     else:
         # Auto-generate filename from author name
-        html_filename = f"{author.slug}_{year}.html"
+        html_filename = f"{author.slug}_{data_request.year}.html"
 
-    faculty: Faculty = Faculty(faculty_list_file, log)
+    faculty: Faculty = Faculty(data_request.faculty_file, log)
     generator: ReportGenerator = ReportGenerator(faculty, log)
 
     # Create title
-    title: str = f"{author.original} Publications ({year})"
+    title: str = f"{author.original} Publications ({data_request.year})"
 
     generator.generate_html_report(
         publications=articles,
@@ -122,8 +144,6 @@ Examples:
   %(prog)s "Ming Tai-Seale" --output ming_report
         """,
     )
-    from dfm_research_paper_digest import setup_logging
-
     resource_path_log = files("logs").joinpath("query_and_report.log")
     log: logging.Logger
 
@@ -174,14 +194,14 @@ Examples:
 
     # Parse author name to PubMed format.
     author: Author = Author(args.author)
-
+    data_request: DataRequestDetails = DataRequestDetails(
+        author, args.faculty_file, args.year
+    )
     query_and_report(
-        author=author,
         contact_email=args.email,
-        faculty_list_file=args.faculty_file,
         log=log,
         output_file=args.output,
-        year=args.year,
+        data_request=data_request,
     )
 
 
