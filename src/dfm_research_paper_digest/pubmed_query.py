@@ -73,17 +73,27 @@ class PubMedQuery:
 
         for pmid in pmids:
             article: PubMedArticle = self.__fetch.article_by_pmid(pmid)
+
+            if article and len(article.author_list) > 0:
+                # Which PubMedAuthor object matches the author
+                # for whom we requested a list of publications?
+                if requested_author.matches(article.author_list):
+                    try:
+                        matching_author: PubMedAuthor = next(
+                            a
+                            for a in article.author_list
+                            if requested_author.matches(a)
+                        )
+
+                        if matching_author and PubMedQuery.is_ucsd_affiliated(
+                            matching_author
+                        ):
+                            articles.append(article)
+                    except StopIteration as e:
+                        self.__log.exception(f"    Error: {e}")
+
             # NCBI recommends max 3 requests per second
             time.sleep(0.34)
-
-            # Which PubMedAuthor object matches the author
-            # for whom we requested a list of publications?
-            matching_author: PubMedAuthor = next(
-                a for a in article.author_list if requested_author.matches(a)
-            )
-
-            if matching_author and PubMedQuery.is_ucsd_affiliated(matching_author):
-                articles.append(article)
 
         return articles
 
@@ -148,7 +158,7 @@ class PubMedQuery:
             list of PubMedArticle objects
         """
         self.__log.info(
-            f"\nSearching PubMed for publications by '{author_name}' from {year}..."
+            f"Searching PubMed for publications by '{author_name}' from {year}..."
         )
 
         # Step 1: Search for PMIDs
@@ -205,9 +215,7 @@ def display_publications(
         log.info("\nNo publications to display.")
         return
 
-    log.info(f"\n{'='*80}")
     log.info(f"Found {len(publications)} publication(s):")
-    log.info(f"{'='*80}\n")
 
     for i, pub in enumerate(publications, 1):
         log.info(f"{i}. {pub.title}")

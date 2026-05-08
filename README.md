@@ -196,8 +196,7 @@ publications = query.query_author("Smith J", year=2024)
 
 ## Notes
 
-- Results are limited to 100 publications per query
-- The tool only retrieves publications from the specified year (default: 2025)
+- The tool only retrieves publications from the specified year (default: current year)
 - All results include direct links to the PubMed website
 
 ## License

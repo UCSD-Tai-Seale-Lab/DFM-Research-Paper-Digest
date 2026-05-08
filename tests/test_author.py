@@ -57,6 +57,28 @@ def test_author():
     assert author.pubmed_style == "Nikiforov, Igor"
 
 
+# Check we can catch corporate names without throwing exception.
+def test_matching_corporate_names():
+    author: Author = Author("Igor V. Nikiforov")
+    assert isinstance(author, Author)
+    assert not author.matches("NCI-Laboratories")
+
+
+def test_with_first_initials_only():
+    author: Author = Author("Igor V. Nikiforov")
+    assert isinstance(author, Author)
+    assert author.matches("I. V. Nikiforov")
+    assert not author.matches("Z. V. Nikiforov")
+    assert not author.matches("Z. Nikiforov")
+
+
+def test_with_accents():
+    author: Author = Author("Ajayi, Toluwalase A., MD")
+    assert isinstance(author, Author)
+    assert author.matches("Tolúwalàṣẹ Àjàyí")
+    assert author.matches("Àjàyí, T")
+
+
 def test_matching_list():
     """Exercises matching an Author against a list."""
     # List of Authors

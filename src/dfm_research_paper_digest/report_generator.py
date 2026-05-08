@@ -309,12 +309,7 @@ class ReportGenerator:
         """
 
         # Get unique faculty members in publications
-        faculty_in_pubs: list[str] = []
-
-        for pub in publications:
-            for author in pub.author_list:
-                if self.__faculty.is_faculty(author):
-                    faculty_in_pubs.append(f"{author.fore_name} {author.last_name}")
+        faculty_in_pubs: list[str] = self.__list_unique_faculty_members(publications)
 
         # Generate HTML
         html: str = self.__generate_html_content(publications, title, faculty_in_pubs)
@@ -327,11 +322,9 @@ class ReportGenerator:
         with open(output_file, "w", encoding="utf-8") as f:
             f.write(html)
 
-        self.__log.info(f"\n{'='*80}")
         self.__log.info(f"✓ HTML Report generated: {output_file}")
         self.__log.info(f"  Total publications: {len(publications)}")
         self.__log.info(f"  Unique DFM faculty found: {len(faculty_in_pubs)}")
-        self.__log.info(f"{'='*80}\n")
 
     def __highlight_faculty_authors(self, authors_list: list[PubMedAuthor]) -> str:
         """
@@ -356,3 +349,30 @@ class ReportGenerator:
                 highlighted.append(nice_name)
 
         return ", ".join(highlighted)
+
+    def __list_unique_faculty_members(
+        self, publications: list[PubMedArticle]
+    ) -> list[str]:
+        """
+            Lists the unique faculty members in a list of PubMedArticle objects.
+
+        Parameters
+        ----------
+        publications: list[PubMedArticle]
+
+        Returns
+        -------
+        faculty_in_pubs: list[str]
+        """
+        faculty_in_pubs: list[str] = []
+
+        for pub in publications:
+            for author in pub.author_list:
+                if self.__faculty.is_faculty(author):
+                    author_name: str = f"{author.fore_name} {author.last_name}"
+
+                    # Build a list of UNIQUE names.
+                    if author_name not in faculty_in_pubs:
+                        faculty_in_pubs.append(author_name)
+
+        return faculty_in_pubs

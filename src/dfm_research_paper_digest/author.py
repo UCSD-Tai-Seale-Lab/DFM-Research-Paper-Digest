@@ -4,6 +4,7 @@ Author class
 """
 from __future__ import annotations
 
+import unicodedata
 from typing import Self
 
 from metapub import PubMedAuthor
@@ -16,16 +17,16 @@ class Author(HumanName):
 
     Attributes:
     ----------
-    affiliation: str            organization
     first: str                  author's given name
+    first_initial:              author's first initial
+    first_initial_only: bool    True if author's name has a first initial but not a full name
     last: str                   author's family name
     middle: str                 author's middle name
     middle_initial:             author's middle initial
     middle_initial_only: bool   True if author's name has a middle initial but not a full name
     original: str               name used to instantiate the object
     pubmed_style: str           Last, First format
-    slug: str                   name with spaces replaced with underscores
-
+    slug: str                   Name formatted as filename
     Methods
     -------
     matches()                   Tests if two authors match,
@@ -36,20 +37,68 @@ class Author(HumanName):
         """
         Instantiates an Author object from a string name.
         """
-        super().__init__(name, **kwargs)
 
-        self.affiliation: str = ""
+        # Remove any accents for easier matching.
+        super().__init__(self.__remove_accents(name), **kwargs)
+
+        self.first_initial_only: bool = False
+        self.first_initial: str = ""
         self.middle_initial_only: bool = False
         self.middle_initial: str = ""
         self.original: str = name
 
         # Add extra properties
+        if self.first:
+            self.first_initial_only = len(self.first.rstrip(".")) == 1
+            self.first_initial = self.first[0]
+
         if self.middle:
             self.middle_initial_only = len(self.middle.rstrip(".")) == 1
             self.middle_initial = self.middle[0]
 
         self.pubmed_style: str = self.last + ", " + self.first
         self.slug: str = name.replace(" ", "_").replace(",", "").replace('"', "")
+
+    def __first_names_or_initials_match(self, other_name: Self) -> bool:
+        """
+        Returns True if:
+            * first_name_A == first_name_B
+            * first_name_A is only one char and matches first char of first_name_B
+            * first_name_B is only one char and matches first char of first_name_A
+
+        Examples:
+                first_name_A       first_name_B       result
+            *       'Juan'              'Juan'            True
+            *       'J'                 'Juan'            True
+            *       'Juan'              'J'               True
+            *       'J'                 'J'               True
+            *       ''                  ''                True
+            *       'X'                 'J'              False
+            *       'X'                 'Juan'           False
+            *       'Juan'              'X'              False
+
+        Parameters
+        ----------
+        first_name_A: str
+        first_name_B: str
+
+        Returns
+        -------
+        match: bool
+        """
+        if self.first == other_name.first:
+            return True
+
+        if self.first_initial_only and self.first_initial == other_name.first_initial:
+            return True
+
+        if (
+            other_name.first_initial_only
+            and self.first_initial == other_name.first_initial
+        ):
+            return True
+
+        return False
 
     def __middle_names_match_where_present(self, other_name: Self) -> bool:
         """
@@ -71,7 +120,7 @@ class Author(HumanName):
             *       ''                  ''                True
             *       'X'                 'J'              False
             *       'X'                 'Juan'           False
-            *       'Juan'              'Z'              False
+            *       'Juan'              'X'              False
 
         Parameters
         ----------
@@ -131,20 +180,36 @@ class Author(HumanName):
 
             return False
 
-        # Is it a STR?
+        # Is it a str?
         if isinstance(other_name, str):
-            return self.matches(Author(other_name))
+            return self.matches(Author(self.__remove_accents(other_name)))
 
         if isinstance(other_name, PubMedAuthor):
             # Create a new Author object & use that.
-            other_author: Author = Author(
-                other_name.fore_name + " " + other_name.last_name
-            )
-            return self.matches(other_author)
+            try:
+                other_author: Author = Author(
+                    other_name.fore_name + " " + other_name.last_name
+                )
+                return self.matches(other_author)
+            except TypeError:
+                # If the PubMed "Author" can't be parsed,
+                # it's probably corporate and won't match any of our faculty names.
+                return False
 
         # It's an Author.
         return (
-            self.first == other_name.first
+            self.__first_names_or_initials_match(other_name)
             and self.last == other_name.last
             and self.__middle_names_match_where_present(other_name)
         )
+
+    # Source - https://stackoverflow.com/a/517974
+    # Posted by MiniQuark, modified by community. See post 'Timeline' for change history
+    # Retrieved 2026-05-08, License - CC BY-SA 3.0
+    @staticmethod
+    def __remove_accents(input_str: str) -> str:
+        nfkd_form = unicodedata.normalize("NFKD", input_str)
+        name_no_accents: str = "".join(
+            [c for c in nfkd_form if not unicodedata.combining(c)]
+        )
+        return name_no_accents
