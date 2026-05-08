@@ -50,15 +50,13 @@ def query_faculty_batch(
     # Parse faculty names.
     faculty: Faculty = Faculty(faculty_list_file, log)
 
-    log.info("=" * 80)
     log.info(f"Querying PubMed for {faculty.num} faculty members ({year})")
-    log.info("=" * 80)
 
     # Initialize PubMed query
     query: PubMedQuery = PubMedQuery(email=contact_email, log=log)
 
     # Store results
-    all_results: list[PubMedArticle] = __assemble_article_list__(
+    all_results: list[PubMedArticle] = __assemble_article_list(
         query, faculty, year, log
     )
 
@@ -80,7 +78,7 @@ def query_faculty_batch(
     )
 
 
-def __assemble_article_list__(
+def __assemble_article_list(
     query: PubMedQuery, faculty: Faculty, year: int, log: logging.Logger
 ) -> list[PubMedArticle]:
     """
@@ -109,8 +107,10 @@ def __assemble_article_list__(
             articles: list[PubMedArticle] = query.query_by_author(
                 author.pubmed_style, year=year
             )
-            all_results.extend(articles)
-            log.info(f"    Found: {len(articles)} publication(s)")
+
+            if articles and len(articles) > 0:
+                all_results.extend(articles)
+                log.info(f"    Found: {len(articles)} publication(s)")
 
         except Exception as e:
             log.exception(f"    Error: {e}")
@@ -120,9 +120,7 @@ def __assemble_article_list__(
             time.sleep(1.0)
 
     # Summary
-    log.info("=" * 80)
     log.info("SUMMARY")
-    log.info("=" * 80)
     log.info(f"Total faculty queried: {faculty.num}")
     log.info(f"Total publications found: {len(all_results)}")
 

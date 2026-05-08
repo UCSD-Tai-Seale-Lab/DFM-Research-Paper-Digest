@@ -68,12 +68,10 @@ def query_and_report(
     author: Author = data_request.author
 
     # Query PubMed
-    log.info("=" * 80)
     log.info(f"Querying PubMed for: {author.original}")
     if author.pubmed_style != author.original:
         log.info(f"PubMed search format: {author.pubmed_style}")
     log.info(f"Year: {data_request.year}")
-    log.info("=" * 80)
 
     pubmed_query: PubMedQuery = PubMedQuery(log=log, email=contact_email)
     articles: list[PubMedArticle] = pubmed_query.query_by_author(
