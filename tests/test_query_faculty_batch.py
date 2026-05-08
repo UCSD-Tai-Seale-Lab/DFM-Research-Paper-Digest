@@ -69,7 +69,7 @@ def test_run_query_faculty_batch(username):
                 "--output",
                 output_file,
                 "--year",
-                "2026",
+                "2025",
             ]
         )
 

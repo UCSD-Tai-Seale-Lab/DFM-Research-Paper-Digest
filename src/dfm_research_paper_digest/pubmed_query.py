@@ -78,19 +78,14 @@ class PubMedQuery:
                 # Which PubMedAuthor object matches the author
                 # for whom we requested a list of publications?
                 if requested_author.matches(article.author_list):
-                    try:
-                        matching_author: PubMedAuthor = next(
-                            a
-                            for a in article.author_list
-                            if requested_author.matches(a)
-                        )
+                    matching_author: PubMedAuthor = next(
+                        a for a in article.author_list if requested_author.matches(a)
+                    )
 
-                        if matching_author and PubMedQuery.is_ucsd_affiliated(
-                            matching_author
-                        ):
-                            articles.append(article)
-                    except StopIteration as e:
-                        self.__log.exception(f"    Error: {e}")
+                    if matching_author and PubMedQuery.is_ucsd_affiliated(
+                        matching_author
+                    ):
+                        articles.append(article)
 
             # NCBI recommends max 3 requests per second
             time.sleep(0.34)
