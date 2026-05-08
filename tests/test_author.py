@@ -3,6 +3,7 @@ Tests Author class.
 """
 
 from dfm_research_paper_digest import Author
+from metapub import PubMedArticle, PubMedAuthor, PubMedFetcher
 
 
 def test_author():
@@ -58,10 +59,18 @@ def test_author():
 
 
 # Check we can catch corporate names without throwing exception.
-def test_matching_corporate_names():
+def test_matching_corporate_names(pmid_with_corporate_author):
     author: Author = Author("Igor V. Nikiforov")
     assert isinstance(author, Author)
+
+    # Test using string.
     assert not author.matches("NCI-Laboratories")
+
+    # Test using PubMedAuthor object.
+    fetcher: PubMedFetcher = PubMedFetcher()
+    article: PubMedArticle = fetcher.article_by_pmid(pmid_with_corporate_author)
+    corporate_author: PubMedAuthor = article.author_list[56]
+    assert not author.matches(corporate_author)
 
 
 def test_with_first_initials_only():

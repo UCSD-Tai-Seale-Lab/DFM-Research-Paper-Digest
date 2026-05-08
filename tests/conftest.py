@@ -3,7 +3,11 @@ import os
 import sys
 
 import pytest
-import xmltodict
+
+
+@pytest.fixture(name="pmid_with_corporate_author")
+def pmid_with_corporate_author() -> str:
+    return "40465838"
 
 
 @pytest.fixture(name="logger")
