@@ -11,7 +11,7 @@ import pytest
 from dfm_research_paper_digest import Author, Faculty
 
 
-def test_faculty(logger: logging.Logger, sample_faculty_list: list[str]):
+def test_faculty_from_file(logger: logging.Logger):
     resource_path = files("data").joinpath("sample_faculty_list.txt")
 
     with as_file(resource_path) as filename:
@@ -55,10 +55,19 @@ def test_faculty(logger: logging.Logger, sample_faculty_list: list[str]):
         assert len(author_list) == 3
         assert author_list[0].matches(Author("Tai-Seale, Ming PhD, MPH"))
 
+
+def test_faculty_from_list(logger: logging.Logger, sample_faculty_list: list[str]):
     # Exercise instantiation from a list[str].
     faculty_from_list: Faculty = Faculty(sample_faculty_list, logger)
     assert isinstance(faculty_from_list, Faculty)
     assert faculty_from_list.num == 4
+
+
+def test_faculty_from_website(logger: logging.Logger, faculty_webpage: str):
+    faculty_from_webpage: Faculty = Faculty(faculty_webpage, logger)
+    assert isinstance(faculty_from_webpage, Faculty)
+    assert faculty_from_webpage.num > 10
+    assert faculty_from_webpage.is_faculty("Tai-Seale, Ming PhD, MPH")
 
 
 def test_faculty_pathological_I(logger: logging.Logger):

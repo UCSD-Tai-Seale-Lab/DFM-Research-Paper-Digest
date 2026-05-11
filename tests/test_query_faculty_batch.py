@@ -52,26 +52,25 @@ def test_query_faculty_batch_II(username):
 
 
 # @pytest.mark.skip(reason="Not really a test.")
-def test_run_query_faculty_batch(username):
+# Run using live faculty list from Department of Family Medicine webpage.
+def test_run_query_faculty_batch(username, faculty_webpage):
     output_file: str = (
         r"C:\Family Medicine\Publication Output\results\batch_results.html"
     )
     Path(output_file).unlink(missing_ok=True)
-    resource_path = files("data").joinpath("faculty_list.txt")
 
-    with as_file(resource_path) as faculty_filename:
-        main(
-            [
-                "--email",
-                f"{username}@ucsd.edu",
-                "--faculty-file",
-                str(faculty_filename),
-                "--output",
-                output_file,
-                "--year",
-                "2025",
-            ]
-        )
+    main(
+        [
+            "--email",
+            f"{username}@ucsd.edu",
+            "--faculty-file",
+            faculty_webpage,
+            "--output",
+            output_file,
+            "--year",
+            datetime.now().year,
+        ]
+    )
 
     # Check that the file was created.
     assert Path(output_file).is_file()

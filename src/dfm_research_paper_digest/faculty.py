@@ -7,7 +7,11 @@ from __future__ import annotations
 import copy
 import logging
 from pathlib import Path
+from urllib.parse import ParseResult, urlparse
 
+import bs4
+import requests
+from bs4 import BeautifulSoup
 from metapub import PubMedAuthor
 
 from dfm_research_paper_digest import Author  # pylint: disable=import-error
@@ -39,13 +43,25 @@ class Faculty:
         if isinstance(faculty_list, list):
             self.__list = [Author(f) for f in faculty_list]
         elif isinstance(faculty_list, (str, Path)):
-            lines: list[str] = self.__read_faculty_list_file(faculty_list)
+            lines: list[str] = []
+
+            if self.__is_url(faculty_list):
+                lines = self.__scrape_webpage(faculty_list)
+            else:
+                lines = self.__read_faculty_list_file(faculty_list)
 
             if lines:
                 self.__list = [Author(f) for f in lines]
             else:
                 self.__log.exception(f"Unable to find/read file {faculty_list}.")
                 raise FileNotFoundError(f"Unable to open file {faculty_list}.")
+        else:
+            self.__log.exception(
+                f"Expected 'faculty_list' to be a list, str or Path, not {type(faculty_list)}."
+            )
+            raise TypeError(
+                f"Expected 'faculty_list' to be a list, str or Path, not {type(faculty_list)}."
+            )
 
         self.authors: list[Author] = copy.deepcopy(self.__list)
         self.names: list[str] = self.__names()
@@ -83,6 +99,32 @@ class Faculty:
                 return True
 
         return False
+
+    def __is_url(self, name: str | Path) -> bool:
+        """
+            Parses string to see if it could be a URL address
+
+        Parameters
+        ----------
+        name: str | Path
+
+        Returns
+        -------
+        bool
+        """
+        if isinstance(name, Path):
+            return False
+
+        if isinstance(name, str):
+            parsed: ParseResult = urlparse(name)
+
+            # A URL typically has a scheme (http/https) and a domain (netloc)
+            return all([parsed.scheme, parsed.netloc])
+        else:
+            self.__log.exception(
+                f"Expected 'name' to be str or Path, not {type(name)}."
+            )
+            raise TypeError(f"Expected 'name' to be str or Path, not {type(name)}.")
 
     def __names(self) -> list[str]:
         """
@@ -128,6 +170,12 @@ class Faculty:
         """
         faculty_lines: list[str]
 
+        if not isinstance(file, str) and not isinstance(file, Path):
+            self.__log.exception(
+                f"Expected 'file' to be str or Path, not {type(file)}."
+            )
+            raise TypeError(f"Expected 'file' to be str or Path, not {type(file)}.")
+
         try:
             with open(file, "r", encoding="utf-8") as f:
                 faculty_lines = [line.strip() for line in f if line.strip()]
@@ -142,3 +190,40 @@ class Faculty:
             self.__log.exception(f"Error loading faculty list: {e}.")
 
         return []
+
+    def __scrape_webpage(self, site_address: str) -> list[str]:
+        """
+            Scrape faculty webpage and extract a list of faculty members.
+
+        Parameters
+        ----------
+        site_address
+
+        Returns
+        -------
+        names: list[str]
+        """
+        if not isinstance(site_address, str):
+            self.__log.exception(
+                f"Expected 'site_address' to be str, not {type(site_address)}."
+            )
+            raise TypeError(
+                f"Expected 'site_address' to be str, not {type(site_address)}."
+            )
+
+        response: requests.Response = requests.get(site_address)
+        soup: bs4.BeautifulSoup = BeautifulSoup(response.text, "html.parser")
+        names: list[str] = []
+
+        tags: bs4.ResultSet = soup.find_all("td", class_="sorting_1")
+
+        for tag in tags:
+            names.append(tag.get_text().strip())
+
+        # The faculty webpage lists Prof. Ming Tai-Seale as just "Tai-Seale, PhD, MPH"
+        names_repaired: list[str] = [
+            "Tai-Seale, Ming PhD, MPH" if "Tai-Seale" in item else item
+            for item in names
+        ]
+        names_repaired.sort()
+        return names_repaired
