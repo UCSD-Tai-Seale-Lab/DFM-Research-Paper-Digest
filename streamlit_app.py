@@ -14,10 +14,10 @@ streamlit.header(" Department of Family Medicine")
 streamlit.subheader("Publications Report")
 
 # log: logging.Logger = setup_logging()
-faculty: Faculty = Faculty("https://familymedicine.ucsd.edu/about/faculty.html")
-faculty_names: list[str] = faculty.names
-faculty_names.insert(0, "All")
-streamlit.write(f"Received {len(faculty_names)} names.")
+# faculty: Faculty = Faculty("https://familymedicine.ucsd.edu/about/faculty.html")
+# faculty_names: list[str] = faculty.names
+# faculty_names.insert(0, "All")
+# streamlit.write(f"Received {len(faculty_names)} names.")
 # selection: streamlit.selectbox = streamlit.selectbox(
 #    "Select faculty members for report.", faculty_names
 # )
