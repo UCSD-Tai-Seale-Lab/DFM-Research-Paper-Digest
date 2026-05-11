@@ -12,7 +12,7 @@ from importlib.resources import as_file, files
 
 from metapub import PubMedArticle
 
-from dfm_research_paper_digest import (
+from src.dfm_research_paper_digest import (
     Author,
     Faculty,
     PubMedQuery,

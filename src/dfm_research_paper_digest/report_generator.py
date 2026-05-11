@@ -10,7 +10,7 @@ from pathlib import Path
 
 from metapub import PubMedArticle, PubMedAuthor
 
-from dfm_research_paper_digest import Faculty, PubMedQuery
+from src.dfm_research_paper_digest import Faculty, PubMedQuery
 
 
 class ReportGenerator:

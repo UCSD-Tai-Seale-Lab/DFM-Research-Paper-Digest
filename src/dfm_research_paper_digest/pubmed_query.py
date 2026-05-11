@@ -37,7 +37,7 @@ class PubMedQuery:
         Args:
             email: Your email (recommended by NCBI for API usage tracking)
         """
-        from dfm_research_paper_digest import (
+        from src.dfm_research_paper_digest import (
             setup_logging,
         )
 
