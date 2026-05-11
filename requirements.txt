@@ -1,1 +1,2 @@
 metapub >=0.7.4
+nameparser >= 1.1.3
