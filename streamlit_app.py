@@ -16,11 +16,10 @@ log: logging.Logger = setup_streamlit_logging()
 faculty: Faculty = Faculty("https://familymedicine.ucsd.edu/about/faculty.html", log)
 faculty_names: list[str] = faculty.names
 faculty_names.insert(0, "All")
-streamlit.write(f"Received {len(faculty_names)} names.")
-# selection: streamlit.selectbox = streamlit.selectbox(
-#    "Select faculty members for report.", options=faculty_names, index=0
-# )
-# streamlit.write(f"Selection: {selection}")
+selection: streamlit.selectbox = streamlit.selectbox(
+    "Select faculty members for report.", options=faculty_names, index=0
+)
+streamlit.write(f"Selection: {selection}")
 
 progress_text: str = "Pulling data from PubMed..."
 my_bar: streamlit.progress = streamlit.progress(0, progress_text)
@@ -28,8 +27,7 @@ my_bar: streamlit.progress = streamlit.progress(0, progress_text)
 if streamlit.button("Create report"):
     streamlit.write("Ok!")
     my_bar.progress(100, text=progress_text)
-else:
-    streamlit.write("Why am I here?")
+
 # report: str = f"faculty publications {datetime.now().year}.html"
 # run_batch_report(
 #    contact_email="kjdelaney@health.ucsd.edu",
