@@ -49,7 +49,7 @@ if streamlit.button("Create report"):
 
     run_batch_report(
         contact_email="kjdelaney@health.ucsd.edu",
-        faculty_list_file=dfm_webpage,
+        faculty_list_file=faculty_source,
         log=log,
         output_file=report,
         progress_bar=my_bar,
@@ -57,4 +57,3 @@ if streamlit.button("Create report"):
     )
     my_bar.progress(100, text="Complete")
     streamlit.download_button(label="Download report", file_name=report, mime="html")
-    #    streamlit.write("Ok!")
