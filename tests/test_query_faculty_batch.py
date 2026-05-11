@@ -6,9 +6,7 @@ from datetime import datetime
 from importlib.resources import as_file, files
 from pathlib import Path
 
-import pytest
-
-from dfm_research_paper_digest.query_faculty_batch import main, query_faculty_batch
+from dfm_research_paper_digest.query_faculty_batch import main, run_batch_report
 
 
 def test_query_faculty_batch_I(username):
@@ -41,7 +39,7 @@ def test_query_faculty_batch_II(username):
 
     # Exercise calling w/o log and w/o output filename.
     with as_file(resource_path) as faculty_filename:
-        query_faculty_batch(
+        run_batch_report(
             contact_email=f"{username}@ucsd.edu",
             faculty_list_file=str(faculty_filename),
             year=datetime.now().year,
@@ -68,7 +66,7 @@ def test_run_query_faculty_batch(username, faculty_webpage):
             "--output",
             output_file,
             "--year",
-            datetime.now().year,
+            str(datetime.now().year),
         ]
     )
 

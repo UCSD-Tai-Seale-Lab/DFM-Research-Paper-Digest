@@ -220,7 +220,8 @@ class Faculty:
         for tag in tags:
             names.append(tag.get_text().strip())
 
-        # The faculty webpage lists Prof. Ming Tai-Seale as just "Tai-Seale, PhD, MPH"
+        # The faculty webpage lists Prof. Ming Tai-Seale as just "Tai-Seale, PhD, MPH",
+        # which won't match publication authors. Fix it here until they fix it there.
         names_repaired: list[str] = [
             "Tai-Seale, Ming PhD, MPH" if "Tai-Seale" in item else item
             for item in names

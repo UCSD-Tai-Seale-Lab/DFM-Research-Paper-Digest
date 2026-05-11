@@ -5,7 +5,7 @@ from metapub import PubMedArticle
 
 from dfm_research_paper_digest import Faculty, PubMedQuery
 
-def query_faculty_batch(
+def run_batch_report(
     contact_email: str = None,
     faculty_list_file: str = None,
     log: logging.Logger = None,
