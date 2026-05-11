@@ -4,10 +4,14 @@ import streamlit
 
 from src.dfm_research_paper_digest.query_faculty_batch import run_batch_report
 
-streamlit.title("Department of Family Medicine Publications Report")
+streamlit.title("Department of Family Medicine")
+streamlit.header("Publications Report")
+progress_text: str = "Pulling data from PubMed..."
+my_bar: streamlit.progress = streamlit.progress(0, progress_text)
 
 if streamlit.button("Create report"):
     streamlit.write("Ok!")
+    my_bar.progress(100, text=progress_text)
 else:
     streamlit.write("Why am I here?")
 # report: str = f"faculty publications {datetime.now().year}.html"
