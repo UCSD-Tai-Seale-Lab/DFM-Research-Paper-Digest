@@ -9,6 +9,7 @@ import logging
 import logging.handlers
 import sys
 from pathlib import Path
+import streamlit
 
 
 def setup_logging(log_filename: str | Path | None = None) -> logging.Logger:
@@ -68,4 +69,27 @@ def setup_logging(log_filename: str | Path | None = None) -> logging.Logger:
     logger.addHandler(console_handler)
     logger.addHandler(logfile_handler)
     logger.setLevel(logging.INFO)
+    return logger
+
+
+@streamlit.cache_resource
+def setup_streamlit_logging() -> logging.Logger:
+    """
+        Setup logging in Streamlit
+
+    Returns
+    -------
+    log: logging.Logger object
+    """
+    logger: logging.Logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
+
+    # Avoid adding handlers multiple times
+    if not logger.handlers:
+        handler: logging.StreamHandler = logging.StreamHandler()
+        formatter: logging.Formatter = logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        )
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
     return logger
