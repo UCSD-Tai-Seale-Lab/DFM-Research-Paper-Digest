@@ -13,13 +13,22 @@ streamlit.header(" Department of Family Medicine")
 streamlit.subheader("Publications Report")
 
 log: logging.Logger = setup_streamlit_logging()
+
+# Specific faculty member? Or ALL?
 faculty: Faculty = Faculty("https://familymedicine.ucsd.edu/about/faculty.html", log)
 faculty_names: list[str] = faculty.names
 faculty_names.insert(0, "All")
-selection: streamlit.selectbox = streamlit.selectbox(
+name_selection: streamlit.selectbox = streamlit.selectbox(
     "Select faculty members for report.", options=faculty_names, index=0
 )
-streamlit.write(f"Selection: {selection}")
+streamlit.write(f"Report on: {name_selection}")
+
+# What year?
+recent_years: list[int] = [datetime.now().year - delta for delta in [0, 1, 2, 3]]
+year_selection: streamlit.selectbox = streamlit.selectbox(
+    "Select year of publication.", options=recent_years, index=0
+)
+streamlit.write(f"Report year: {year_selection}")
 
 progress_text: str = "Pulling data from PubMed..."
 my_bar: streamlit.progress = streamlit.progress(0, progress_text)
@@ -36,10 +45,4 @@ if streamlit.button("Create report"):
 #    year=datetime.now().year,
 # )
 
-# with open(report, "rb") as file:
-#    btn = streamlit.download_button(
-#        label="Download faculty publications report",
-#        data=file,
-#        filename=report,
-#        mime="application/octet-stream",
-#    )
+streamlit.html("output/faculty_2026.html")
