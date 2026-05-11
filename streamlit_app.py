@@ -14,10 +14,11 @@ log: logging.Logger = setup_logging()
 faculty: Faculty = Faculty("https://familymedicine.ucsd.edu/about/faculty.html", log)
 faculty_names: list[str] = faculty.names
 faculty_names.insert(0, "All")
-selection: streamlit.selectbox = streamlit.selectbox(
-    "Select faculty members for report.", faculty_names
-)
-streamlit.write(f"Selection: {selection}")
+streamlit.write(f"Received {len(faculty_names)} names.")
+# selection: streamlit.selectbox = streamlit.selectbox(
+#    "Select faculty members for report.", faculty_names
+# )
+# streamlit.write(f"Selection: {selection}")
 
 progress_text: str = "Pulling data from PubMed..."
 my_bar: streamlit.progress = streamlit.progress(0, progress_text)
