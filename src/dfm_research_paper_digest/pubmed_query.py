@@ -14,7 +14,7 @@ from importlib.resources import as_file, files
 
 from metapub import PubMedArticle, PubMedAuthor, PubMedFetcher
 
-import dfm_research_paper_digest
+import src.dfm_research_paper_digest
 
 
 class PubMedQuery:
@@ -67,8 +67,8 @@ class PubMedQuery:
         """
         articles: list[PubMedArticle] = []
 
-        requested_author: dfm_research_paper_digest.Author = (
-            dfm_research_paper_digest.Author(author_name)
+        requested_author: src.dfm_research_paper_digest.Author = (
+            src.dfm_research_paper_digest.Author(author_name)
         )
 
         for pmid in pmids:
@@ -235,7 +235,7 @@ Examples:
   %(prog)s "Zhang Y" "Li Y" "Xie B"  # Query multiple authors
         """,
     )
-    log = dfm_research_paper_digest.setup_logging(log_filename="pubmed_query.log")
+    log = src.dfm_research_paper_digest.setup_logging(log_filename="pubmed_query.log")
 
     parser.add_argument(
         "authors",
