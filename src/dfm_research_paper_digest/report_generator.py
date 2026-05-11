@@ -316,7 +316,9 @@ class ReportGenerator:
 
         # Ensure directory exists.
         output_dir: Path = Path(output_file).resolve().parent
-        output_dir.mkdir(parents=True, exist_ok=True)
+
+        if not output_dir.exists():
+            output_dir.mkdir(parents=True, exist_ok=True)
 
         # Write to file.
         with open(output_file, "w", encoding="utf-8") as f:

@@ -41,11 +41,12 @@ my_bar: streamlit.progress = streamlit.progress(0)
 
 if streamlit.button("Create report"):
     faculty_source: str | list[str] = dfm_webpage
+    report: str = f"/app/static/faculty publications {year_selection}.html"
 
     if name_selection != "All":
         faculty_source = [name_selection]
+        report = f"/app/static/{name_selection} {year_selection}.html"
 
-    report: str = f"/app/static/faculty publications {year_selection}.html"
     run_batch_report(
         contact_email="kjdelaney@health.ucsd.edu",
         faculty_list_file=dfm_webpage,
