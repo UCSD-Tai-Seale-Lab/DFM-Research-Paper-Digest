@@ -36,8 +36,11 @@ progress_text: str = "Pulling data from PubMed..."
 my_bar: streamlit.progress = streamlit.progress(0, progress_text)
 
 if streamlit.button("Create report"):
-    url =
-    streamlit.write("Ok!")
+    streamlit.markdown(
+        '<a href="/app/static/faculty_2026.html" target="_black">Open</a>',
+        unsafe_allow_html=True,
+    )
+    #    streamlit.write("Ok!")
     my_bar.progress(100, text=progress_text)
 
 # report: str = f"faculty publications {datetime.now().year}.html"
