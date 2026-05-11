@@ -3,7 +3,6 @@ from datetime import datetime
 
 import streamlit
 from PIL import Image
-from streamlit_javascript import st_javascript
 
 from src.dfm_research_paper_digest.faculty import Faculty
 from src.dfm_research_paper_digest.my_logging import setup_streamlit_logging
