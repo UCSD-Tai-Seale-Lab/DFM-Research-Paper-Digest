@@ -1,11 +1,13 @@
-from datetime import datetime
 import logging
+from datetime import datetime
+
 import streamlit
 from PIL import Image
-from src.dfm_research_paper_digest.faculty import Faculty
-from src.dfm_research_paper_digest.query_faculty_batch import run_batch_report
+from streamlit_javascript import st_javascript
 
+from src.dfm_research_paper_digest.faculty import Faculty
 from src.dfm_research_paper_digest.my_logging import setup_streamlit_logging
+from src.dfm_research_paper_digest.query_faculty_batch import run_batch_report
 
 image: Image = Image.open("logos-clinicalHealth-full.png")
 streamlit.image(image)
@@ -34,6 +36,7 @@ progress_text: str = "Pulling data from PubMed..."
 my_bar: streamlit.progress = streamlit.progress(0, progress_text)
 
 if streamlit.button("Create report"):
+    url =
     streamlit.write("Ok!")
     my_bar.progress(100, text=progress_text)
 
@@ -45,4 +48,4 @@ if streamlit.button("Create report"):
 #    year=datetime.now().year,
 # )
 
-streamlit.html("output/faculty_2026.html")
+streamlit.html("static/faculty_2026.html")
