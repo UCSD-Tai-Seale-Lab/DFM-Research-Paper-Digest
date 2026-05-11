@@ -13,7 +13,7 @@ from importlib.resources import as_file, files
 
 from metapub import PubMedArticle
 
-from dfm_research_paper_digest import (
+from src.dfm_research_paper_digest import (
     Faculty,
     PubMedQuery,
     setup_logging,
@@ -112,7 +112,7 @@ def run_batch_report(
     Returns:
         Dictionary with faculty names as keys and their publications as values
     """
-    from dfm_research_paper_digest.report_generator import ReportGenerator
+    from src.dfm_research_paper_digest.report_generator import ReportGenerator
 
     if not log:
         resource_path = files("logs").joinpath("query_faculty_batch.log")

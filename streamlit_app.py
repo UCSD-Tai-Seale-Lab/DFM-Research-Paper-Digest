@@ -1,6 +1,8 @@
-import streamlit
-from src.dfm_research_paper_digest.query_faculty_batch import run_batch_report
 from datetime import datetime
+
+import streamlit
+
+from src.dfm_research_paper_digest.query_faculty_batch import run_batch_report
 
 streamlit.title("Department of Family Medicine Publications Report")
 report: str = f"faculty publications {datetime.now().year}.html"

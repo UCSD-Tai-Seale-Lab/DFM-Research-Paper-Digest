@@ -1,1 +1,1 @@
-import dfm_research_paper_digest
+import src.dfm_research_paper_digest
