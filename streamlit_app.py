@@ -16,7 +16,8 @@ streamlit.subheader("Publications Report")
 log: logging.Logger = setup_streamlit_logging()
 
 # Specific faculty member? Or ALL?
-faculty: Faculty = Faculty("https://familymedicine.ucsd.edu/about/faculty.html", log)
+dfm_webpage: str = "https://familymedicine.ucsd.edu/about/faculty.html"
+faculty: Faculty = Faculty(dfm_webpage, log)
 faculty_names: list[str] = faculty.names
 faculty_names.insert(0, "All")
 name_selection: streamlit.selectbox = streamlit.selectbox(
@@ -35,14 +36,16 @@ progress_text: str = "Pulling data from PubMed..."
 my_bar: streamlit.progress = streamlit.progress(0, progress_text)
 
 if streamlit.button("Create report"):
+    report: str = f"/app.static/faculty publications {year_selection}.html"
+    run_batch_report(
+        contact_email="kjdelaney@health.ucsd.edu",
+        faculty_list_file=dfm_webpage,
+        output_file=report,
+        progress_bar=my_bar,
+        year=year_selection,
+    )
     my_bar.progress(100, text=progress_text)
-    streamlit.link_button(label="Open report", url="/app/static/faculty_2026.html")
+    streamlit.download_button(
+        label="Download report", file_name=report, mime="html"
+    )
     #    streamlit.write("Ok!")
-
-# report: str = f"faculty publications {datetime.now().year}.html"
-# run_batch_report(
-#    contact_email="kjdelaney@health.ucsd.edu",
-#    faculty_list_file="https://familymedicine.ucsd.edu/about/faculty.html",
-#    output_file=report,
-#    year=datetime.now().year,
-# )
