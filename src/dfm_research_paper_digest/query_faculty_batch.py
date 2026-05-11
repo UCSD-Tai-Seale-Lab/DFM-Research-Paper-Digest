@@ -10,7 +10,7 @@ import os
 import time
 from datetime import datetime
 from importlib.resources import as_file, files
-
+import streamlit
 from metapub import PubMedArticle
 
 from src.dfm_research_paper_digest import (
@@ -21,7 +21,7 @@ from src.dfm_research_paper_digest import (
 
 
 def __assemble_article_list(
-    query: PubMedQuery, faculty: Faculty, year: int, log: logging.Logger
+    query: PubMedQuery, faculty: Faculty, year: int, log: logging.Logger, progress_bar: streamlit.progress = None
 ) -> list[PubMedArticle]:
     """
         Runs query for each author & assembles list of articles.
@@ -32,6 +32,7 @@ def __assemble_article_list(
     faculty: Faculty object
     year: int
     log: logging.Logger
+    progress_bar: streamlit.progress object
 
     Returns
     -------
@@ -39,6 +40,7 @@ def __assemble_article_list(
     """
     i: int = 0
     all_results: list[PubMedArticle] = []
+    pct_completion: int = 0
 
     # Query each faculty member
     for author in faculty.authors:
@@ -56,6 +58,10 @@ def __assemble_article_list(
 
         except Exception as e:
             log.exception(f"    Error: {e}")
+
+        if progress_bar:
+            pct_completion = int(100.0 * i / faculty.num)
+            progress_bar.progress(pct_completion)
 
         # Rate limiting: NCBI recommends max 3 requests per second
         if i < faculty.num:
@@ -97,6 +103,7 @@ def run_batch_report(
     faculty_list_file: str = None,
     log: logging.Logger = None,
     output_file: str = None,
+    progress_bar: streamlit.progress = None,
     year: int = datetime.now().year,
 ):
     """
@@ -107,6 +114,7 @@ def run_batch_report(
         faculty_list_file: Path to faculty list file OR webpate (for report generation)
         log: logging.Logger object (default: None, in which case we create our own)
         output_file: Optional CSV filename for output
+        progress_bar: streamlit.progress object
         year: Publication year (default: current year)
 
     Returns:
@@ -122,7 +130,6 @@ def run_batch_report(
 
     # Parse faculty names.
     faculty: Faculty = Faculty(faculty_list_file, log)
-
     log.info(f"Querying PubMed for {faculty.num} faculty members ({year})")
 
     # Initialize PubMed query
