@@ -14,7 +14,7 @@ import requests
 from bs4 import BeautifulSoup
 from metapub import PubMedAuthor
 
-from dfm_research_paper_digest import Author  # pylint: disable=import-error
+from src.dfm_research_paper_digest import Author  # pylint: disable=import-error
 
 
 # pylint: disable=too-few-public-methods
