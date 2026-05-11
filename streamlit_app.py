@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 from datetime import datetime
 
@@ -8,11 +10,13 @@ from src.dfm_research_paper_digest.faculty import Faculty
 from src.dfm_research_paper_digest.my_logging import setup_streamlit_logging
 from src.dfm_research_paper_digest.query_faculty_batch import run_batch_report
 
+# Headline
 image: Image = Image.open("logos-clinicalHealth-full.png")
 streamlit.image(image)
 streamlit.header(" Department of Family Medicine")
 streamlit.subheader("Publications Report")
 
+# Setup logging
 log: logging.Logger = setup_streamlit_logging()
 
 # Specific faculty member? Or ALL?
@@ -32,11 +36,16 @@ year_selection: streamlit.selectbox = streamlit.selectbox(
 )
 streamlit.write(f"Report year: {year_selection}")
 
-progress_text: str = "Pulling data from PubMed..."
-my_bar: streamlit.progress = streamlit.progress(0, progress_text)
+# Keep track of progress.
+my_bar: streamlit.progress = streamlit.progress(0)
 
 if streamlit.button("Create report"):
-    report: str = f"/app.static/faculty publications {year_selection}.html"
+    faculty_source: str | list[str] = dfm_webpage
+
+    if name_selection != "All":
+        faculty_source = [name_selection]
+
+    report: str = f"/app/static/faculty publications {year_selection}.html"
     run_batch_report(
         contact_email="kjdelaney@health.ucsd.edu",
         faculty_list_file=dfm_webpage,
@@ -45,6 +54,6 @@ if streamlit.button("Create report"):
         progress_bar=my_bar,
         year=year_selection,
     )
-    my_bar.progress(100, text=progress_text)
+    my_bar.progress(100, text="Complete")
     streamlit.download_button(label="Download report", file_name=report, mime="html")
     #    streamlit.write("Ok!")

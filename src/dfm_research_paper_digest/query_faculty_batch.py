@@ -3,6 +3,8 @@
 Batch Faculty Publications Query
 Queries PubMed for publications from multiple faculty members
 """
+from __future__ import annotations
+
 # pylint: disable=import-error, import-outside-toplevel
 import argparse
 import logging
@@ -48,6 +50,10 @@ def __assemble_article_list(
 
     # Query each faculty member
     for author in faculty.authors:
+        if progress_bar:
+            pct_completion = int(100.0 * i / faculty.num)
+            progress_bar.progress(pct_completion, f"Querying {author.original}")
+
         i += 1
         log.info(f"[{i}/{faculty.num}] Querying: {author.original}")
 
@@ -62,10 +68,6 @@ def __assemble_article_list(
 
         except Exception as e:
             log.exception(f"    Error: {e}")
-
-        if progress_bar:
-            pct_completion = int(100.0 * i / faculty.num)
-            progress_bar.progress(pct_completion)
 
         # Rate limiting: NCBI recommends max 3 requests per second
         if i < faculty.num:
@@ -104,7 +106,7 @@ def __eliminate_duplicates(articles: list[PubMedArticle]) -> list[PubMedArticle]
 
 def run_batch_report(
     contact_email: str = None,
-    faculty_list_file: str = None,
+    faculty_list_file: str | list[str] = None,
     log: logging.Logger = None,
     output_file: str = None,
     progress_bar: streamlit.progress = None,
@@ -115,10 +117,10 @@ def run_batch_report(
 
     Args:
         contact_email: Optional email for NCBI API
-        faculty_list_file: Path to faculty list file OR webpate (for report generation)
+        faculty_list_file: webpage OR list of faculty names
         log: logging.Logger object (default: None, in which case we create our own)
         output_file: Optional CSV filename for output
-        progress_bar: streamlit.progress object
+        progress_bar: streamlit progress object
         year: Publication year (default: current year)
 
     Returns:
