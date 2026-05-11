@@ -21,7 +21,11 @@ from src.dfm_research_paper_digest import (
 
 
 def __assemble_article_list(
-    query: PubMedQuery, faculty: Faculty, year: int, log: logging.Logger, progress_bar: streamlit.progress = None
+    query: PubMedQuery,
+    faculty: Faculty,
+    year: int,
+    log: logging.Logger,
+    progress_bar: streamlit.progress = None,
 ) -> list[PubMedArticle]:
     """
         Runs query for each author & assembles list of articles.
@@ -137,7 +141,7 @@ def run_batch_report(
 
     # Store results
     all_results: list[PubMedArticle] = __assemble_article_list(
-        query, faculty, year, log
+        query, faculty, year, log, progress_bar
     )
 
     # Generate HTML report.
