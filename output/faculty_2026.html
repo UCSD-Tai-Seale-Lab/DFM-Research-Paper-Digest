@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DFM Faculty Publications Report (2026)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2em;
+        }
+        .header .subtitle {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        .summary {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .summary h2 {
+            margin-top: 0;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .summary-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+        .summary-item .label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .summary-item .value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+        }
+        .publication {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .publication:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .publication-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        .publication-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin: 10px 0;
+            line-height: 1.4;
+        }
+        .publication-authors {
+            color: #555;
+            margin: 15px 0;
+            line-height: 1.6;
+            font-size: 1em;
+        }
+        .publication-authors strong {
+            color: #667eea;
+            font-weight: bold;
+            background: #f0f4ff;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .publication-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-size: 0.95em;
+        }
+        .meta-label {
+            font-weight: bold;
+            color: #444;
+        }
+        .pmid-link {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .pmid-link:hover {
+            background: #218838;
+        }
+        .faculty-list {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+        .faculty-list h3 {
+            margin-top: 0;
+            color: #667eea;
+            font-size: 1.1em;
+        }
+        .faculty-list ul {
+            columns: 3;
+            column-gap: 20px;
+            margin: 10px 0;
+        }
+        .faculty-list li {
+            margin-bottom: 5px;
+            color: #555;
+        }
+        .legend {
+            background: #fff9e6;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .legend strong {
+            color: #667eea;
+            background: #f0f4ff;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        @media print {
+            body {
+                background: white;
+            }
+            .publication {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>DFM Faculty Publications Report (2026)</h1>
+        <div class="subtitle">Generated on May 11, 2026 at 11:28 AM</div>
+    </div>
+
+    <div class="summary">
+        <h2>Report Summary</h2>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <div class="label">Total Publications</div>
+                <div class="value">28</div>
+            </div>
+            <div class="summary-item">
+                <div class="label">DFM Faculty Authors</div>
+                <div class="value">16</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="legend">
+        <strong>Note:</strong> DFM faculty members are highlighted in <strong>bold with blue background</strong> in the author lists.
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #1</span>
+        <div class="publication-title">Short-Term Effect of Ambient Air Pollution on Daily Mortality in Three Jordanian Cities: A Time-Series Study.</div>
+        <div class="publication-authors">Murad S Ramadan, Fayez A Abdulla, <strong>Wael Al-Delaimy</strong>, Aurelio Tobías, Massimo Stafoggia, Heba Safi, Mazen Malkawi</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>Geohealth</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>42111356</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/42111356/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #2</span>
+        <div class="publication-title">The overlapping effects of climate change and conflict on mental health of vulnerable populations: a scoping review.</div>
+        <div class="publication-authors">Rawan Iriqat, Annikki Herranen-Tabibi, Zachary Sendar, Abdallah Abu-Jlambo, <strong>Wael K Al-Delaimy</strong></div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>Confl Health</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>41634834</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/41634834/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #3</span>
+        <div class="publication-title">Building Youth Capacity for Climate-Health Science: Lessons From Implementing The DataJam in Jordan.</div>
+        <div class="publication-authors">Kelly Nielsen, Judy Cameron, Mohammed Salahat, Catherine Cramer, Nathan Gonzalez, Alham Al-Shurafat, Lamees Alshneikat, Debbie Loomis, <strong>Wael Al-Delaimy</strong></div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>Geohealth</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>41960023</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/41960023/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #4</span>
+        <div class="publication-title">Psychological symptoms predict long coronavirus disease 2019: a prospective analysis from the Women's Health Initiative.</div>
+        <div class="publication-authors"><strong>Wael K Al-Delaimy</strong>, William Bruno, Aladdin Shadyab, Nazmus Saquib N, Joseph S Goveas</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>Menopause</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>41589860</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/41589860/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #5</span>
+        <div class="publication-title">Enhancing 5-Day Particulate Matter (PM10) Forecasts in Morocco Using U-Net: A Deep Learning Approach.</div>
+        <div class="publication-authors">Anass Houdou, Kenza Khomsi, Luca Delle Monache, Weiming Hu, Saber Boutayeb, Lahcen Belyamani, Fayez Abdulla, Imad El Badisy, <strong>Wael K Al-Delaimy</strong>, Mohamed Khalis</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>Atmos Res</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>40933727</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/40933727/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #6</span>
+        <div class="publication-title">Women's perceptions of placenta donation for research purposes: a cross-sectional study from the MENA region.</div>
+        <div class="publication-authors">Yusra Elrahal, Omar F Khabour, Karem H Alzoubi, Saleem Banihani, <strong>Wael K Al-Delaimy</strong></div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>Philos Ethics Humanit Med</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>41680887</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/41680887/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #7</span>
+        <div class="publication-title">Public Perceptions of Ethical and Professional Practice in Jordanian Community Pharmacies: A Cross-Sectional Study.</div>
+        <div class="publication-authors">Ola F Jarad, Hisham E Hasan, Omar F Khabour, Karem H Alzoubi, <strong>Wael K Al-Delaimy</strong></div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>Patient Prefer Adherence</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>41873419</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/41873419/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #8</span>
+        <div class="publication-title">Peripheral Vascular Calcification.</div>
+        <div class="publication-authors">Sujin Lee, Jenny Woo, Yabing Chen, Shipra Arya, <strong>Matthew Allison</strong></div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>Arterioscler Thromb Vasc Biol</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>41537264</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/41537264/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #9</span>
+        <div class="publication-title">Long-term Risk Assessment in Primary Prevention: Making the Case for 30-Year PREVENT Scores.</div>
+        <div class="publication-authors">Tara S Allen, Harpreet S Bhatia, <strong>Matthew A Allison</strong></div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>Eur J Prev Cardiol</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>41649907</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/41649907/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #10</span>
+        <div class="publication-title">Gonadotropin trajectories among postmenopausal women not using hormone therapy.</div>
+        <div class="publication-authors">Sarah M Lima, Yihua Yue, Jennifer W Bea, Kathleen M Hovey, Jean Wactawski-Wende, JoAnn E Manson, Denise J Roe, Janet L Funk, Andrew Odegaard, Shelby G Ziller, <strong>Matthew Allison</strong>, Robert Wallace, Su Yon Jung, Jane A Cauley, Heather M Ochs Balcom</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>Menopause</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>40891652</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/40891652/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #11</span>
+        <div class="publication-title">Effects of Cocoa Extract and Multivitamin Supplementation on Venous Thromboembolism in the COSMOS Trial.</div>
+        <div class="publication-authors">Sarah Jaehwa Park, JoAnn E Manson, Eunjung Kim, Robert J Glynn, Pamela M Rist, <strong>Matthew A Allison</strong>, Howard D Sesso</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>Thromb Haemost</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>41651011</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/41651011/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #12</span>
+        <div class="publication-title">Racial and ethnic disparities in type 2 diabetes: does visceral fat play a role? Evidence from the MESA study.</div>
+        <div class="publication-authors">Tong Xia, Roch A Nianogo, QingZhao Yu, Tamara Horwich, Preethi Srikanthan, Kosuke Inoue, <strong>Matthew Allison</strong>, Zuo-Feng Zhang, Moyses Szklo, Karol E Watson, Liwei Chen</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>Int J Obes (Lond)</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>41951781</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/41951781/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #13</span>
+        <div class="publication-title">Neighborhood Physical Disinvestment and Incident Diabetes between visits 1 and 2 of the Hispanic Community Health Study/Study of Latinos (HCHS/SOL).</div>
+        <div class="publication-authors">Cara M Smith, Elizabeth W Spalt, Linda C Gallo, Jordan A Carlson, <strong>Matthew Allison</strong>, Bharat Thyagarajan, Earle C Chambers, Amber Pirzada, Martha Daviglus, Christina Cordero, Qibin Qi, Elena Austin, Amanda M Fretts, India Ornelas, Robert Kaplan, Joel D Kaufman, Stephen J Mooney</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>J Urban Health</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>41840257</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/41840257/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #14</span>
+        <div class="publication-title">Cocoa flavanol supplementation and prevention of cardiovascular disease: a novel analysis of the COSMOS randomized trial using "win ratio".</div>
+        <div class="publication-authors">Soshiro Ogata, JoAnn E Manson, Pamela M Rist, Rikuta Hamaya, Aaron K Aragaki, <strong>Matthew Allison</strong>, Bernhard Haring, Lisa W Martin, Kunihiro Nishimura, Allison Clar, Howard D Sesso, None None</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>Eur J Epidemiol</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>41849087</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/41849087/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #15</span>
+        <div class="publication-title">Endogenous sex hormones, sex hormone-binding globulin, and muscle health: insights into sarcopenia and sarcopenic obesity from the Women's Health Initiative.</div>
+        <div class="publication-authors">Amar Osmancevic, Bledar Daka, Joseph C Larson, <strong>Matthew Allison</strong>, Richard O Burney, Aladdin H Shadyab, Jane A Cauley, Carolyn J Crandall</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>Menopause</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>41701631</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/41701631/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #16</span>
+        <div class="publication-title">Arterial compliance, assessed by PTC1 and PTC2 from radial artery pressure waveforms, and cognitive performance: The Multi-Ethnic Study of Atherosclerosis.</div>
+        <div class="publication-authors">Lyndia C Brumback, David R Jacobs, Daniel A Duprez, <strong>Matthew A Allison</strong>, Timothy M Hughes, Susan R Heckbert, Stephen R Rapp</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>J Hum Hypertens</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>41946821</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/41946821/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #17</span>
+        <div class="publication-title">Epigenome-wide association study meta-analysis of BMI in African Americans.</div>
+        <div class="publication-authors">Kendra Ferrier, Mariaelisa Graff, Iain R Konigsberg, Maggie Stanislawski, Heather M Highland, Laura M Raffield, April P Carson, Eric Boerwinkle, Jill M Norris, Chris R Gignoux, Audrey E Hendricks, Sridharan Raghavan, Kari E North, Kristin L Young, Anne E Justice, <strong>Matthew A Allison</strong>, Mathew J Budoff, Silva Kasela, François Aguet, Joshua J Joseph, Charles Kooperberg, Stephen S Rich, Jerome I Rotter, Ethan M Lange, Leslie A Lange</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>HGG Adv</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>41351263</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/41351263/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #18</span>
+        <div class="publication-title">Osteopathic Manipulative Treatment for the Breastfeeding Dyad: A Scoping Review.</div>
+        <div class="publication-authors"><strong>Alice I Chen</strong>, <strong>Anna Mercer</strong>, Eileen Conaway, Karen M Heskett, A Hope Tobey, Melissa Campbell, Mikaela Panza, Kimberly Wolf</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>J Hum Lact</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>42001426</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/42001426/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #19</span>
+        <div class="publication-title">Integrating Osteopathic Care Into Treatment of the Breastfeeding Dyad: Anatomic and Physiologic Considerations.</div>
+        <div class="publication-authors">Eileen Conaway, A Hope Tobey, <strong>Alice I Chen</strong>, <strong>Anna Mercer</strong>, Kimberly Wolf</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>J Hum Lact</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>42057291</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/42057291/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #20</span>
+        <div class="publication-title">Metformin to Improve Walking Performance in Lower Extremity Peripheral Artery Disease: The PERMET Randomized Clinical Trial.</div>
+        <div class="publication-authors">Mary M McDermott, Kathryn J Domanchuk, Lu Tian, Lihui Zhao, Dongxue Zhang, Lydia Bazzano, Scott Berceli, <strong>Michael H Criqui</strong>, Luigi Ferrucci, Jack M Guralnik, Christiaan Leeuwenburgh, Karen J Ho, Ahmed Ismaeel, Melina R Kibbe, Claudia Korcarz, Kate Kosmac, Donald Lloyd-Jones, Charlotte A Peterson, James H Stein, Robert Sufit, John Wilkins, Tamar S Polonsky</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>JAMA</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>41205146</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/41205146/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #21</span>
+        <div class="publication-title">Community-based recruitment with ankle brachial index testing to identify peripheral artery disease participants for randomized clinical trials.</div>
+        <div class="publication-authors">Mary M McDermott, Madeline D Cetlin, Kathryn J Domanchuk, Shujun Xu, Mary O Whipple, Tamar Polonsky, <strong>Michael H Criqui</strong>, Jack M Guralnik, Lu Tian, Lihui Zhao, Karen J Ho, Philip Greenland, Diane Treat-Jacobson</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>Am Heart J</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>42035974</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/42035974/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #22</span>
+        <div class="publication-title">Optimizing Primary Care Tools for Incontinence MAnagement (OPTIMA): protocol for a cluster randomized controlled trial.</div>
+        <div class="publication-authors">Maxwell B Moore, Kyle Okamuro, Catherine Bresee, Ramy Eskander, <strong>Geneen T Gin</strong>, Tamara Grisales, Anthony Galvez, Kimberly Gregory, Jejo Koola, Emily S Lukacz, Allison M Mays, Teryl K Nuckols, Chaztyn Pangelina, Joshua Pevnick, David B Reuben, Jennifer Singer, <strong>Ming Tai-Seale</strong>, Annie Wang, Neil Wenger, Shirley Wu, Tajnoos Yazdany, Xi Zhu, Jennifer T Anger, None None</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>Trials</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>41882689</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/41882689/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #23</span>
+        <div class="publication-title">Evaluation of trabecular and subentheseal bone volume density in calcaneus with dual-echo ultrashort echo time magnetic resonance imaging: In vivo feasibility study.</div>
+        <div class="publication-authors">Kenichiro Doi, Dina Moazamian, Yuanshan Wu, Takuaki Yamamoto, <strong>Amy Leu</strong>, Salem Alenezi, James H Flint, Karen Y Cheng, Yajun Ma, Saeed Jerban</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>Bone</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>41391643</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/41391643/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #24</span>
+        <div class="publication-title">Huddles for unprofessional behaviours in the healthcare setting that may require immediate investigation, inquiry or intervention.</div>
+        <div class="publication-authors">Cynthia A Baldwin, Thomas F Catron, Gerald B Hickson, Scott Aberson, Rebecca M Anderson, Sandy Bledsoe, Michael Brodman, Jeremy Cauwels, Roger Dmochowski, Thomas Hemmen, Brian Hoenerman, Rochelle Johnson, Sonam Kapoor, Daniel Lee, <strong>Dustin Lillie</strong>, Kristen Mekeel, Steven Meranze, Diane Moate, William Perry, Shira L Robbins, Thomas J Savides, Brijen J Shah, Kimberly Thillman, Craig Uthe, Christian Tomaszewski, Britney Wade, Lynn Webb, William O Cooper</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>BMJ Lead</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>40280742</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/40280742/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #25</span>
+        <div class="publication-title">PrEP as a "Hidden Message": The Impact of Partner Dynamics on Oral PrEP Adherence Among Cisgender Women in Serodiscordant Relationships.</div>
+        <div class="publication-authors">Thupten D Phuntsog, Jamila K Stockman, K Rivet Amico, Ryan Kofron, <strong>Sheldon Morris</strong>, Raphael J Landovitz, Steffanie Strathdee, David J Moore, Jill Blumenthal</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>AIDS Behav</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>41575708</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/41575708/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #26</span>
+        <div class="publication-title">A cognitive screening program in community-based medical clinics to facilitate Latino participation in Alzheimer's disease research.</div>
+        <div class="publication-authors">David P Salmon, Caytre Ede, Christina Gigliotti, Emily A Little, Melanie L Quiring, Roberto Gratianne, <strong>Jairo A Romero</strong>, Diane M Jacobs, Guerry M Peavy, Douglas Galasko</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>Alzheimers Dement</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>41569268</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/41569268/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #27</span>
+        <div class="publication-title">Integrating Meaning, Purpose, and Spirituality (MPS) Within Lifestyle Medicine Education and Training: Core Competencies to Support Whole-Person Care.</div>
+        <div class="publication-authors">Jessica A Matthews, Liana Lianov, Gowri Anandarajah, Christina M Puchalski, Nathan M Jones, Christina Miller, Michele M Suhie, Elizabeth P Frates, Mary Gannon Kaufmann, Shiho Ito, Valerie A Smith, <strong>Deepa Sannidhi</strong>, Taylor B Hayes, Laurel Miller, Gregory Miller, Selina S Chen, Edward M Phillips</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>Am J Lifestyle Med</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>41798881</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/41798881/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="publication">
+        <span class="publication-number">Publication #28</span>
+        <div class="publication-title">Polypore mushroom mycelia as an adjunct to COVID-19 vaccination: a randomized clinical trial.</div>
+        <div class="publication-authors"><strong>Gordon Saxe</strong>, Christine N Smith, Shahrokh Golshan, Tatyana Shekhtman, Zolton J Bair, Chase Beathard, Renee A Davis, Lauray MacElhern, Andrew Shubov, <strong>Daniel Slater</strong>, Lan K Kao, Phoebe Senowitz, Stephen Wilson</div>
+        <div class="publication-meta">
+            <div class="meta-item">
+                <span class="meta-label">Journal:</span>
+                <span>BMC Immunol</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Publication Date:</span>
+                <span>2026</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">PMID:</span>
+                <span>41620671</span>
+            </div>
+            <div class="meta-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/41620671/"
+                   class="pmid-link" target="_blank">View on PubMed</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
