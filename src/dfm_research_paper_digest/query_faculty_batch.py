@@ -33,7 +33,7 @@ def query_faculty_batch(
 
     Args:
         contact_email: Optional email for NCBI API
-        faculty_list_file: Path to faculty list file (for report generation)
+        faculty_list_file: Path to faculty list file OR webpate (for report generation)
         log: logging.Logger object (default: None, in which case we create our own)
         output_file: Optional CSV filename for output
         year: Publication year (default: current year)
@@ -124,7 +124,30 @@ def __assemble_article_list(
     log.info(f"Total faculty queried: {faculty.num}")
     log.info(f"Total publications found: {len(all_results)}")
 
-    return all_results
+    return __eliminate_duplicates(all_results)
+
+
+def __eliminate_duplicates(articles: list[PubMedArticle]) -> list[PubMedArticle]:
+    """
+        Remove duplicate entries in article list.
+
+    Parameters
+    ----------
+    articles: list[PubMedArticle]
+
+    Returns
+    -------
+    unique_list: list[PubMedArticle]
+    """
+    seen: set = set()
+    unique_list: list = []
+
+    for obj in articles:
+        if obj.pmid not in seen:
+            unique_list.append(obj)
+            seen.add(obj.pmid)
+
+    return unique_list
 
 
 def main(argv=None):

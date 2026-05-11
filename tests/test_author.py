@@ -2,8 +2,9 @@
 Tests Author class.
 """
 
-from dfm_research_paper_digest import Author
 from metapub import PubMedArticle, PubMedAuthor, PubMedFetcher
+
+from dfm_research_paper_digest import Author
 
 
 def test_author():

@@ -5,9 +5,9 @@ import sys
 import pytest
 
 
-@pytest.fixture(name="pmid_with_corporate_author")
-def pmid_with_corporate_author() -> str:
-    return "40465838"
+@pytest.fixture(name="faculty_webpage")
+def faculty_webpage() -> str:
+    return "https://familymedicine.ucsd.edu/about/faculty.html"
 
 
 @pytest.fixture(name="logger")
@@ -41,6 +41,11 @@ def logger(tmp_path) -> logging.Logger:
 
     logger.setLevel(logging.DEBUG)
     return logger
+
+
+@pytest.fixture(name="pmid_with_corporate_author")
+def pmid_with_corporate_author() -> str:
+    return "40465838"
 
 
 @pytest.fixture(name="sample_faculty_list")
