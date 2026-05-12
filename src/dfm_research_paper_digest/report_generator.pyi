@@ -9,11 +9,10 @@ class ReportGenerator:
         self.__faculty: Faculty = None
         self.__log: logging.Logger = None
 
-    def __generate_html_content(
+    def generate_html_content(
         self,
         publications: list[PubMedArticle],
         title: str,
-        faculty_in_pubs: list[str],
     ) -> str: ...
     def generate_html_report(
         self,

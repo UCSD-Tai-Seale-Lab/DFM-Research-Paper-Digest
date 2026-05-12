@@ -111,7 +111,7 @@ def run_batch_report(
     output_file: str = None,
     progress_bar: streamlit.progress = None,
     year: int = datetime.now().year,
-):
+) -> str:
     """
     Query PubMed for multiple faculty members and combine results.
 
@@ -124,7 +124,7 @@ def run_batch_report(
         year: Publication year (default: current year)
 
     Returns:
-        Dictionary with faculty names as keys and their publications as values
+        html: str
     """
     from src.dfm_research_paper_digest.report_generator import ReportGenerator
 
@@ -157,11 +157,11 @@ def run_batch_report(
 
     log.info(f"Generating HTML report: {html_filename}.")
     report_gen: ReportGenerator = ReportGenerator(faculty, log)
-    report_gen.generate_html_report(
+    html: str = report_gen.generate_html_content(
         publications=all_results,
-        output_file=html_filename,
         title=f"DFM Faculty Publications Report ({year})",
     )
+    return html
 
 
 def main(argv=None):

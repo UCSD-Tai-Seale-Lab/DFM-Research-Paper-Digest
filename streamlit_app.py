@@ -47,13 +47,19 @@ if streamlit.button("Create report"):
         faculty_source = [name_selection]
         report = f"/app/static/{name_selection} {year_selection}.html"
 
-    run_batch_report(
+    html: str = run_batch_report(
         contact_email="kjdelaney@health.ucsd.edu",
         faculty_list_file=faculty_source,
         log=log,
-        output_file=report,
         progress_bar=my_bar,
         year=year_selection,
     )
     my_bar.progress(100, text="Complete")
-    streamlit.download_button(label="Download report", file_name=report, mime="html")
+
+    streamlit.download_button(
+        label="Download report",
+        data=html,
+        file_name=report,
+        mime="text/html",
+        icon=":material/download:",
+    )
