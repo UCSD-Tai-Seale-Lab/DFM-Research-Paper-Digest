@@ -57,26 +57,27 @@ if streamlit.button("Create report"):
     )
     my_bar.progress(100, text="Complete")
 
-    # JavaScript to open a new window and write HTML to it
-    js_code = f"""
-    <script>
-        function openInNewTab() {{
-            var newWindow = window.open();
-            newWindow.document.write(`{html}`);
-            newWindow.document.close();
-        }}
-        openInNewTab();
-    </script>
-    """
-
     if streamlit.button("Display report"):
         # Display report in new tab.
+
+        # JavaScript to open a new window and write HTML to it
+        js_code = f"""
+        <script>
+            function openInNewTab() {{
+                var newWindow = window.open();
+                newWindow.document.write(`{html}`);
+                newWindow.document.close();
+            }}
+            openInNewTab();
+        </script>
+        """
+        log.info("Clicked 'display report' button.")
         components.html(js_code, height=0)
 
-    streamlit.download_button(
-        label="Download report",
-        data=html,
-        file_name=report,
-        mime="text/html",
-        icon=":material/download:",
-    )
+        streamlit.download_button(
+            label="Download report",
+            data=html,
+            file_name=report,
+            mime="text/html",
+            icon=":material/download:",
+        )
