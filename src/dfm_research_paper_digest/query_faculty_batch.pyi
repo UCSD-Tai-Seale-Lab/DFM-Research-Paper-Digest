@@ -9,10 +9,9 @@ def run_batch_report(
     contact_email: str = None,
     faculty_list_file: str = None,
     log: logging.Logger = None,
-    output_file: str = None,
     progress_bar: streamlit.progress = None,
     year: int = datetime.now().year,
-) -> None: ...
+) -> str: ...
 def __assemble_article_list(
     query: PubMedQuery,
     faculty: Faculty,

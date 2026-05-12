@@ -36,13 +36,23 @@ class ReportGenerator:
         self.__faculty: Faculty = faculty
         self.__log: logging.Logger = log
 
-    def __generate_html_content(
+    def generate_html_content(
         self,
         publications: list[PubMedArticle],
         title: str,
-        faculty_in_pubs: list[str],
     ) -> str:
-        """Generate HTML content for report."""
+        """
+            Turn a list of articles into html string.
+
+        Parameters
+        ----------
+        publications: list[PubMedArticle]
+        title: str
+
+        Returns
+        -------
+        html: str
+        """
 
         # HTML header with styling
         html: str = f"""<!DOCTYPE html>
@@ -235,6 +245,8 @@ class ReportGenerator:
         <div class="subtitle">Generated on {datetime.now().strftime('%B %d, %Y at %I:%M %p')}</div>
     </div>
 """
+        # Get unique faculty members in publications
+        faculty_in_pubs: list[str] = self.__list_unique_faculty_members(publications)
 
         # Summary section
         html += f"""
@@ -307,12 +319,8 @@ class ReportGenerator:
             output_file: Output HTML filename
             title: Report title
         """
-
-        # Get unique faculty members in publications
-        faculty_in_pubs: list[str] = self.__list_unique_faculty_members(publications)
-
         # Generate HTML
-        html: str = self.__generate_html_content(publications, title, faculty_in_pubs)
+        html: str = self.generate_html_content(publications, title)
 
         # Ensure directory exists.
         output_dir: Path = Path(output_file).resolve().parent
