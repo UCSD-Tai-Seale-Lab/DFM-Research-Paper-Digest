@@ -42,7 +42,7 @@ my_bar: streamlit.progress = streamlit.progress(0)
 
 if streamlit.button("Create report"):
     faculty_source: str | list[str] = dfm_webpage
-    report: str = f"/app/static/faculty publications {year_selection}.html"
+    report: str = f"faculty publications {year_selection}.html"
 
     if name_selection != "All":
         faculty_source = [name_selection]
@@ -68,8 +68,10 @@ if streamlit.button("Create report"):
         openInNewTab();
     </script>
     """
-    # Display report in new tab.
-    components.html(js_code, height=0)
+
+    if streamlit.button("Display report"):
+        # Display report in new tab.
+        components.html(js_code, height=0)
 
     streamlit.download_button(
         label="Download report",
