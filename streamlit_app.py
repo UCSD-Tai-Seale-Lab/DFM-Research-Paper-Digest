@@ -42,6 +42,7 @@ my_bar: streamlit.progress = streamlit.progress(0)
 html: str = ""
 report_name: str = ""
 
+# Initialize session_state.
 if "display_html" not in streamlit.session_state:
     streamlit.session_state.display_html = False
 
@@ -54,7 +55,7 @@ if streamlit.button("Create report"):
 
     if name_selection != "All":
         faculty_source = [name_selection]
-        report = f"{name_selection.replace(', ', '_')} {year_selection}.html"
+        report_name = f"{name_selection.replace(', ', '_')} {year_selection}.html"
 
     html = run_batch_report(
         contact_email="kjdelaney@health.ucsd.edu",
@@ -65,6 +66,7 @@ if streamlit.button("Create report"):
     )
     my_bar.progress(100, text="Complete")
     streamlit.session_state.display_html = True
+    streamlit.session_state.show_download_button = True
 
 # Display report in new tab.
 if streamlit.session_state.display_html:
@@ -82,7 +84,6 @@ if streamlit.session_state.display_html:
     </script>
     """
     components.html(js_code, height=0)
-    streamlit.session_state.show_download_button = True
 
 if streamlit.session_state.show_download_button:
     streamlit.download_button(
@@ -92,3 +93,7 @@ if streamlit.session_state.show_download_button:
         mime="text/html",
         icon=":material/download:",
     )
+
+streamlit.link_button(
+    "Go to Help Page", "https://github.com/UCSD-Tai-Seale-Lab/DFM-Research-Paper-Digest"
+)
