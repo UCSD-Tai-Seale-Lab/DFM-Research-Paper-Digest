@@ -46,7 +46,7 @@ if streamlit.button("Create report"):
 
     if name_selection != "All":
         faculty_source = [name_selection]
-        report = f"{name_selection.replace(', '), '_'} {year_selection}.html"
+        report = f"{name_selection.replace(', ', '_')} {year_selection}.html"
 
     html: str = run_batch_report(
         contact_email="kjdelaney@health.ucsd.edu",
