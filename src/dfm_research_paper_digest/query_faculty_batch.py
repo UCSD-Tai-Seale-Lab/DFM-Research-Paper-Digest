@@ -146,16 +146,7 @@ def run_batch_report(
         query, faculty, year, log, progress_bar
     )
 
-    # Generate HTML report.
-    if output_file:
-        html_filename: str = (
-            output_file if output_file.endswith(".html") else f"{output_file}.html"
-        )
-    else:
-        # Auto-generate filename.
-        html_filename = f"faculty_{year}.html"
-
-    log.info(f"Generating HTML report: {html_filename}.")
+    log.info(f"Generating HTML content.")
     report_gen: ReportGenerator = ReportGenerator(faculty, log)
     html: str = report_gen.generate_html_content(
         publications=all_results,
