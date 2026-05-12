@@ -39,16 +39,24 @@ streamlit.write(f"Report year: {year_selection}")
 
 # Keep track of progress.
 my_bar: streamlit.progress = streamlit.progress(0)
+html: str = ""
+report_name: str = ""
+
+if "display_html" not in streamlit.session_state:
+    streamlit.session_state.display_html = False
+
+if "show_download_button" not in streamlit.session_state:
+    streamlit.session_state.show_download_button = False
 
 if streamlit.button("Create report"):
     faculty_source: str | list[str] = dfm_webpage
-    report: str = f"faculty publications {year_selection}.html"
+    report_name = f"faculty publications {year_selection}.html"
 
     if name_selection != "All":
         faculty_source = [name_selection]
         report = f"{name_selection.replace(', ', '_')} {year_selection}.html"
 
-    html: str = run_batch_report(
+    html = run_batch_report(
         contact_email="kjdelaney@health.ucsd.edu",
         faculty_list_file=faculty_source,
         log=log,
@@ -56,28 +64,31 @@ if streamlit.button("Create report"):
         year=year_selection,
     )
     my_bar.progress(100, text="Complete")
+    streamlit.session_state.display_html = True
 
-    # Display report in new tab.
-    if streamlit.button("Display report"):
-        log.info("Clicked 'display report' button.")
+# Display report in new tab.
+if streamlit.session_state.display_html:
+    log.info("HTML display activated.")
 
-        # JavaScript to open a new window and write HTML to it
-        js_code = f"""
-        <script>
-            function openInNewTab() {{
-                var newWindow = window.open();
-                newWindow.document.write(`{html}`);
-                newWindow.document.close();
-            }}
-            openInNewTab();
-        </script>
-        """
-        components.html(js_code, height=0)
+    # JavaScript to open a new window and write HTML to it
+    js_code = f"""
+    <script>
+        function openInNewTab() {{
+            var newWindow = window.open();
+            newWindow.document.write(`{html}`);
+            newWindow.document.close();
+        }}
+        openInNewTab();
+    </script>
+    """
+    components.html(js_code, height=0)
+    streamlit.session_state.show_download_button = True
 
-        streamlit.download_button(
-            label="Download report",
-            data=html,
-            file_name=report,
-            mime="text/html",
-            icon=":material/download:",
-        )
+if streamlit.session_state.show_download_button:
+    streamlit.download_button(
+        label="Download report",
+        data=html,
+        file_name=report_name,
+        mime="text/html",
+        icon=":material/download:",
+    )
