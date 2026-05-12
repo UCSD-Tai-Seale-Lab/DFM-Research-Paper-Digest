@@ -57,8 +57,9 @@ if streamlit.button("Create report"):
     )
     my_bar.progress(100, text="Complete")
 
+    # Display report in new tab.
     if streamlit.button("Display report"):
-        # Display report in new tab.
+        log.info("Clicked 'display report' button.")
 
         # JavaScript to open a new window and write HTML to it
         js_code = f"""
@@ -71,7 +72,6 @@ if streamlit.button("Create report"):
             openInNewTab();
         </script>
         """
-        log.info("Clicked 'display report' button.")
         components.html(js_code, height=0)
 
         streamlit.download_button(
