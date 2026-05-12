@@ -4,6 +4,7 @@ import logging
 from datetime import datetime
 
 import streamlit
+import streamlit.components.v1 as components
 from PIL import Image
 
 from src.dfm_research_paper_digest.faculty import Faculty
@@ -41,11 +42,11 @@ my_bar: streamlit.progress = streamlit.progress(0)
 
 if streamlit.button("Create report"):
     faculty_source: str | list[str] = dfm_webpage
-    report: str = f"/app/static/faculty publications {year_selection}.html"
+    report: str = f"faculty publications {year_selection}.html"
 
     if name_selection != "All":
         faculty_source = [name_selection]
-        report = f"/app/static/{name_selection} {year_selection}.html"
+        report = f"{name_selection.replace(', '), '_'} {year_selection}.html"
 
     html: str = run_batch_report(
         contact_email="kjdelaney@health.ucsd.edu",
@@ -55,6 +56,22 @@ if streamlit.button("Create report"):
         year=year_selection,
     )
     my_bar.progress(100, text="Complete")
+
+    # JavaScript to open a new window and write HTML to it
+    js_code = f"""
+    <script>
+        function openInNewTab() {{
+            var newWindow = window.open();
+            newWindow.document.write(`{html}`);
+            newWindow.document.close();
+        }}
+        openInNewTab();
+    </script>
+    """
+
+    if streamlit.button("Display report"):
+        # Display report in new tab.
+        components.html(js_code, height=0)
 
     streamlit.download_button(
         label="Download report",
