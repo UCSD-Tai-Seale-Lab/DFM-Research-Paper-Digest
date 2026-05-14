@@ -59,6 +59,13 @@ def test_author():
     assert author.pubmed_style == "Nikiforov, Igor"
 
 
+def test_author_from_PubMedAuthor(pmid_with_ok_author):
+    fetcher: PubMedFetcher = PubMedFetcher()
+    article: PubMedArticle = fetcher.article_by_pmid(pmid_with_ok_author)
+    author: Author = Author(article.author_list[0])
+    assert isinstance(author, Author)
+
+
 # Check we can catch corporate names without throwing exception.
 def test_matching_corporate_names(pmid_with_corporate_author):
     author: Author = Author("Igor V. Nikiforov")

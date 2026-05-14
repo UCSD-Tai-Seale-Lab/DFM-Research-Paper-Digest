@@ -48,6 +48,11 @@ def pmid_with_corporate_author() -> str:
     return "40465838"
 
 
+@pytest.fixture(name="pmid_with_ok_author")
+def pmid_with_ok_author() -> str:
+    return "40268237"
+
+
 @pytest.fixture(name="sample_faculty_list")
 def sample_faculty_list() -> list[str]:
     return [

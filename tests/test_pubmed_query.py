@@ -2,23 +2,27 @@
 Tests PubMedQuery class.
 """
 
-from pathlib import Path
+from importlib.resources import as_file, files
 
 import pytest
 from metapub import PubMedArticle
 
-from dfm_research_paper_digest import PubMedQuery, display_publications
-from dfm_research_paper_digest.pubmed_query import main
+from dfm_research_paper_digest import Faculty, PubMedQuery, display_publications
 
 
 def test_pubmed_query(logger, username):
-    pubmed_query: PubMedQuery = PubMedQuery(
-        log=logger, email=f"{username}@health.ucsd.com"
-    )
-    assert isinstance(pubmed_query, PubMedQuery)
-    articles: list[PubMedArticle] = pubmed_query.query_by_author(
-        author_name="Ming Tai-Seale", year=2025
-    )
+    resource_path = files("data").joinpath("sample_faculty_list.txt")
+
+    with as_file(resource_path) as faculty_filename:
+        faculty: Faculty = Faculty(str(faculty_filename), logger)
+        assert isinstance(faculty, Faculty)
+        pubmed_query: PubMedQuery = PubMedQuery(
+            faculty=faculty, log=logger, email=f"{username}@health.ucsd.com"
+        )
+        assert isinstance(pubmed_query, PubMedQuery)
+        articles: list[PubMedArticle] = pubmed_query.query_by_author(
+            author_name="Ming Tai-Seale", year=2025
+        )
     assert isinstance(articles, list)
     first_article: PubMedArticle = articles[0]
     assert isinstance(first_article, PubMedArticle)
@@ -26,46 +30,31 @@ def test_pubmed_query(logger, username):
     display_publications(articles, logger)
 
 
-def test_pubmed_query_main(username):
-    main(
-        [
-            "Ming Tai-Seale",
-            "Wael Al-Delaimy",
-            "--email",
-            f"{username}@health.ucsd.edu",
-            "--year",
-            "2026",
-        ]
-    )
-
-
-def test_pubmed_query_main_no_articles(username):
-    main(
-        [
-            "Nowhere Nothing",
-            "--email",
-            f"{username}@health.ucsd.edu",
-            "--year",
-            "3000",
-        ]
-    )
-
-
 def test_pubmed_query_pathological(logger, username):
-    pubmed_query: PubMedQuery = PubMedQuery(
-        log=logger, email=f"{username}@health.ucsd.com"
-    )
-    assert isinstance(pubmed_query, PubMedQuery)
+    resource_path = files("data").joinpath("sample_faculty_list.txt")
 
-    # Try query that won't return any articles.
-    articles = pubmed_query.query_by_author(author_name="Nowhere Nothing")
-    assert isinstance(articles, list)
-    assert len(articles) == 0
+    with as_file(resource_path) as faculty_filename:
+        faculty: Faculty = Faculty(str(faculty_filename), logger)
+        assert isinstance(faculty, Faculty)
+        pubmed_query: PubMedQuery = PubMedQuery(
+            faculty=faculty, log=logger, email=f"{username}@health.ucsd.com"
+        )
+        assert isinstance(pubmed_query, PubMedQuery)
+
+        # Try query that won't return any articles.
+        articles = pubmed_query.query_by_author(author_name="Nowhere Nothing")
+        assert isinstance(articles, list)
+        assert len(articles) == 0
 
 
-def test_instantiation_without_log(username):
-    pubmed_query: PubMedQuery = PubMedQuery(email=f"{username}@health.ucsd.com")
-    assert isinstance(pubmed_query, PubMedQuery)
+def test_instantiation_without_log(username, logger):
+    resource_path = files("data").joinpath("sample_faculty_list.txt")
+
+    with as_file(resource_path) as faculty_filename:
+        faculty: Faculty = Faculty(str(faculty_filename), logger)
+        assert isinstance(faculty, Faculty)
+        pubmed_query: PubMedQuery = PubMedQuery(faculty=faculty, email=f"{username}@health.ucsd.com")
+        assert isinstance(pubmed_query, PubMedQuery)
 
 
 def test_affiliation():

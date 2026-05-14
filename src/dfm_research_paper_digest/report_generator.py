@@ -10,7 +10,7 @@ from pathlib import Path
 
 from metapub import PubMedArticle, PubMedAuthor
 
-from src.dfm_research_paper_digest import Faculty, PubMedQuery
+from src.dfm_research_paper_digest import Author, Faculty, PubMedQuery
 
 
 class ReportGenerator:
@@ -246,7 +246,7 @@ class ReportGenerator:
     </div>
 """
         # Get unique faculty members in publications
-        faculty_in_pubs: list[str] = self.__list_unique_faculty_members(publications)
+        num_faculty_in_pubs: int = self.__count_unique_faculty_members(publications)
 
         # Summary section
         html += f"""
@@ -259,7 +259,7 @@ class ReportGenerator:
             </div>
             <div class="summary-item">
                 <div class="label">DFM Faculty Authors</div>
-                <div class="value">{len(faculty_in_pubs)}</div>
+                <div class="value">{num_faculty_in_pubs}</div>
             </div>
         </div>
     </div>
@@ -322,19 +322,11 @@ class ReportGenerator:
         # Generate HTML
         html: str = self.generate_html_content(publications, title)
 
-        # Ensure directory exists.
-        output_dir: Path = Path(output_file).resolve().parent
-
-        if not output_dir.exists():
-            output_dir.mkdir(parents=True, exist_ok=True)
-
-        # Write to file.
-        with open(output_file, "w", encoding="utf-8") as f:
-            f.write(html)
+        # Create file.
+        self.write_html_file(html, output_file)
 
         self.__log.info(f"✓ HTML Report generated: {output_file}")
         self.__log.info(f"  Total publications: {len(publications)}")
-        self.__log.info(f"  Unique DFM faculty found: {len(faculty_in_pubs)}")
 
     def __highlight_faculty_authors(self, authors_list: list[PubMedAuthor]) -> str:
         """
@@ -360,11 +352,9 @@ class ReportGenerator:
 
         return ", ".join(highlighted)
 
-    def __list_unique_faculty_members(
-        self, publications: list[PubMedArticle]
-    ) -> list[str]:
+    def __count_unique_faculty_members(self, publications: list[PubMedArticle]) -> int:
         """
-            Lists the unique faculty members in a list of PubMedArticle objects.
+            Counts the unique faculty members in a list of PubMedArticle objects.
 
         Parameters
         ----------
@@ -372,17 +362,39 @@ class ReportGenerator:
 
         Returns
         -------
-        faculty_in_pubs: list[str]
+        count: int
         """
-        faculty_in_pubs: list[str] = []
+        faculty_authors_in_pubs: list[Author] = []
 
         for pub in publications:
-            for author in pub.author_list:
-                if self.__faculty.is_faculty(author):
-                    author_name: str = f"{author.fore_name} {author.last_name}"
+            for pubMedAuthor in pub.author_list:
+                if self.__faculty.is_faculty(pubMedAuthor):
+                    # Build a list of UNIQUE Author objects.
+                    this_author: Author = Author(pubMedAuthor)
 
-                    # Build a list of UNIQUE names.
-                    if author_name not in faculty_in_pubs:
-                        faculty_in_pubs.append(author_name)
+                    if not this_author.matches(faculty_authors_in_pubs):
+                        faculty_authors_in_pubs.append(this_author)
 
-        return faculty_in_pubs
+        return len(faculty_authors_in_pubs)
+
+    @staticmethod
+    def write_html_file(html: str, output_file: str) -> None:
+        """
+            Creates .html file
+
+        Parameters
+        ----------
+        html: str
+        output_file: str
+
+        """
+
+        # Ensure directory exists.
+        output_dir: Path = Path(output_file).resolve().parent
+
+        if not output_dir.exists():
+            output_dir.mkdir(parents=True, exist_ok=True)
+
+        # Write to file.
+        with open(output_file, "w", encoding="utf-8") as f:
+            f.write(html)
