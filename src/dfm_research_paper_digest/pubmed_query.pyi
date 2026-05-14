@@ -3,6 +3,8 @@ from datetime import datetime
 
 from metapub import PubMedArticle, PubMedAuthor, PubMedFetcher
 
+import src.dfm_research_paper_digest
+
 def display_publications(
     publications: list[PubMedArticle], log: logging.Logger
 ) -> None: ...
@@ -12,7 +14,13 @@ def export_to_csv(
 def main(argv=None) -> None: ...
 
 class PubMedQuery:
-    def __init__(self, email: str = None, log: logging.Logger = None):
+    def __init__(
+        self,
+        faculty: src.dfm_research_paper_digest.Faculty,
+        email: str = None,
+        log: logging.Logger = None,
+    ):
+        self.__faculty: src.dfm_research_paper_digest.Faculty = None
         self.__fetch: PubMedFetcher = None
         self.__log: logging.Logger = None
 

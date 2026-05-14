@@ -25,7 +25,7 @@ class Author(HumanName):
     middle_initial:             author's middle initial
     middle_initial_only: bool   True if author's name has a middle initial but not a full name
     original: str               name used to instantiate the object
-    pubmed_style: str           Last, First format
+    pubmed_style: str           Last Name, First Initial format
     slug: str                   Name formatted as filename
     Methods
     -------
@@ -33,19 +33,29 @@ class Author(HumanName):
                                  allowing for middle name/initial ambiguity
     """
 
-    def __init__(self, name: str, **kwargs):
+    def __init__(self, name: str | PubMedAuthor, **kwargs):
         """
-        Instantiates an Author object from a string name.
+        Instantiates an Author object from a string name or PubMedAuthor object.
         """
+        name_str: str = ""
+
+        if isinstance(name, PubMedAuthor):
+            name_str = name.fore_name + " " + name.last_name
+        elif isinstance(name, str):
+            name_str = name
+        else:
+            raise TypeError(
+                f"Expected 'name' to be str or PubMedAuthor, not {type(name)}."
+            )
 
         # Remove any accents for easier matching.
-        super().__init__(self.__remove_accents(name), **kwargs)
+        super().__init__(self.__remove_accents(name_str), **kwargs)
 
         self.first_initial_only: bool = False
         self.first_initial: str = ""
         self.middle_initial_only: bool = False
         self.middle_initial: str = ""
-        self.original: str = name
+        self.original: str = name_str
 
         # Add extra properties
         if self.first:
@@ -56,8 +66,8 @@ class Author(HumanName):
             self.middle_initial_only = len(self.middle.rstrip(".")) == 1
             self.middle_initial = self.middle[0]
 
-        self.pubmed_style: str = self.last + ", " + self.first
-        self.slug: str = name.replace(" ", "_").replace(",", "").replace('"', "")
+        self.pubmed_style: str = self.last + ", " + self.first_initial
+        self.slug: str = name_str.replace(" ", "_").replace(",", "").replace('"', "")
 
     def __first_names_or_initials_match(self, other_name: Self) -> bool:
         """

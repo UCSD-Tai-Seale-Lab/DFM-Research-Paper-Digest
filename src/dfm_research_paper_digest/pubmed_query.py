@@ -23,14 +23,21 @@ class PubMedQuery:
 
     Attributes:
     ----------
+    faculty: Faculty object
     email: str
+    log: logging.Logger object
 
     Methods
     -------
     query_by_author()
     """
 
-    def __init__(self, email: str = None, log: logging.Logger = None):
+    def __init__(
+        self,
+        faculty: src.dfm_research_paper_digest.Faculty,
+        email: str = None,
+        log: logging.Logger = None,
+    ):
         """
         Initialize PubMed query tool.
 
@@ -50,6 +57,7 @@ class PubMedQuery:
                 self.__log = setup_logging(log_filename=log_filename)
 
         self.__log = log
+        self.__faculty: src.dfm_research_paper_digest.Faculty = faculty
         self.__fetch: PubMedFetcher = PubMedFetcher(email=email)
 
     def __fetch_publication_details(
@@ -82,8 +90,10 @@ class PubMedQuery:
                         a for a in article.author_list if requested_author.matches(a)
                     )
 
-                    if matching_author and PubMedQuery.is_ucsd_affiliated(
+                    if (
                         matching_author
+                        and self.__faculty.is_faculty(matching_author)
+                        and PubMedQuery.is_ucsd_affiliated(matching_author)
                     ):
                         articles.append(article)
 
@@ -221,65 +231,5 @@ def display_publications(
         log.info(f"   URL: https://pubmed.ncbi.nlm.nih.gov/{pub.pmid}/")
 
 
-def main(argv=None):
-    """Main function to run the PubMed query tool."""
-    # Set up argument parser
-    parser = argparse.ArgumentParser(
-        description="Query PubMed for publications by a specific author from 2025.",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  %(prog)s "Smith J"
-  %(prog)s "Ming Tai-Seale" --email your@email.com
-  %(prog)s "John Smith" --year 2024
-  %(prog)s "Zhang Y" "Li Y" "Xie B"  # Query multiple authors
-        """,
-    )
-    log = src.dfm_research_paper_digest.setup_logging(log_filename="pubmed_query.log")
-
-    parser.add_argument(
-        "authors",
-        nargs="+",
-        help='Author name(s) to search for (e.g., "Smith J", "John Smith", or "Ming Tai-Seale")',
-    )
-
-    parser.add_argument(
-        "--email",
-        "-e",
-        type=str,
-        help="Your email address (optional, recommended by NCBI for API tracking)",
-    )
-
-    parser.add_argument(
-        "--year",
-        "-y",
-        type=int,
-        default=datetime.now().year,
-        help="Publication year to search (default: 2025)",
-    )
-
-    # Parse arguments
-    args = parser.parse_args(argv)
-
-    # Create query object
-    query = PubMedQuery(email=args.email, log=log)
-
-    # Process each author
-    for author_name in args.authors:
-        log.info("=" * 80)
-        log.info("PubMed Author Publications Query Tool")
-        log.info("=" * 80)
-
-        # Query PubMed
-        publications = query.query_by_author(author_name, year=args.year)
-
-        # Display or collect results
-        display_publications(publications, log)
-
-        # Add delay between queries if multiple authors
-        if len(args.authors) > 1 and author_name != args.authors[-1]:
-            time.sleep(0.5)
-
-
 if __name__ == "__main__":
-    main()  # pragma: no cover
+    pass

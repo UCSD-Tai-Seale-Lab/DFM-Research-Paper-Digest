@@ -12,6 +12,7 @@ import os
 import time
 from datetime import datetime
 from importlib.resources import as_file, files
+
 import streamlit
 from metapub import PubMedArticle
 
@@ -108,7 +109,6 @@ def run_batch_report(
     contact_email: str = None,
     faculty_list_file: str | list[str] = None,
     log: logging.Logger = None,
-    output_file: str = None,
     progress_bar: streamlit.progress = None,
     year: int = datetime.now().year,
 ) -> str:
@@ -139,7 +139,7 @@ def run_batch_report(
     log.info(f"Querying PubMed for {faculty.num} faculty members ({year})")
 
     # Initialize PubMed query
-    query: PubMedQuery = PubMedQuery(email=contact_email, log=log)
+    query: PubMedQuery = PubMedQuery(faculty=faculty, email=contact_email, log=log)
 
     # Store results
     all_results: list[PubMedArticle] = __assemble_article_list(
@@ -169,6 +169,8 @@ Examples:
   %(prog)s --email your@email.com --output results
         """,
     )
+    from src.dfm_research_paper_digest import ReportGenerator
+
     resource_path_log = files("logs").joinpath("query_faculty_batch.log")
     log: logging.Logger
 
@@ -210,13 +212,13 @@ Examples:
     args = parser.parse_args(argv)
 
     # Query faculty
-    run_batch_report(
+    html: str = run_batch_report(
         contact_email=args.email,
         faculty_list_file=args.faculty_file,
         log=log,
-        output_file=args.output,
         year=args.year,
     )
+    ReportGenerator.write_html_file(html, args.output)
 
 
 if __name__ == "__main__":

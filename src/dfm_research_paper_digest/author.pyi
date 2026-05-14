@@ -6,7 +6,7 @@ from metapub import PubMedAuthor
 from nameparser import HumanName
 
 class Author(HumanName):
-    def __init__(self, name: str, **kwargs) -> None:
+    def __init__(self, name: str | PubMedAuthor, **kwargs) -> None:
         self.first_initial_only: bool = None
         self.first_initial: str = None
         self.middle_initial_only: bool = None
