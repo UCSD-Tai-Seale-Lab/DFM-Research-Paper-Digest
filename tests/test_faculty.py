@@ -39,15 +39,6 @@ def test_faculty_from_file(logger: logging.Logger):
         assert faculty_list[0] == "Tai-Seale, Ming"
         assert faculty_list[2] == "Cheng, Terri"
 
-        faculty_list_original: list[str] = faculty.original_names
-        assert isinstance(faculty_list_original, list)
-        assert isinstance(faculty_list_original[0], str)
-        assert len(faculty_list_original) == 3
-
-        # These will be in original format.
-        assert faculty_list_original[0] == "Tai-Seale, Ming PhD, MPH"
-        assert faculty_list_original[2] == "Cheng, Terri, MD"
-
         # Author objects
         author_list: list[Author] = faculty.authors
         assert isinstance(author_list, list)

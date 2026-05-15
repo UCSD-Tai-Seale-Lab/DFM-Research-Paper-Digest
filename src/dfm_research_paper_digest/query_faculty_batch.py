@@ -6,9 +6,7 @@ Queries PubMed for publications from multiple faculty members
 from __future__ import annotations
 
 # pylint: disable=import-error, import-outside-toplevel
-import argparse
 import logging
-import os
 import time
 from datetime import datetime
 from importlib.resources import as_file, files
@@ -136,7 +134,7 @@ def run_batch_report(
 
     # Parse faculty names.
     faculty: Faculty = Faculty(faculty_list_file, log)
-    log.info(f"Querying PubMed for {faculty.num} faculty members ({year})")
+    log.info("Querying PubMed for %d faculty members (%d)", faculty.num, year)
 
     # Initialize PubMed query
     query: PubMedQuery = PubMedQuery(faculty=faculty, email=contact_email, log=log)
@@ -146,7 +144,7 @@ def run_batch_report(
         query, faculty, year, log, progress_bar
     )
 
-    log.info(f"Generating HTML content.")
+    log.info("Generating HTML content.")
     report_gen: ReportGenerator = ReportGenerator(faculty, log)
     html: str = report_gen.generate_html_content(
         publications=all_results,

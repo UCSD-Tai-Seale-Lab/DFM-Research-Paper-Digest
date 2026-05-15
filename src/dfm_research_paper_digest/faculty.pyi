@@ -15,7 +15,6 @@ class Faculty:
         self.authors: list[Author] = None
         self.names: list[str] = None
         self.num: int = None
-        self.original_names: list[str] = None
 
     def is_faculty(self, author: Author | PubMedAuthor | str) -> bool: ...
     def __is_url(self, name: str | Path) -> bool: ...

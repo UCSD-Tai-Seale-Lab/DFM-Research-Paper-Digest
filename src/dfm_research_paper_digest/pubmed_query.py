@@ -169,17 +169,17 @@ class PubMedQuery:
             list of PubMedArticle objects
         """
         self.__log.info(
-            f"Searching PubMed for publications by '{author_name}' from {year}..."
+            "Searching PubMed for publications by '%s' from %d ...", author_name, year
         )
 
         # Step 1: Search for PMIDs
         pmids: list[str] = self.__search_author_publications(author_name, year)
 
         if not pmids:
-            self.__log.info(f"No publications found for '{author_name}' in {year}.")
+            self.__log.info("No publications found for '%s' in %d.", author_name, year)
             return []
 
-        self.__log.info(f"Found {len(pmids)} publication(s).")
+        self.__log.info("Found %d publication(s).", len(pmids))
 
         # Step 2: Fetch publication details
         publications: list[PubMedArticle] = self.__fetch_publication_details(
