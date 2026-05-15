@@ -14,6 +14,7 @@ def export_to_csv(
 def main(argv=None) -> None: ...
 
 class PubMedQuery:
+    UCSD_AFFILIATIONS: str = ""
     def __init__(
         self,
         faculty: src.dfm_research_paper_digest.Faculty,
@@ -24,9 +25,6 @@ class PubMedQuery:
         self.__fetch: PubMedFetcher = None
         self.__log: logging.Logger = None
 
-    def display_publications(
-        publications: list[PubMedArticle], log: logging.Logger
-    ): ...
     def __fetch_publication_details(
         self, pmids: list[str], author_name: str
     ) -> list[PubMedArticle]: ...

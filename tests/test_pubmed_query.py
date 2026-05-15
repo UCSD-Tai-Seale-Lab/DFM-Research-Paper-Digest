@@ -7,7 +7,7 @@ from importlib.resources import as_file, files
 import pytest
 from metapub import PubMedArticle
 
-from dfm_research_paper_digest import Faculty, PubMedQuery, display_publications
+from dfm_research_paper_digest import Faculty, PubMedQuery
 
 
 def test_pubmed_query(logger, username):
@@ -26,8 +26,6 @@ def test_pubmed_query(logger, username):
     assert isinstance(articles, list)
     first_article: PubMedArticle = articles[0]
     assert isinstance(first_article, PubMedArticle)
-
-    display_publications(articles, logger)
 
 
 def test_pubmed_query_pathological(logger, username):
@@ -53,7 +51,9 @@ def test_instantiation_without_log(username, logger):
     with as_file(resource_path) as faculty_filename:
         faculty: Faculty = Faculty(str(faculty_filename), logger)
         assert isinstance(faculty, Faculty)
-        pubmed_query: PubMedQuery = PubMedQuery(faculty=faculty, email=f"{username}@health.ucsd.com")
+        pubmed_query: PubMedQuery = PubMedQuery(
+            faculty=faculty, email=f"{username}@health.ucsd.com"
+        )
         assert isinstance(pubmed_query, PubMedQuery)
 
 
