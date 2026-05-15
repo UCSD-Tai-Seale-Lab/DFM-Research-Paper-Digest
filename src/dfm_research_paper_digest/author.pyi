@@ -6,11 +6,15 @@ from metapub import PubMedAuthor
 from nameparser import HumanName
 
 class Author(HumanName):
+    ALIAS_PREVENTION_LIST: dict = {}
+
     def __init__(self, name: str | PubMedAuthor, **kwargs) -> None:
+        self.__alias_prevention_dict: dict = {}
         self.first_initial_only: bool = None
         self.first_initial: str = None
         self.middle_initial_only: bool = None
         self.middle_initial: str = None
+        self.must_show_as: str = None
         self.original: str = None
         self.pubmed_style: str = None
         self.slug: str = None

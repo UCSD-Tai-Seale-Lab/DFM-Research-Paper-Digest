@@ -43,6 +43,11 @@ def logger(tmp_path) -> logging.Logger:
     return logger
 
 
+@pytest.fixture(name="pmid_physics")
+def pmid_physics() -> str:
+    return "41586649"
+
+
 @pytest.fixture(name="pmid_with_corporate_author")
 def pmid_with_corporate_author() -> str:
     return "40465838"

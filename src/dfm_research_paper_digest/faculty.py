@@ -66,7 +66,6 @@ class Faculty:
         self.authors: list[Author] = copy.deepcopy(self.__list)
         self.names: list[str] = self.__names()
         self.num: int = len(self.__list)
-        self.original_names: list[str] = self.__original_names()
 
     def is_faculty(self, var: Author | PubMedAuthor | str) -> bool:
         """
@@ -120,11 +119,9 @@ class Faculty:
 
             # A URL typically has a scheme (http/https) and a domain (netloc)
             return all([parsed.scheme, parsed.netloc])
-        else:
-            self.__log.exception(
-                f"Expected 'name' to be str or Path, not {type(name)}."
-            )
-            raise TypeError(f"Expected 'name' to be str or Path, not {type(name)}.")
+
+        self.__log.exception(f"Expected 'name' to be str or Path, not {type(name)}.")
+        raise TypeError(f"Expected 'name' to be str or Path, not {type(name)}.")
 
     def __names(self) -> list[str]:
         """
@@ -138,21 +135,6 @@ class Faculty:
 
         for member in self.__list:
             authors.append(member.pubmed_style)
-
-        return authors
-
-    def __original_names(self) -> list[str]:
-        """
-        Generates a list of Author names in original format.
-
-        Returns
-        -------
-        authors: list[str]
-        """
-        authors: list[str] = []
-
-        for member in self.__list:
-            authors.append(member.original)
 
         return authors
 
@@ -211,7 +193,7 @@ class Faculty:
                 f"Expected 'site_address' to be str, not {type(site_address)}."
             )
 
-        response: requests.Response = requests.get(site_address)
+        response: requests.Response = requests.get(site_address, timeout=5)
         soup: bs4.BeautifulSoup = BeautifulSoup(response.text, "html.parser")
         names: list[str] = []
 

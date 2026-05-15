@@ -367,10 +367,10 @@ class ReportGenerator:
         faculty_authors_in_pubs: list[Author] = []
 
         for pub in publications:
-            for pubMedAuthor in pub.author_list:
-                if self.__faculty.is_faculty(pubMedAuthor):
+            for pub_med_author in pub.author_list:
+                if self.__faculty.is_faculty(pub_med_author):
                     # Build a list of UNIQUE Author objects.
-                    this_author: Author = Author(pubMedAuthor)
+                    this_author: Author = Author(pub_med_author)
 
                     if not this_author.matches(faculty_authors_in_pubs):
                         faculty_authors_in_pubs.append(this_author)

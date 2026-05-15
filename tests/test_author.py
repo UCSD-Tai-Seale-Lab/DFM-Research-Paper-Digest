@@ -96,6 +96,16 @@ def test_with_accents():
     assert author.matches("Àjàyí, T")
 
 
+def test_insist_on_middle_initial(pmid_physics):
+    dfm_author: Author = Author("Lee, Robert, MD")
+    assert isinstance(dfm_author, Author)
+    fetcher: PubMedFetcher = PubMedFetcher()
+    article: PubMedArticle = fetcher.article_by_pmid(pmid_physics)
+    not_same_guy: Author = Author(article.author_list[1723])
+    assert not dfm_author.matches(not_same_guy)
+    assert not not_same_guy.matches(dfm_author)
+
+
 def test_matching_list():
     """Exercises matching an Author against a list."""
     # List of Authors

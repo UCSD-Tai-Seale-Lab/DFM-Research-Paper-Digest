@@ -33,11 +33,16 @@ class Author(HumanName):
                                  allowing for middle name/initial ambiguity
     """
 
+    # Link how a name is listed on Faculty webpage with how it's listed in publication.
+    ALIAS_PREVENTION_LIST: dict = {"Lee, Robert, MD": "Robert Y. Lee"}
+
     def __init__(self, name: str | PubMedAuthor, **kwargs):
         """
         Instantiates an Author object from a string name or PubMedAuthor object.
         """
-        name_str: str = ""
+        # Set up the alias prevention dictionary.
+
+        name_str: str
 
         if isinstance(name, PubMedAuthor):
             name_str = name.fore_name + " " + name.last_name
@@ -65,6 +70,9 @@ class Author(HumanName):
         if self.middle:
             self.middle_initial_only = len(self.middle.rstrip(".")) == 1
             self.middle_initial = self.middle[0]
+
+        if self.original in Author.ALIAS_PREVENTION_LIST:
+            self.must_show_as = Author.ALIAS_PREVENTION_LIST[self.original]
 
         self.pubmed_style: str = self.last + ", " + self.first_initial
         self.slug: str = name_str.replace(" ", "_").replace(",", "").replace('"', "")
@@ -205,11 +213,19 @@ class Author(HumanName):
                 return False
 
         # It's an Author.
-        return (
-            self.__first_names_or_initials_match(other_name)
-            and self.last == other_name.last
-            and self.__middle_names_match_where_present(other_name)
-        )
+        is_match: bool
+        if hasattr(self, "must_show_as"):
+            is_match = self.must_show_as == other_name.original
+        elif hasattr(other_name, "must_show_as"):
+            is_match = self.original == other_name.must_show_as
+        else:
+            is_match = (
+                self.__first_names_or_initials_match(other_name)
+                and self.last == other_name.last
+                and self.__middle_names_match_where_present(other_name)
+            )
+
+        return is_match
 
     # Source - https://stackoverflow.com/a/517974
     # Posted by MiniQuark, modified by community. See post 'Timeline' for change history
