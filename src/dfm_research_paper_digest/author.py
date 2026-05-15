@@ -34,6 +34,7 @@ class Author(HumanName):
     """
 
     # Link how a name is listed on Faculty webpage with how it's listed in publication.
+    # Reason: there's another R Lee at UCSD who publishes physics  papers & we don't want them confused.
     ALIAS_PREVENTION_LIST: dict = {"Lee, Robert, MD": "Robert Y. Lee"}
 
     def __init__(self, name: str | PubMedAuthor, **kwargs):
