@@ -72,7 +72,7 @@ def __assemble_article_list(
 
         # Rate limiting: NCBI recommends max 3 requests per second
         if i < faculty.num:
-            time.sleep(1.0)
+            time.sleep(0.33)
 
     # Summary
     log.info("SUMMARY")
@@ -155,71 +155,5 @@ def run_batch_report(
     return html
 
 
-def main(argv=None):
-    """Main function with CLI interface."""
-    parser = argparse.ArgumentParser(
-        description="Batch query PubMed for multiple faculty members",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  # Query from a list
-  %(prog)s --year 2025 --output faculty_pubs_2025
-
-  # With email
-  %(prog)s --email your@email.com --output results
-        """,
-    )
-    from src.dfm_research_paper_digest import ReportGenerator
-
-    resource_path_log = files("logs").joinpath("query_faculty_batch.log")
-    log: logging.Logger
-
-    with as_file(resource_path_log) as log_filename:
-        log = setup_logging(log_filename=log_filename)
-
-    parser.add_argument(
-        "--email",
-        "-e",
-        type=str,
-        default=f"{os.getlogin()}@health.ucsd.edu",
-        help="Your email (recommended by NCBI)",
-    )
-
-    parser.add_argument(
-        "--faculty-file",
-        "-f",
-        type=str,
-        default="https://familymedicine.ucsd.edu/about/faculty.html",
-        help="URL of Dept of Family Medicine faculty list",
-    )
-
-    parser.add_argument(
-        "--output",
-        "-o",
-        type=str,
-        default=f"faculty_{datetime.now().year}.html",
-        help="Output filename (default: faculty_<current year>.html)",
-    )
-
-    parser.add_argument(
-        "--year",
-        "-y",
-        type=str,
-        default=str(datetime.now().year),
-        help="Publication year (default: current year)",
-    )
-
-    args = parser.parse_args(argv)
-
-    # Query faculty
-    html: str = run_batch_report(
-        contact_email=args.email,
-        faculty_list_file=args.faculty_file,
-        log=log,
-        year=args.year,
-    )
-    ReportGenerator.write_html_file(html, args.output)
-
-
 if __name__ == "__main__":
-    main()  # pragma: no cover
+    pass

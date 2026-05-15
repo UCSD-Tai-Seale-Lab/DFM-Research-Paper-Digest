@@ -197,9 +197,7 @@ class Author(HumanName):
         if isinstance(other_name, PubMedAuthor):
             # Create a new Author object & use that.
             try:
-                other_author: Author = Author(
-                    other_name.fore_name + " " + other_name.last_name
-                )
+                other_author: Author = Author(other_name)
                 return self.matches(other_author)
             except TypeError:
                 # If the PubMed "Author" can't be parsed,

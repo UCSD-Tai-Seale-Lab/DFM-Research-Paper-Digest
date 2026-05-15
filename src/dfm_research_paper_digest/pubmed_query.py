@@ -6,12 +6,12 @@ Queries PubMed for publications by a specific author from 2025.
 # pylint: disable=import-error, import-outside-toplevel
 from __future__ import annotations
 
-import argparse
 import logging
 import time
 from datetime import datetime
 from importlib.resources import as_file, files
 
+import streamlit
 from metapub import PubMedArticle, PubMedAuthor, PubMedFetcher
 
 import src.dfm_research_paper_digest
@@ -31,6 +31,10 @@ class PubMedQuery:
     -------
     query_by_author()
     """
+
+    UCSD_AFFILIATIONS: str = (
+        '((University[ad] AND California[ad]) OR UC[ad]) AND "San Diego"[ad]'
+    )
 
     def __init__(
         self,
@@ -58,7 +62,9 @@ class PubMedQuery:
 
         self.__log = log
         self.__faculty: src.dfm_research_paper_digest.Faculty = faculty
-        self.__fetch: PubMedFetcher = PubMedFetcher(email=email)
+        self.__fetch: PubMedFetcher = PubMedFetcher(
+            email=email, api_key=streamlit.secrets["api_key"]
+        )
 
     def __fetch_publication_details(
         self, pmids: list[str], author_name: str
@@ -98,7 +104,7 @@ class PubMedQuery:
                         articles.append(article)
 
             # NCBI recommends max 3 requests per second
-            time.sleep(0.34)
+            time.sleep(0.33)
 
         return articles
 
@@ -196,39 +202,12 @@ class PubMedQuery:
             list of PubMed IDs (PMIDs)
         """
         # Construct search query
-        search_term = f"{author_name}[Author] AND {year}[pdat]"
+        search_term = (
+            f"{author_name}[Author] AND {year}[pdat] AND "
+            + PubMedQuery.UCSD_AFFILIATIONS
+        )
         pmids: list[str] = self.__fetch.pmids_for_query(search_term)
         return pmids
-
-
-def display_publications(
-    publications: list[PubMedArticle], log: logging.Logger
-) -> None:
-    """
-        Display publications in a formatted manner.
-
-    Parameters
-    ----------
-    publications: list[Article]
-    log: logging.Loggre object
-
-    Returns
-    -------
-
-    """
-    if not publications:
-        log.info("\nNo publications to display.")
-        return
-
-    log.info(f"Found {len(publications)} publication(s):")
-
-    for i, pub in enumerate(publications, 1):
-        log.info(f"{i}. {pub.title}")
-        log.info(f"   Authors: {pub.authors_str}")
-        log.info(f"   Journal: {pub.journal}")
-        log.info(f"   Year: {pub.year}")
-        log.info(f"   PMID: {pub.pmid}")
-        log.info(f"   URL: https://pubmed.ncbi.nlm.nih.gov/{pub.pmid}/")
 
 
 if __name__ == "__main__":
