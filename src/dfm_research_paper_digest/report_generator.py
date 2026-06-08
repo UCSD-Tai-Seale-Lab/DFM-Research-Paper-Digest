@@ -441,19 +441,21 @@ class ReportGenerator:
         log: logging.Logger
         """
         # Fetch secure credentials from environment variables
-        smtp_server = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
-        smtp_port = int(os.environ.get("SMTP_PORT", 587))
-        sender_email = os.environ.get("SENDER_EMAIL")
-        sender_password = os.environ.get("APP_PASSWORD")  # Use an App Password!
-        recipient_email = os.environ.get("RECIPIENT_EMAIL")
+        smtp_server: str = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
+        smtp_port: int = int(os.environ.get("SMTP_PORT", 587))
+        sender_email: str = os.environ.get("SENDER_EMAIL")
 
         if not sender_email:
             log.error("Missing sender_email environment credentials.")
             raise ValueError("Missing sender_email environment credentials.")
 
+        sender_password: str = os.environ.get("APP_PASSWORD")  # Use an App Password!
+
         if not sender_password:
             log.error("Missing sender_password environment credentials.")
             raise ValueError("Missing sender_password environment credentials.")
+
+        recipient_email: str = os.environ.get("RECIPIENT_EMAIL")
 
         if not recipient_email:
             log.error("Missing recipient_email environment credentials.")
