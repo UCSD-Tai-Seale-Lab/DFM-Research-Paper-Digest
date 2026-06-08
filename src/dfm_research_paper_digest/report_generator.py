@@ -5,8 +5,14 @@ Creates formatted HTML reports with highlighted faculty members
 """
 # pylint: disable=import-error, import-outside-toplevel, too-few-public-methods
 import logging
+import os
+import smtplib
 from datetime import datetime
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from pathlib import Path
+from email.mime.base import MIMEBase
+from email import encoders
 
 from metapub import PubMedArticle, PubMedAuthor
 
@@ -376,6 +382,108 @@ class ReportGenerator:
                         faculty_authors_in_pubs.append(this_author)
 
         return len(faculty_authors_in_pubs)
+
+    # https://share.google/aimode/HEO3xf7J6202ID5l7
+    @staticmethod
+    def send_email(html_body: str, log: logging.Logger):
+        """
+        Sends html content as email.
+
+        Parameters
+        ----------
+        html_body: str
+        log: logging.Logger
+        """
+        # Fetch secure credentials from environment variables
+        smtp_server = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
+        smtp_port = int(os.environ.get("SMTP_PORT", 587))
+        sender_email = os.environ.get("SENDER_EMAIL")
+        sender_password = os.environ.get("APP_PASSWORD")  # Use an App Password!
+        recipient_email = os.environ.get("RECIPIENT_EMAIL")
+
+        if not all([sender_email, sender_password, recipient_email]):
+            log.error("Missing email environment credentials.")
+            raise ValueError("Missing email environment credentials.")
+
+        # Create the email structure
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = "Department of Family Medicine Publication Report"
+        msg["From"] = sender_email
+        msg["To"] = recipient_email
+
+        # Attach the HTML content
+        msg.attach(MIMEText(html_body, "html"))
+
+        # Connect to the server and transmit securely
+        server: smtplib.SMTP
+
+        try:
+            server = smtplib.SMTP(smtp_server, smtp_port)
+            server.starttls()
+            server.login(sender_email, sender_password)
+            server.sendmail(sender_email, [recipient_email], msg.as_string())
+            log.info("Email report sent successfully!")
+        except Exception as e:
+            log.error(f"Failed to send email: {e}")
+            raise e
+        finally:
+            server.quit()
+
+    # https://share.google/aimode/HEO3xf7J6202ID5l7
+    @staticmethod
+    def send_email_attachment(report_name: str, log: logging.Logger):
+        """
+        Sends html content as email.
+
+        Parameters
+        ----------
+        report_name: str
+        log: logging.Logger
+        """
+        # Fetch secure credentials from environment variables
+        smtp_server = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
+        smtp_port = int(os.environ.get("SMTP_PORT", 587))
+        sender_email = os.environ.get("SENDER_EMAIL")
+        sender_password = os.environ.get("APP_PASSWORD")  # Use an App Password!
+        recipient_email = os.environ.get("RECIPIENT_EMAIL")
+
+        if not all([sender_email, sender_password, recipient_email]):
+            log.error("Missing email environment credentials.")
+            raise ValueError("Missing email environment credentials.")
+
+        # Create the email structure
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = "Department of Family Medicine Publication Report"
+        msg["From"] = f"Commander Data <{sender_email}>"
+        msg["To"] = recipient_email
+
+        # https://share.google/aimode/6dPklNlIhVOg6bQZi
+        with open(report_name, "rb") as attachment:
+            part = MIMEBase("application", "octet-stream")
+            part.set_payload(attachment.read())
+
+        encoders.encode_base64(part)
+        part.add_header(
+            "Content-Disposition",
+            f"attachment; filename= {report_name}",
+        )
+        # Attach the HTML content
+        msg.attach(part)
+
+        # Connect to the server and transmit securely
+        server: smtplib.SMTP
+
+        try:
+            server = smtplib.SMTP(smtp_server, smtp_port)
+            server.starttls()
+            server.login(sender_email, sender_password)
+            server.sendmail(sender_email, [recipient_email], msg.as_string())
+            log.info("Email report sent successfully!")
+        except Exception as e:
+            log.error(f"Failed to send email: {e}")
+            raise e
+        finally:
+            server.quit()
 
     @staticmethod
     def write_html_file(html: str, output_file: str) -> None:

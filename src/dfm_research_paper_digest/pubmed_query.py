@@ -7,11 +7,13 @@ Queries PubMed for publications by a specific author from 2025.
 from __future__ import annotations
 
 import logging
+import os
 import time
 from datetime import datetime
 from importlib.resources import as_file, files
 
 import streamlit
+import streamlit.errors
 from metapub import PubMedArticle, PubMedAuthor, PubMedFetcher
 
 import src.dfm_research_paper_digest
@@ -62,9 +64,22 @@ class PubMedQuery:
 
         self.__log = log
         self.__faculty: src.dfm_research_paper_digest.Faculty = faculty
-        self.__fetch: PubMedFetcher = PubMedFetcher(
-            email=email, api_key=streamlit.secrets["api_key"]
-        )
+
+        # Are we running this under Streamlit or from the command line?
+        self.__fetch: PubMedFetcher
+
+        try:
+            self.__fetch = PubMedFetcher(
+                email=email, api_key=streamlit.secrets["api_key"]
+            )
+        except streamlit.errors.StreamlitSecretNotFoundError:
+            # Retrieve from environment variables.
+            api_key: str = os.environ.get("NCBI_API_KEY")
+
+            if api_key:
+                self.__fetch = PubMedFetcher(email=email, api_key=api_key)
+            else:
+                self.__fetch = PubMedFetcher(email=email)
 
     def __fetch_publication_details(
         self, pmids: list[str], author_name: str
