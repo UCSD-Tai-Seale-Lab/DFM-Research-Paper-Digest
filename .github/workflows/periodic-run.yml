@@ -21,7 +21,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-python-version: '3.12'
+          python-version: '3.12'
 
       # 3. Handle third-party dependencies.
       - name: Install Dependencies
