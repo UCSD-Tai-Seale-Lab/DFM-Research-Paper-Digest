@@ -1,5 +1,5 @@
-# https://share.google/aimode/uO1Xau4PrnC3spiKw
-name: Run Periodic Code
+# https://share.google/aimode/HEO3xf7J6202ID5l7
+name: Generate and Email Report
 
 on:
   schedule:
@@ -9,17 +9,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  run-reporting-job:
+  run-dfm_reporting-job:
     runs-on: ubuntu-latest
 
     steps:
       # 1. Pull down the repository code.
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # 2. Initialize Python on the worker runner.
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-python-version: '3.12'
 
