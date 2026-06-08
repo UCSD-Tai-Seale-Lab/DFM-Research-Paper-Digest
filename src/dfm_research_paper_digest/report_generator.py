@@ -447,9 +447,17 @@ class ReportGenerator:
         sender_password = os.environ.get("APP_PASSWORD")  # Use an App Password!
         recipient_email = os.environ.get("RECIPIENT_EMAIL")
 
-        if not all([sender_email, sender_password, recipient_email]):
-            log.error("Missing email environment credentials.")
-            raise ValueError("Missing email environment credentials.")
+        if not sender_email:
+            log.error("Missing sender_email environment credentials.")
+            raise ValueError("Missing sender_email environment credentials.")
+
+        if not sender_password:
+            log.error("Missing sender_password environment credentials.")
+            raise ValueError("Missing sender_password environment credentials.")
+
+        if not recipient_email:
+            log.error("Missing recipient_email environment credentials.")
+            raise ValueError("Missing recipient_email environment credentials.")
 
         # Create the email structure
         msg = MIMEMultipart("alternative")
