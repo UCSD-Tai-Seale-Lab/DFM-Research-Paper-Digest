@@ -1,0 +1,16 @@
+# https://share.google/aimode/WtAUTFLxlLqbopKoh
+name: Keep Workflows Alive
+
+on:
+  schedule:
+    # Runs at 00:00 on day 1 of every month
+    - cron: "0 0 1 * *"
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gautamkrishnar/keepalive-workflow@v1 # Pushes an empty commit if no activity is detected
