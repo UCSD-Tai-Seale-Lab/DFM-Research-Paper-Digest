@@ -17,7 +17,6 @@ dfm_webpage: str = "https://familymedicine.ucsd.edu/about/faculty.html"
 html: str = run_batch_report(
     contact_email="kjdelaney@health.ucsd.edu",
     faculty_list_file=dfm_webpage,
-    # faculty_list_file=["Tai-Seale, Ming PhD, MPH"],
     log=log,
     year=year_selection,
 )

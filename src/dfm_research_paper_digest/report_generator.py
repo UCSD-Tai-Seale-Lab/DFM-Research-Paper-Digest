@@ -461,6 +461,9 @@ class ReportGenerator:
             log.error("Missing recipient_email environment credentials.")
             raise ValueError("Missing recipient_email environment credentials.")
 
+        # Handle possible list of recipients.
+        recipients_list: list = recipient_email.split(",")
+
         # Create the email structure
         msg = MIMEMultipart("alternative")
         msg["Subject"] = "Department of Family Medicine Publication Report"
@@ -487,13 +490,12 @@ class ReportGenerator:
             server = smtplib.SMTP(smtp_server, smtp_port)
             server.starttls()
             server.login(sender_email, sender_password)
-            server.sendmail(sender_email, [recipient_email], msg.as_string())
+            server.sendmail(sender_email, recipients_list, msg.as_string())
             log.info("Email report sent successfully!")
+            server.quit()
         except Exception as e:
             log.error(f"Failed to send email: {e}")
             raise e
-        finally:
-            server.quit()
 
     @staticmethod
     def write_html_file(html: str, output_file: str) -> None:
