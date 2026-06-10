@@ -11,7 +11,7 @@ from src.dfm_research_paper_digest.faculty import Faculty
 from src.dfm_research_paper_digest.my_logging import setup_streamlit_logging
 from src.dfm_research_paper_digest.query_faculty_batch import run_batch_report
 
-# Hide the "Hosted with Streamlit" notice, top toolbar, and default footer
+# Hide the "Hosted with Streamlit" notice and default footer.
 hide_st_style = """
 <style>
 footer {visibility: hidden;}

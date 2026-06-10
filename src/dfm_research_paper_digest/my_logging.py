@@ -82,7 +82,7 @@ def setup_streamlit_logging() -> logging.Logger:
     -------
     log: logging.Logger object
     """
-    logger: logging.Logger = logging.getLogger(__name__)
+    logger: logging.Logger = logging.getLogger("dfm_publications")
     logger.setLevel(logging.INFO)
 
     # Avoid adding handlers multiple times

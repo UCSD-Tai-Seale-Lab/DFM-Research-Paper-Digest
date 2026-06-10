@@ -132,6 +132,8 @@ def run_batch_report(
         with as_file(resource_path) as log_filename:
             log = setup_logging(log_filename=log_filename)
 
+    log.info("Starting batch report.")
+
     # Parse faculty names.
     faculty: Faculty = Faculty(faculty_list_file, log)
     log.info("Querying PubMed for %d faculty members (%d)", faculty.num, year)
