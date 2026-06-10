@@ -89,7 +89,7 @@ def setup_streamlit_logging() -> logging.Logger:
     if not logger.handlers:
         handler: logging.StreamHandler = logging.StreamHandler()
         formatter: logging.Formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            "%(asctime)s - %(funcName)s - %(levelname)s - %(message)s"
         )
         handler.setFormatter(formatter)
         logger.addHandler(handler)
