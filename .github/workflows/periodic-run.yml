@@ -4,7 +4,7 @@ name: Generate and Email Report
 on:
   schedule:
     # Runs every day at 12:00 AM UTC (Adjust using cron syntax)
-    - cron: '0 0 * * *'
+    - cron: '0 0 1 * *'
   # Allows you to also trigger this manually from the Actions tab
   workflow_dispatch:
 
