@@ -11,6 +11,15 @@ from src.dfm_research_paper_digest.faculty import Faculty
 from src.dfm_research_paper_digest.my_logging import setup_streamlit_logging
 from src.dfm_research_paper_digest.query_faculty_batch import run_batch_report
 
+# Hide the "Hosted with Streamlit" notice, top toolbar, and default footer
+hide_st_style = """
+<style>
+footer {visibility: hidden;}
+div[data-testid="stToolbar"] {visibility: hidden !important;}
+</style>
+"""
+streamlit.markdown(hide_st_style, unsafe_allow_html=True)
+
 # Headline
 image: Image = Image.open("logos-clinicalHealth-full.png")
 streamlit.image(image)
