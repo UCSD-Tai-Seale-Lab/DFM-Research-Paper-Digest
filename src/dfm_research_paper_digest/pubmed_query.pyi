@@ -22,8 +22,9 @@ class PubMedQuery:
         log: logging.Logger = None,
     ):
         self.__faculty: src.dfm_research_paper_digest.Faculty = None
-        self.__fetch: PubMedFetcher = None
+        self.__fetcher: PubMedFetcher = None
         self.__log: logging.Logger = None
+        self.__using_streamlit: bool = None
 
     def __fetch_publication_details(
         self, pmids: list[str], author_name: str

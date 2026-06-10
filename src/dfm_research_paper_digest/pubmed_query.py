@@ -12,6 +12,7 @@ import time
 from datetime import datetime
 from importlib.resources import as_file, files
 
+import metapub.ncbi_errors
 import streamlit
 import streamlit.errors
 from metapub import PubMedArticle, PubMedAuthor, PubMedFetcher
@@ -65,13 +66,15 @@ class PubMedQuery:
         self.__log = log
         self.__faculty: src.dfm_research_paper_digest.Faculty = faculty
 
-        # Are we running this under Streamlit or from the command line?
-        self.__fetch: PubMedFetcher
+        self.__fetcher: PubMedFetcher
+        self.__using_streamlit: bool = False
 
+        # Are we running this under Streamlit or from the command line?
         try:
-            self.__fetch = PubMedFetcher(
+            self.__fetcher = PubMedFetcher(
                 email=email, api_key=streamlit.secrets["api_key"]
             )
+            self.__using_streamlit = True
         except streamlit.errors.StreamlitSecretNotFoundError:
             # Retrieve from environment variables.
             api_key: str = os.environ.get("NCBI_API_KEY")
@@ -101,22 +104,32 @@ class PubMedQuery:
         )
 
         for pmid in pmids:
-            article: PubMedArticle = self.__fetch.article_by_pmid(pmid)
+            try:
+                article: PubMedArticle = self.__fetcher.article_by_pmid(pmid)
 
-            if article and len(article.author_list) > 0:
-                # Which PubMedAuthor object matches the author
-                # for whom we requested a list of publications?
-                if requested_author.matches(article.author_list):
-                    matching_author: PubMedAuthor = next(
-                        a for a in article.author_list if requested_author.matches(a)
+                if article and len(article.author_list) > 0:
+                    # Which PubMedAuthor object matches the author
+                    # for whom we requested a list of publications?
+                    if requested_author.matches(article.author_list):
+                        matching_author: PubMedAuthor = next(
+                            a
+                            for a in article.author_list
+                            if requested_author.matches(a)
+                        )
+
+                        if (
+                            matching_author
+                            and self.__faculty.is_faculty(matching_author)
+                            and PubMedQuery.is_ucsd_affiliated(matching_author)
+                        ):
+                            articles.append(article)
+            except metapub.ncbi_errors.NCBIServiceError as e:
+                self.__log.error("NCBI Service Error: %s", e.user_message)
+
+                if self.__using_streamlit:
+                    streamlit.error(
+                        f"**NCBI web service error: {e.user_message}", icon="🚨"
                     )
-
-                    if (
-                        matching_author
-                        and self.__faculty.is_faculty(matching_author)
-                        and PubMedQuery.is_ucsd_affiliated(matching_author)
-                    ):
-                        articles.append(article)
 
             # NCBI recommends max 3 requests per second
             time.sleep(0.33)
@@ -221,7 +234,19 @@ class PubMedQuery:
             f"{author_name}[Author] AND {year}[pdat] AND "
             + PubMedQuery.UCSD_AFFILIATIONS
         )
-        pmids: list[str] = self.__fetch.pmids_for_query(search_term)
+
+        pmids: list[str] = []
+
+        try:
+            pmids = self.__fetcher.pmids_for_query(search_term)
+        except metapub.ncbi_errors.NCBIServiceError as e:
+            self.__log.error("NCBI Service Error: %s", e.user_message)
+
+            if self.__using_streamlit:
+                streamlit.error(
+                    f"**NCBI web service error: {e.user_message}", icon="🚨"
+                )
+
         return pmids
 
 
