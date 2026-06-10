@@ -70,17 +70,19 @@ class PubMedQuery:
         self.__fetcher: PubMedFetcher
         self.__using_streamlit: bool = False
 
+        api_key: str
+
         # Are we running this under Streamlit or from the command line?
         try:
-            self.__fetcher = PubMedFetcher(
-                email=email, api_key=streamlit.secrets["api_key"]
-            )
+            api_key = streamlit.secrets["api_key"]
+            self.__fetcher = PubMedFetcher(email=email, api_key=api_key)
             self.__using_streamlit = True
+            self.__log.info("Found API key in Streamlit secrets.")
         except streamlit.errors.StreamlitSecretNotFoundError:
             self.__log.info("Did not find Streamlit Secret 'api_key'.")
 
             # Retrieve from environment variables.
-            api_key: str = os.environ.get("NCBI_API_KEY")
+            api_key = os.environ.get("NCBI_API_KEY")
 
             if api_key:
                 self.__log.info("Found API key in environment variable.")
