@@ -57,15 +57,16 @@ class PubMedQuery:
 
         self.__log: logging.Logger
 
-        if not log:
+        if log:
+            self.__log = log
+        else:
             resource_path = files("logs").joinpath("pubmed_query.log")
 
             with as_file(resource_path) as log_filename:
                 self.__log = setup_logging(log_filename=log_filename)
 
-        self.__log = log
+        self.__log.info("Instantiating PubMedQuery object.")
         self.__faculty: src.dfm_research_paper_digest.Faculty = faculty
-
         self.__fetcher: PubMedFetcher
         self.__using_streamlit: bool = False
 
@@ -76,16 +77,16 @@ class PubMedQuery:
             )
             self.__using_streamlit = True
         except streamlit.errors.StreamlitSecretNotFoundError:
-            log.info("Did not find Streamlit Secret 'api_key'.")
+            self.__log.info("Did not find Streamlit Secret 'api_key'.")
 
             # Retrieve from environment variables.
             api_key: str = os.environ.get("NCBI_API_KEY")
 
             if api_key:
-                log.info("Found API key in environment variable.")
+                self.__log.info("Found API key in environment variable.")
                 self.__fetcher = PubMedFetcher(email=email, api_key=api_key)
             else:
-                log.info("Did not find API key in environment variable.")
+                self.__log.info("Did not find API key in environment variable.")
                 self.__fetcher = PubMedFetcher(email=email)
 
     def __fetch_publication_details(

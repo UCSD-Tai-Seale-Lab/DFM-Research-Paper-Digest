@@ -40,6 +40,8 @@ class Faculty:
         self.__list: list[Author]
         self.__log: logging.Logger = log
 
+        self.__log.info("Instantiating Faculty object.")
+
         if isinstance(faculty_list, list):
             self.__list = [Author(f) for f in faculty_list]
         elif isinstance(faculty_list, (str, Path)):
