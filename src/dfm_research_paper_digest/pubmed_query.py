@@ -76,13 +76,17 @@ class PubMedQuery:
             )
             self.__using_streamlit = True
         except streamlit.errors.StreamlitSecretNotFoundError:
+            log.info("Did not find Streamlit Secret 'api_key'.")
+
             # Retrieve from environment variables.
             api_key: str = os.environ.get("NCBI_API_KEY")
 
             if api_key:
-                self.__fetch = PubMedFetcher(email=email, api_key=api_key)
+                log.info("Found API key in environment variable.")
+                self.__fetcher = PubMedFetcher(email=email, api_key=api_key)
             else:
-                self.__fetch = PubMedFetcher(email=email)
+                log.info("Did not find API key in environment variable.")
+                self.__fetcher = PubMedFetcher(email=email)
 
     def __fetch_publication_details(
         self, pmids: list[str], author_name: str
