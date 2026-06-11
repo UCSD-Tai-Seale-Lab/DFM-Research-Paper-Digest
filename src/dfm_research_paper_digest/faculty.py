@@ -139,7 +139,7 @@ class Faculty:
         authors: list[str] = []
 
         for member in self.__list:
-            authors.append(member.pubmed_style)
+            authors.append(member.original)
 
         return authors
 
