@@ -51,7 +51,7 @@ class Author(HumanName):
             name_str = name
         else:
             raise TypeError(
-                f"Expected 'name' to be str or PubMedAuthor, not {type(name)}."
+                "Expected 'name' to be str or PubMedAuthor, not %s.", type(name)
             )
 
         # Remove any accents for easier matching.

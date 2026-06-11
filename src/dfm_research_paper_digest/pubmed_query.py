@@ -164,7 +164,7 @@ class PubMedQuery:
 
             if not isinstance(var[0], str):
                 raise TypeError(
-                    f"Affiliations expected to be a list of str, not {type(var[0])}."
+                    "Affiliations expected to be a list of str, not %s.", type(var[0])
                 )
 
             affiliations = var
@@ -172,7 +172,8 @@ class PubMedQuery:
             affiliations = [var]
         else:
             raise TypeError(
-                f"Expected either PubMedAuthor object, list[str] or str, but received {type(var)}."
+                "Expected either PubMedAuthor object, list[str] or str, but received %s.",
+                type(var),
             )
 
         ucsd_keywords: list[str] = [
