@@ -92,23 +92,19 @@ class PubMedQuery:
                 self.__fetcher = PubMedFetcher(email=email)
 
     def __fetch_publication_details(
-        self, pmids: list[str], author_name: str
+        self, pmids: list[str], requested_author: src.dfm_research_paper_digest.Author
     ) -> list[PubMedArticle]:
         """
         Fetch publication details for given PMIDs.
 
         Args:
             pmids: list of PubMed IDs
-            author_name: str
+            requested_author: Author object
 
         Returns:
             list of PubMedArticle objects
         """
         articles: list[PubMedArticle] = []
-
-        requested_author: src.dfm_research_paper_digest.Author = (
-            src.dfm_research_paper_digest.Author(author_name)
-        )
 
         for pmid in pmids:
             try:
@@ -191,54 +187,62 @@ class PubMedQuery:
         )
 
     def query_by_author(
-        self, author_name: str, year: int = datetime.now().year
+        self,
+        author: src.dfm_research_paper_digest.Author,
+        year: int = datetime.now().year,
     ) -> list[PubMedArticle]:
         """
         Complete query for author publications.
 
         Args:
-            author_name: Name of the author
-            year: Publication year (default: 2025)
+            author: Author object
+            year: Publication year (default: current year)
 
         Returns:
             list of PubMedArticle objects
         """
         self.__log.info(
-            "Searching PubMed for publications by '%s' from %d ...", author_name, year
+            "Searching PubMed for publications by '%s' from %d ...",
+            author.original,
+            year,
         )
 
         # Step 1: Search for PMIDs
-        pmids: list[str] = self.__search_author_publications(author_name, year)
+        pmids: list[str] = self.__search_author_publications(author, year)
 
         if not pmids:
-            self.__log.info("No publications found for '%s' in %d.", author_name, year)
+            self.__log.info(
+                "No publications found for '%s' in %d.", author.original, year
+            )
             return []
 
         self.__log.info("Found %d publication(s).", len(pmids))
 
         # Step 2: Fetch publication details
         publications: list[PubMedArticle] = self.__fetch_publication_details(
-            pmids, author_name
+            pmids, author
         )
 
         return publications
 
     def __search_author_publications(
-        self, author_name: str, year: int = datetime.now().year
+        self,
+        author: src.dfm_research_paper_digest.Author,
+        year: int = datetime.now().year,
     ) -> list[str]:
         """
-        Search for publication IDs by author and year.
+        Search for publication IDs by author, year and UCSD affiliation.
 
         Args:
             author_name: Name of the author (e.g., "Smith J" or "John Smith")
-            year: Publication year (default: 2025)
+            year: Publication year (default: current year)
 
         Returns:
             list of PubMed IDs (PMIDs)
         """
         # Construct search query
         search_term = (
-            f"{author_name}[Author] AND {year}[pdat] AND "
+            f"{author.pubmed_style}[Author] AND {year}[pdat] AND "
             + PubMedQuery.UCSD_AFFILIATIONS
         )
 
