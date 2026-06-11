@@ -120,12 +120,19 @@ class PubMedQuery:
                             if requested_author.matches(a)
                         )
 
-                        if (
-                            matching_author
-                            and self.__faculty.is_faculty(matching_author)
-                            and PubMedQuery.is_ucsd_affiliated(matching_author)
-                        ):
-                            articles.append(article)
+                        if matching_author:
+                            self.__log.debug(
+                                f"Matching author is {str(matching_author)}."
+                            )
+
+                            if self.__faculty.is_faculty(matching_author):
+                                self.__log.debug(f"{str(matching_author)} is faculty.")
+
+                                if PubMedQuery.is_ucsd_affiliated(matching_author):
+                                    self.__log.debug(
+                                        f"{str(matching_author)} is UCSD affiliated."
+                                    )
+                                    articles.append(article)
             except metapub.ncbi_errors.NCBIServiceError as e:
                 self.__log.error("NCBI Service Error: %s", e.user_message)
 
@@ -144,6 +151,7 @@ class PubMedQuery:
         """
             Checks to see if affiliation is present
             AND looks like "UCSD" or "University of California San Diego"
+            AND NOT like "Emergency Medicine" or "Mechanical Engineering"
 
         Args:
             var: list[str] or PubMedAuthor or str
@@ -158,7 +166,7 @@ class PubMedQuery:
         affiliations: list[str] = []
 
         if isinstance(var, list):
-            # If NO affliation, then we can't swear they're affiliated.
+            # If NO affiliation, then we can't swear they're affiliated.
             if len(var) == 0:
                 return False
 
@@ -183,8 +191,17 @@ class PubMedQuery:
             "UC San Diego",
         ]
 
+        distraction_keywords: list[str] = [
+            "Emergency Medicine",
+            "Mechanical Engineering",
+        ]
+
         return any(
             keyword in affil for affil in affiliations for keyword in ucsd_keywords
+        ) and not any(
+            keyword in affil
+            for affil in affiliations
+            for keyword in distraction_keywords
         )
 
     def query_by_author(
