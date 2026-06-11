@@ -59,10 +59,12 @@ class Faculty:
                 raise FileNotFoundError(f"Unable to open file {faculty_list}.")
         else:
             self.__log.exception(
-                f"Expected 'faculty_list' to be a list, str or Path, not {type(faculty_list)}."
+                "Expected 'faculty_list' to be a list, str or Path, not %s.",
+                type(faculty_list),
             )
             raise TypeError(
-                f"Expected 'faculty_list' to be a list, str or Path, not {type(faculty_list)}."
+                "Expected 'faculty_list' to be a list, str or Path, not %s.",
+                type(faculty_list),
             )
 
         self.authors: list[Author] = copy.deepcopy(self.__list)
