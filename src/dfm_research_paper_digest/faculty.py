@@ -124,8 +124,8 @@ class Faculty:
             # A URL typically has a scheme (http/https) and a domain (netloc)
             return all([parsed.scheme, parsed.netloc])
 
-        self.__log.exception(f"Expected 'name' to be str or Path, not {type(name)}.")
-        raise TypeError(f"Expected 'name' to be str or Path, not {type(name)}.")
+        self.__log.exception("Expected 'name' to be str or Path, not %s.", type(name))
+        raise TypeError("Expected 'name' to be str or Path, not %s.", type(name))
 
     def __names(self) -> list[str]:
         """
@@ -158,9 +158,9 @@ class Faculty:
 
         if not isinstance(file, str) and not isinstance(file, Path):
             self.__log.exception(
-                f"Expected 'file' to be str or Path, not {type(file)}."
+                "Expected 'file' to be str or Path, not %s.", type(file)
             )
-            raise TypeError(f"Expected 'file' to be str or Path, not {type(file)}.")
+            raise TypeError("Expected 'file' to be str or Path, not %s.", type(file))
 
         try:
             with open(file, "r", encoding="utf-8") as f:
@@ -191,10 +191,10 @@ class Faculty:
         """
         if not isinstance(site_address, str):
             self.__log.exception(
-                f"Expected 'site_address' to be str, not {type(site_address)}."
+                "Expected 'site_address' to be str, not %s.", type(site_address)
             )
             raise TypeError(
-                f"Expected 'site_address' to be str, not {type(site_address)}."
+                "Expected 'site_address' to be str, not %s.", type(site_address)
             )
 
         response: requests.Response = requests.get(site_address, timeout=5)
