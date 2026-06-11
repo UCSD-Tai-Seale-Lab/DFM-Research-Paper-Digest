@@ -3,6 +3,7 @@ from datetime import datetime
 
 from metapub import PubMedArticle, PubMedAuthor, PubMedFetcher
 
+import dfm_research_paper_digest
 import src.dfm_research_paper_digest
 
 def display_publications(
@@ -27,13 +28,17 @@ class PubMedQuery:
         self.__using_streamlit: bool = None
 
     def __fetch_publication_details(
-        self, pmids: list[str], author_name: str
+        self, pmids: list[str], author: src.dfm_research_paper_digest.Author
     ) -> list[PubMedArticle]: ...
     @staticmethod
     def is_ucsd_affiliated(var: list[str] | PubMedAuthor | str) -> bool: ...
     def query_by_author(
-        self, author_name: str, year: int = datetime.now().year
+        self,
+        author: src.dfm_research_paper_digest.Author,
+        year: int = datetime.now().year,
     ) -> list[PubMedArticle]: ...
     def __search_author_publications(
-        self, author_name: str, year: int = datetime.now().year
+        self,
+        author: src.dfm_research_paper_digest.Author,
+        year: int = datetime.now().year,
     ) -> list[str]: ...

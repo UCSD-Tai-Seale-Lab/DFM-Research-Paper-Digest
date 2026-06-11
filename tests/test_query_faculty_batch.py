@@ -12,16 +12,14 @@ from dfm_research_paper_digest.report_generator import ReportGenerator
 
 def test_query_faculty_batch_I(username):
     """Single faculty name"""
-    output_file: str = (
-        r"C:\Family Medicine\Publication Output\results\Tai-Seale_2025.html"
-    )
+    output_file: str = r"C:\Family Medicine\Publication Output\results\Chen_2026.html"
     Path(output_file).resolve().unlink(missing_ok=True)
 
     # Exercise calling w/ single name.
     html: str = run_batch_report(
         contact_email=f"{username}@ucsd.edu",
-        faculty_list_file=["Tai-Seale, Ming PhD, MPH"],
-        year=2025,
+        faculty_list_file=["Chen, Alice, DO"],
+        year=2026,
     )
     assert isinstance(html, str)
     ReportGenerator.write_html_file(html, output_file)

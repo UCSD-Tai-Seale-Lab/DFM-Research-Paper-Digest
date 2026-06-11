@@ -57,9 +57,7 @@ def __assemble_article_list(
         log.info(f"[{i}/{faculty.num}] Querying: {author.original}")
 
         try:
-            articles: list[PubMedArticle] = query.query_by_author(
-                author.pubmed_style, year=year
-            )
+            articles: list[PubMedArticle] = query.query_by_author(author, year=year)
 
             if articles and len(articles) > 0:
                 all_results.extend(articles)

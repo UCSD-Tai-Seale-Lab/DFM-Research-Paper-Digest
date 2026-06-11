@@ -35,7 +35,7 @@ def setup_logging(log_filename: str | Path | None = None) -> logging.Logger:
         #   (Don't use calling >function<, as it will likely be '__init__', which tells us nothing.
         frame_records = inspect.stack()[1]
         calling_module = inspect.getmodulename(frame_records[1])
-        log_filename = f"AoU_{calling_module}.log"
+        log_filename = f"{calling_module}.log"
 
     # Ensure the path to the log file exists.
     file_path: Path
