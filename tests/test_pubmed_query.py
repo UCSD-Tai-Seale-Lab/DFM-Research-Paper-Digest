@@ -65,6 +65,11 @@ def test_affiliation():
     # Exercise str input.
     assert PubMedQuery.is_ucsd_affiliated("University of California, San Diego")
 
+    # Exercise other UCSD departments.
+    assert not PubMedQuery.is_ucsd_affiliated(
+        "Department of Emergency Medicine, School of Medicine, University of California San Diego, San Diego, CA, United States. Electronic address: alc022@health.ucsd.edu."
+    )
+
     # Force exceptions.
     with pytest.raises(TypeError):
         PubMedQuery.is_ucsd_affiliated(1979)
