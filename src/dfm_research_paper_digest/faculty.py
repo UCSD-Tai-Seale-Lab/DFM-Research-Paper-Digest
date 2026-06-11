@@ -67,7 +67,8 @@ class Faculty:
                 type(faculty_list),
             )
 
-        self.authors: list[Author] = copy.deepcopy(self.__list)
+        # self.authors: list[Author] = copy.deepcopy(self.__list)
+        self.authors: list[Author] = self.__list
         self.names: list[str] = self.__names()
         self.num: int = len(self.__list)
 
