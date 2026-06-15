@@ -345,7 +345,7 @@ class ReportGenerator:
             authors_html: str = self.__link_faculty_authors(pub.author_list)
 
             html += f"""
-    <div class="publication" data-authors="{", ".join(pub.author_list)}">
+    <div class="publication" data-authors="{self.__simple_authors_list(pub.author_list)}">
         <span class="publication-number">Publication #{i}</span>
         <div class="publication-title">{pub.title}</div>
         <div class="publication-authors">{authors_html}</div>
@@ -563,6 +563,24 @@ class ReportGenerator:
         except Exception as e:
             log.error(f"Failed to send email: {e}")
             raise e
+
+    def __simple_authors_list(self, authors_list: list[PubMedAuthor]) -> str:
+        """
+        Create HTML string.
+
+        Args:
+            authors_list: list of PubMedAuthor objects
+
+        Returns:
+            HTML string with <strong> tags around faculty members
+        """
+        highlighted: list = []
+
+        for author in authors_list:
+            nice_name: str = f"{author.fore_name} {author.last_name}"
+            highlighted.append(nice_name)
+
+        return ", ".join(highlighted)
 
     @staticmethod
     def write_html_file(html: str, output_file: str) -> None:
