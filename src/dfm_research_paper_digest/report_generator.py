@@ -42,6 +42,31 @@ class ReportGenerator:
         self.__faculty: Faculty = faculty
         self.__log: logging.Logger = log
 
+    def __count_unique_faculty_members(self, publications: list[PubMedArticle]) -> int:
+        """
+            Counts the unique faculty members in a list of PubMedArticle objects.
+
+        Parameters
+        ----------
+        publications: list[PubMedArticle]
+
+        Returns
+        -------
+        count: int
+        """
+        faculty_authors_in_pubs: list[Author] = []
+
+        for pub in publications:
+            for pub_med_author in pub.author_list:
+                if self.__faculty.is_faculty(pub_med_author):
+                    # Build a list of UNIQUE Author objects.
+                    this_author: Author = Author(pub_med_author)
+
+                    if not this_author.matches(faculty_authors_in_pubs):
+                        faculty_authors_in_pubs.append(this_author)
+
+        return len(faculty_authors_in_pubs)
+
     def generate_html_content(
         self,
         publications: list[PubMedArticle],
@@ -75,6 +100,14 @@ class ReportGenerator:
             padding: 20px;
             background-color: #f5f5f5;
         }}
+		.author-link {{
+		  cursor: pointer; /* Turns mouse into a pointer over author names */
+		  text-decoration: underline;
+		  color: #0066cc;
+		}}
+		.author-link:hover {{
+		  color: #003366;
+		}}
         .header {{
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -91,6 +124,9 @@ class ReportGenerator:
             opacity: 0.9;
             font-size: 1.1em;
         }}
+		.hidden {{
+		  display: none;
+		}}
         .summary {{
             background: white;
             padding: 20px;
@@ -244,6 +280,29 @@ class ReportGenerator:
             }}
         }}
     </style>
+	<script defer>
+	function filterByAuthor(authorName) {{
+	  const pubs = document.querySelectorAll('.publication');
+	  
+	  pubs.forEach(pub => {{
+		// Get the authors string stored in our HTML data attribute
+		const authors = pub.getAttribute('data-authors');
+		alert("Authors: " + authors)
+		// Check if the clicked author's name is in this publication's author list
+		if (authors.includes(authorName)) {{
+		  alert("Found " + authorName + " in authors");
+		  pub.classList.remove('hidden');
+		}} else {{
+		  pub.classList.add('hidden');
+		}}
+	  }});
+	}}
+
+	function showAllPublications() {{
+	  const pubs = document.querySelectorAll('.publication');
+	  pubs.forEach(pub => pub.classList.remove('hidden'));
+	}}
+	</script>
 </head>
 <body>
     <div class="header">
@@ -275,13 +334,18 @@ class ReportGenerator:
     <div class="legend">
         <strong>Note:</strong> DFM faculty members are highlighted in <strong>bold with blue background</strong> in the author lists.
     </div>
+    
+	<!-- Filter Button/Link to Reset -->
+	<button onclick="showAllPublications()">Show All</button>
+	<br>
+	
 """
         # Publications
         for i, pub in enumerate(publications, 1):
-            authors_html: str = self.__highlight_faculty_authors(pub.author_list)
+            authors_html: str = self.__link_faculty_authors(pub.author_list)
 
             html += f"""
-    <div class="publication">
+    <div class="publication" data-authors="{", ".join(pub.author_list)}">
         <span class="publication-number">Publication #{i}</span>
         <div class="publication-title">{pub.title}</div>
         <div class="publication-authors">{authors_html}</div>
@@ -360,30 +424,29 @@ class ReportGenerator:
 
         return ", ".join(highlighted)
 
-    def __count_unique_faculty_members(self, publications: list[PubMedArticle]) -> int:
+    def __link_faculty_authors(self, authors_list: list[PubMedAuthor]) -> str:
         """
-            Counts the unique faculty members in a list of PubMedArticle objects.
+        Create HTML string with faculty members highlighted.
 
-        Parameters
-        ----------
-        publications: list[PubMedArticle]
+        Args:
+            authors_list: list of PubMedAuthor objects
 
-        Returns
-        -------
-        count: int
+        Returns:
+            HTML string with <strong> tags around faculty members
         """
-        faculty_authors_in_pubs: list[Author] = []
+        highlighted: list = []
 
-        for pub in publications:
-            for pub_med_author in pub.author_list:
-                if self.__faculty.is_faculty(pub_med_author):
-                    # Build a list of UNIQUE Author objects.
-                    this_author: Author = Author(pub_med_author)
+        for author in authors_list:
+            nice_name: str = f"{author.fore_name} {author.last_name}"
 
-                    if not this_author.matches(faculty_authors_in_pubs):
-                        faculty_authors_in_pubs.append(this_author)
+            if self.__faculty.is_faculty(author) and PubMedQuery.is_ucsd_affiliated():
+                highlighted.append(
+                    f'<span class="author-link" onclick="filterByAuthor(\'{nice_name}\')">{nice_name}</span>'
+                )
+            else:
+                highlighted.append(f"<span>{nice_name}</span>")
 
-        return len(faculty_authors_in_pubs)
+        return ", ".join(highlighted)
 
     # https://share.google/aimode/HEO3xf7J6202ID5l7
     @staticmethod
