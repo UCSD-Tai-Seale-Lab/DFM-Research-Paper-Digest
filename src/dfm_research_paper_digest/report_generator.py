@@ -439,7 +439,9 @@ class ReportGenerator:
         for author in authors_list:
             nice_name: str = f"{author.fore_name} {author.last_name}"
 
-            if self.__faculty.is_faculty(author) and PubMedQuery.is_ucsd_affiliated():
+            if self.__faculty.is_faculty(author) and PubMedQuery.is_ucsd_affiliated(
+                author
+            ):
                 highlighted.append(
                     f'<span class="author-link" onclick="filterByAuthor(\'{nice_name}\')">{nice_name}</span>'
                 )
