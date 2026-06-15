@@ -287,10 +287,9 @@ class ReportGenerator:
 	  pubs.forEach(pub => {{
 		// Get the authors string stored in our HTML data attribute
 		const authors = pub.getAttribute('data-authors');
-		alert("Authors: " + authors)
+
 		// Check if the clicked author's name is in this publication's author list
 		if (authors.includes(authorName)) {{
-		  alert("Found " + authorName + " in authors");
 		  pub.classList.remove('hidden');
 		}} else {{
 		  pub.classList.add('hidden');
