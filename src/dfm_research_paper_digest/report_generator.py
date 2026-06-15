@@ -249,6 +249,8 @@ class ReportGenerator:
     <div class="header">
         <h1>{title}</h1>
         <div class="subtitle">Generated on {datetime.now().strftime('%B %d, %Y at %I:%M %p')}</div>
+		<br>
+		<a href="https://dfm-publications-report.streamlit.app/" style="color: white;">Click here to generate your own specialized report on demand.</a>
     </div>
 """
         # Get unique faculty members in publications
