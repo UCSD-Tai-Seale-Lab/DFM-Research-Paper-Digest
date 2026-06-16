@@ -4,6 +4,7 @@ import logging
 from datetime import datetime
 import base64
 import streamlit
+import streamlit.components.v2 as components
 from PIL import Image
 
 from src.dfm_research_paper_digest.faculty import Faculty
@@ -89,7 +90,6 @@ if streamlit.session_state.display_html:
         <script type="text/javascript">
             const newWindow = window.open('about:blank', '_blank');
             newWindow.document.write('{html}');
-            newWindow.document.close();
         </script>
         """
     log.info("Calling .html method.")
