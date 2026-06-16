@@ -80,14 +80,16 @@ if streamlit.button("Create report"):
 # Display report in new tab.
 if streamlit.session_state.display_html:
     log.info("HTML display activated.")
-    b64_html = base64.b64encode(html.encode("utf-8")).decode("utf-8")
-    data_uri = f"data:text/html;base64,{b64_html}"
+    # b64_html = base64.b64encode(html.encode("utf-8")).decode("utf-8")
+    # data_uri = f"data:text/html;base64,{b64_html}"
     log.info("HTML content encoded.")
 
     # JavaScript to open a new window and write HTML to it
     js_code = f"""
         <script type="text/javascript">
-            window.open('{data_uri}', '_blank').focus();
+            const newWindow = window.open('about:blank', '_blank');
+            newWindow.document.write('{html}');
+            newWindow.document.close();
         </script>
         """
     log.info("Calling .html method.")
