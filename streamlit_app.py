@@ -73,26 +73,25 @@ if streamlit.button("Create report"):
         year=year_selection,
     )
     my_bar.progress(100, text="Complete")
+
+    # Store it in session state so the new tab can read it
+    streamlit.session_state["dynamic_html"] = html
+
     streamlit.session_state.display_html = True
     streamlit.session_state.show_download_button = True
 
 # Display report in new tab.
 if streamlit.session_state.display_html:
-    log.info("HTML display activated.")
-    # b64_html = base64.b64encode(html.encode("utf-8")).decode("utf-8")
-    # data_uri = f"data:text/html;base64,{b64_html}"
-    # log.info("HTML content encoded.")
-
-    # 2. Store it in session state so the new tab can read it
-    streamlit.session_state["dynamic_html"] = html
-
-    # 3. Create a button that targets the secondary page
+    # Create a button that targets the secondary page
     streamlit.page_link("pages/report_viewer.py", label="View report")
 
 if streamlit.session_state.show_download_button:
+    if "dynamic_html" in streamlit.session_state:
+        html_content = streamlit.session_state["dynamic_html"]
+
     streamlit.download_button(
         label="Download report",
-        data=html,
+        data=html_content,
         file_name=report_name,
         mime="text/html",
         icon=":material/download:",
