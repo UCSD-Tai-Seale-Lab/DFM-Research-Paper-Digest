@@ -77,22 +77,20 @@ if streamlit.button("Create report"):
     streamlit.session_state.display_html = True
     streamlit.session_state.show_download_button = True
 
+
 # Display report in new tab.
 if streamlit.session_state.display_html:
     log.info("HTML display activated.")
 
     # JavaScript to open a new window and write HTML to it
     js_code = f"""
-    <script>
-        function openInNewTab() {{
-            var newWindow = window.open();
-            newWindow.document.write(`{html}`);
-            newWindow.document.close();
-        }}
-        openInNewTab();
-    </script>
-    """
-    streamlit.markdown(js_code, unsafe_allow_html=True)
+        <script type="text/javascript">
+            var win = window.open('about:blank', '_blank');
+            win.document.write(`{html}`);
+            win.document.close();
+        </script>
+        """
+    streamlit.html(js_code, height=0)
     # components.html(js_code, height=0)
 
 if streamlit.session_state.show_download_button:
