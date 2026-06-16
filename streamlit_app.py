@@ -59,13 +59,15 @@ if "show_download_button" not in streamlit.session_state:
 
 if streamlit.button("Create report"):
     faculty_source: str | list[str] = dfm_webpage
-    report_name = f"faculty publications {year_selection}.html"
+    streamlit.session_state.report_name = f"faculty publications {year_selection}.html"
 
     if name_selection != "All":
         faculty_source = [name_selection]
-        report_name = f"{name_selection.replace(', ', '_')} {year_selection}.html"
+        streamlit.session_state.report_name = (
+            f"{name_selection.replace(', ', '_')} {year_selection}.html"
+        )
 
-    html = run_batch_report(
+    html_content = run_batch_report(
         contact_email="kjdelaney@health.ucsd.edu",
         faculty_list_file=faculty_source,
         log=log,
@@ -75,8 +77,7 @@ if streamlit.button("Create report"):
     my_bar.progress(100, text="Complete")
 
     # Store it in session state so the new tab can read it
-    streamlit.session_state["dynamic_html"] = html
-
+    streamlit.session_state.html_content = html_content
     streamlit.session_state.display_html = True
     streamlit.session_state.show_download_button = True
 
@@ -86,16 +87,17 @@ if streamlit.session_state.display_html:
     streamlit.page_link("pages/report_viewer.py", label="View report")
 
 if streamlit.session_state.show_download_button:
-    if "dynamic_html" in streamlit.session_state:
-        html_content = streamlit.session_state["dynamic_html"]
-
-    streamlit.download_button(
-        label="Download report",
-        data=html_content,
-        file_name=report_name,
-        mime="text/html",
-        icon=":material/download:",
-    )
+    if (
+        "html_content" in streamlit.session_state
+        and "report_name" in streamlit.session_state
+    ):
+        streamlit.download_button(
+            label="Download report",
+            data=streamlit.session_state.html_content,
+            file_name=streamlit.session_state.report_name,
+            mime="text/html",
+            icon=":material/download:",
+        )
 
 streamlit.link_button(
     "Go to Help Page", "https://github.com/UCSD-Tai-Seale-Lab/DFM-Research-Paper-Digest"
