@@ -4,7 +4,6 @@ import logging
 from datetime import datetime
 import base64
 import streamlit
-import streamlit.components.v2 as components
 from PIL import Image
 
 from src.dfm_research_paper_digest.faculty import Faculty
@@ -77,29 +76,13 @@ if streamlit.button("Create report"):
     streamlit.session_state.display_html = True
     streamlit.session_state.show_download_button = True
 
-
 # Display report in new tab.
 if streamlit.session_state.display_html:
     log.info("HTML display activated.")
     b64_html = base64.b64encode(html.encode("utf-8")).decode("utf-8")
     data_uri = f"data:text/html;base64,{b64_html}"
     log.info("HTML content encoded.")
-
-    # JavaScript to open a new window and write HTML to it
-    js_code = f"""
-        <script type="text/javascript">
-            const url = "{data_uri}";
-            const a = parent.document.createElement("a");
-            a.href = url;
-            a.target = "_blank";
-            parent.document.body.appendChild(a);
-            a.click();
-            parent.document.body.removeChild(a);
-        </script>
-        """
-    log.info("Calling .html method.")
-    streamlit.html(js_code, unsafe_allow_javascript=True)
-    # components.html(js_code, height=0)
+    streamlit.link_button("Show report", data_uri)
 
 if streamlit.session_state.show_download_button:
     streamlit.download_button(
