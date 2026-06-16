@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
-
+import base64
 import streamlit
-import streamlit.components.v1 as components
 from PIL import Image
 
 from src.dfm_research_paper_digest.faculty import Faculty
@@ -81,13 +80,13 @@ if streamlit.button("Create report"):
 # Display report in new tab.
 if streamlit.session_state.display_html:
     log.info("HTML display activated.")
+    b64_html = base64.b64encode(html.encode("utf-8")).decode("utf-8")
+    data_uri = f"data:text/html;base64,{b64_html}"
 
     # JavaScript to open a new window and write HTML to it
     js_code = f"""
         <script type="text/javascript">
-            var win = window.open('about:blank', '_blank');
-            win.document.write(`{html}`);
-            win.document.close();
+            window.open('{data_uri}', '_blank').focus();
         </script>
         """
     streamlit.html(js_code, unsafe_allow_javascript=True)
