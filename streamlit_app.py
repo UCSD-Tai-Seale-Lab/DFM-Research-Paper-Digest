@@ -79,10 +79,15 @@ if streamlit.button("Create report"):
 # Display report in new tab.
 if streamlit.session_state.display_html:
     log.info("HTML display activated.")
-    b64_html = base64.b64encode(html.encode("utf-8")).decode("utf-8")
-    data_uri = f"data:text/html;base64,{b64_html}"
-    log.info("HTML content encoded.")
-    streamlit.link_button("Show report", data_uri)
+    # b64_html = base64.b64encode(html.encode("utf-8")).decode("utf-8")
+    # data_uri = f"data:text/html;base64,{b64_html}"
+    # log.info("HTML content encoded.")
+
+    # 2. Store it in session state so the new tab can read it
+    streamlit.session_state["dynamic_html"] = html
+
+    # 3. Create a button that targets the secondary page
+    streamlit.link_button("View report", "/html_viewer", type="primary")
 
 if streamlit.session_state.show_download_button:
     streamlit.download_button(
