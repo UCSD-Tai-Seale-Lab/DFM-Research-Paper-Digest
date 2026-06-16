@@ -92,7 +92,7 @@ if streamlit.session_state.display_html:
         openInNewTab();
     </script>
     """
-    streamlit.iframe(js_code, height=0)
+    streamlit.iframe(js_code, height=200)
     # components.html(js_code, height=0)
 
 if streamlit.session_state.show_download_button:
