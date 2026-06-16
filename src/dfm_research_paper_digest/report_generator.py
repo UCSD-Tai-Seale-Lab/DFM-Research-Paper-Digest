@@ -13,10 +13,24 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from pathlib import Path
+from enum import Enum
 
 from metapub import PubMedArticle, PubMedAuthor
 
 from src.dfm_research_paper_digest import Author, Faculty, PubMedQuery
+
+
+class HighlightStyle(Enum):
+    """
+    Do we want to mark faculty members with just:
+        bold
+        link
+        or no special formatting?
+    """
+
+    BOLD = 1
+    LINK = 2
+    PLAIN = 3
 
 
 class ReportGenerator:
@@ -41,6 +55,7 @@ class ReportGenerator:
         """
         self.__faculty: Faculty = faculty
         self.__log: logging.Logger = log
+        self.__highlight_style: HighlightStyle = HighlightStyle.BOLD
 
     def __count_unique_faculty_members(self, publications: list[PubMedArticle]) -> int:
         """
@@ -66,6 +81,40 @@ class ReportGenerator:
                         faculty_authors_in_pubs.append(this_author)
 
         return len(faculty_authors_in_pubs)
+
+    def __format_authors(self, nice_name: str, is_faculty: bool, plain: bool) -> str:
+        """
+        Either highlight/link or just plain,
+        depending on value of variable self.__highlight_style.
+
+        Args:
+            nice_name: str
+            is_faculty: bool
+            plain: bool
+
+        Returns:
+            nice_name_formatted: author with appropriate HTML surrounding
+        """
+        nice_name_formatted: str = nice_name
+
+        if not plain:
+            match self.__highlight_style:
+                case HighlightStyle.BOLD:
+                    if is_faculty:
+                        nice_name_formatted = f"<strong>{nice_name}</strong>"
+                    else:
+                        nice_name_formatted = nice_name
+
+                case HighlightStyle.LINK:
+                    if is_faculty:
+                        nice_name_formatted = '<span class="author-link" onclick="filterByAuthor(\'{nice_name}\')">{nice_name}</span>'
+                    else:
+                        nice_name_formatted = f"<span>{nice_name}</span>"
+
+                case HighlightStyle.PLAIN:
+                    nice_name_formatted = nice_name
+
+        return nice_name_formatted
 
     def generate_html_content(
         self,
@@ -332,19 +381,14 @@ class ReportGenerator:
 
     <div class="legend">
         <strong>Note:</strong> DFM faculty members are highlighted in <strong>bold with blue background</strong> in the author lists.
-    </div>
-    
-	<!-- Filter Button/Link to Reset -->
-	<button onclick="showAllPublications()">Show All</button>
-	<br>
-	
+    </div>	
 """
         # Publications
         for i, pub in enumerate(publications, 1):
-            authors_html: str = self.__link_faculty_authors(pub.author_list)
+            authors_html: str = self.__list_faculty_authors(pub.author_list)
 
             html += f"""
-    <div class="publication" data-authors="{self.__simple_authors_list(pub.author_list)}">
+    <div class="publication" data-authors="{self.__list_faculty_authors(pub.author_list)}">
         <span class="publication-number">Publication #{i}</span>
         <div class="publication-title">{pub.title}</div>
         <div class="publication-authors">{authors_html}</div>
@@ -399,30 +443,6 @@ class ReportGenerator:
         self.__log.info(f"✓ HTML Report generated: {output_file}")
         self.__log.info(f"  Total publications: {len(publications)}")
 
-    def __highlight_faculty_authors(self, authors_list: list[PubMedAuthor]) -> str:
-        """
-        Create HTML string with faculty members highlighted.
-
-        Args:
-            authors_list: list of PubMedAuthor objects
-
-        Returns:
-            HTML string with <strong> tags around faculty members
-        """
-        highlighted: list = []
-
-        for author in authors_list:
-            nice_name: str = f"{author.fore_name} {author.last_name}"
-
-            if self.__faculty.is_faculty(author) and PubMedQuery.is_ucsd_affiliated(
-                author
-            ):
-                highlighted.append(f"<strong>{nice_name}</strong>")
-            else:
-                highlighted.append(nice_name)
-
-        return ", ".join(highlighted)
-
     def __link_faculty_authors(self, authors_list: list[PubMedAuthor]) -> str:
         """
         Create HTML string with faculty members highlighted.
@@ -441,11 +461,34 @@ class ReportGenerator:
             if self.__faculty.is_faculty(author) and PubMedQuery.is_ucsd_affiliated(
                 author
             ):
-                highlighted.append(
-                    f'<span class="author-link" onclick="filterByAuthor(\'{nice_name}\')">{nice_name}</span>'
-                )
+                highlighted.append()
             else:
                 highlighted.append(f"<span>{nice_name}</span>")
+
+        return ", ".join(highlighted)
+
+    def __list_faculty_authors(
+        self, authors_list: list[PubMedAuthor], plain: bool = False
+    ) -> str:
+        """
+        Create HTML string with faculty members highlighted/linked or just plain,
+        depending on value of variable self.__highlight_style.
+
+        Args:
+            authors_list: list of PubMedAuthor objects
+            plain: bool Default: False
+
+        Returns:
+            HTML string with <strong> tags around faculty members
+        """
+        highlighted: list = []
+
+        for author in authors_list:
+            nice_name: str = f"{author.fore_name} {author.last_name}"
+            is_faculty: bool = self.__faculty.is_faculty(
+                author
+            ) and PubMedQuery.is_ucsd_affiliated(author)
+            highlighted.append(self.__format_authors(nice_name, is_faculty, plain))
 
         return ", ".join(highlighted)
 
@@ -562,24 +605,6 @@ class ReportGenerator:
         except Exception as e:
             log.error(f"Failed to send email: {e}")
             raise e
-
-    def __simple_authors_list(self, authors_list: list[PubMedAuthor]) -> str:
-        """
-        Create HTML string.
-
-        Args:
-            authors_list: list of PubMedAuthor objects
-
-        Returns:
-            HTML string with <strong> tags around faculty members
-        """
-        highlighted: list = []
-
-        for author in authors_list:
-            nice_name: str = f"{author.fore_name} {author.last_name}"
-            highlighted.append(nice_name)
-
-        return ", ".join(highlighted)
 
     @staticmethod
     def write_html_file(html: str, output_file: str) -> None:
