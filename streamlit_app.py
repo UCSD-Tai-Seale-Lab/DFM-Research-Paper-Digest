@@ -87,7 +87,8 @@ if streamlit.session_state.display_html:
     streamlit.session_state["dynamic_html"] = html
 
     # 3. Create a button that targets the secondary page
-    streamlit.link_button("View report", "/html_viewer", type="primary")
+    if streamlit.button("View report"):
+        streamlit.switch_page("pages/html_viewer.py")
 
 if streamlit.session_state.show_download_button:
     streamlit.download_button(
