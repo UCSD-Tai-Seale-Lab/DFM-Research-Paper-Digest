@@ -90,7 +90,7 @@ if streamlit.session_state.display_html:
             win.document.close();
         </script>
         """
-    streamlit.html(js_code, height=0)
+    streamlit.html(js_code)
     # components.html(js_code, height=0)
 
 if streamlit.session_state.show_download_button:
