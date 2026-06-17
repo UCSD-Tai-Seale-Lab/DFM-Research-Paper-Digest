@@ -10,15 +10,6 @@ from src.dfm_research_paper_digest.faculty import Faculty
 from src.dfm_research_paper_digest.my_logging import setup_streamlit_logging
 from src.dfm_research_paper_digest.query_faculty_batch import run_batch_report
 
-# Hide the "Hosted with Streamlit" notice and default footer.
-hide_st_style = """
-<style>
-footer {visibility: hidden;}
-div[data-testid="stToolbar"] {visibility: hidden !important;}
-</style>
-"""
-streamlit.markdown(hide_st_style, unsafe_allow_html=True)
-
 # Headline
 image: Image = Image.open("logos-clinicalHealth-full.png")
 streamlit.image(image)
@@ -51,13 +42,11 @@ html: str = ""
 report_name: str = ""
 
 # Initialize session_state.
-if "display_html" not in streamlit.session_state:
-    streamlit.session_state.display_html = False
-
-if "show_download_button" not in streamlit.session_state:
-    streamlit.session_state.show_download_button = False
+if "report_is_ready" not in streamlit.session_state:
+    streamlit.session_state.report_is_ready = False
 
 if streamlit.button("Create report"):
+    streamlit.session_state.report_is_ready = False
     faculty_source: str | list[str] = dfm_webpage
     streamlit.session_state.report_name = f"faculty publications {year_selection}.html"
 
@@ -78,15 +67,12 @@ if streamlit.button("Create report"):
 
     # Store it in session state so the new tab can read it
     streamlit.session_state.html_content = html_content
-    streamlit.session_state.display_html = True
-    streamlit.session_state.show_download_button = True
+    streamlit.session_state.report_is_ready = True
 
-# Display report in new tab.
-if streamlit.session_state.display_html:
-    # Create a button that targets the secondary page
+if streamlit.session_state.report_is_ready:
+    # Create a button that targets the secondary page.
     streamlit.page_link("pages/report_viewer.py", label="View report")
 
-if streamlit.session_state.show_download_button:
     if (
         "html_content" in streamlit.session_state
         and "report_name" in streamlit.session_state
