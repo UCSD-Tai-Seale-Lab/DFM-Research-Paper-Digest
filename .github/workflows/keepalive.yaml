@@ -5,6 +5,8 @@ on:
   schedule:
     # Runs at 01:03 on day 1 of every month
     - cron: "3 1 1 * *"
+  # Allows you to also trigger this manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
     workflow-keepalive:
