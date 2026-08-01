@@ -61,7 +61,7 @@ class Author(HumanName):
         self.first_initial: str = ""
         self.middle_initial_only: bool = False
         self.middle_initial: str = ""
-        self.original: str = name_str
+        self._original: str = name_str
 
         # Add extra properties
         if self.first:
@@ -72,11 +72,21 @@ class Author(HumanName):
             self.middle_initial_only = len(self.middle.rstrip(".")) == 1
             self.middle_initial = self.middle[0]
 
-        if self.original in Author.ALIAS_PREVENTION_LIST:
-            self.must_show_as = Author.ALIAS_PREVENTION_LIST[self.original]
+        if self._original in Author.ALIAS_PREVENTION_LIST:
+            self.must_show_as = Author.ALIAS_PREVENTION_LIST[self._original]
 
         self.pubmed_style: str = self.last + ", " + self.first_initial
         self.slug: str = name_str.replace(" ", "_").replace(",", "").replace('"', "")
+
+    # Added get/set methods in response to strange error when running GitHub Actions:
+    # "AttributeError: property 'original' of 'Author' object has no setter"
+    @property
+    def original(self):
+        return self._original
+
+    @original.setter
+    def original(self, value):
+        self._original = value
 
     def __first_names_or_initials_match(self, other_name: Self) -> bool:
         """
@@ -218,7 +228,7 @@ class Author(HumanName):
         if hasattr(self, "must_show_as"):
             is_match = self.must_show_as == other_name.original
         elif hasattr(other_name, "must_show_as"):
-            is_match = self.original == other_name.must_show_as
+            is_match = self._original == other_name.must_show_as
         else:
             is_match = (
                 self.__first_names_or_initials_match(other_name)

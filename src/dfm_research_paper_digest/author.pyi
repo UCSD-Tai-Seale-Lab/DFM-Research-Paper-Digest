@@ -15,7 +15,7 @@ class Author(HumanName):
         self.middle_initial_only: bool = None
         self.middle_initial: str = None
         self.must_show_as: str = None
-        self.original: str = None
+        self._original: str = None
         self.pubmed_style: str = None
         self.slug: str = None
 

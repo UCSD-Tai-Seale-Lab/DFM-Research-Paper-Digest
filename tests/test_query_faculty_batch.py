@@ -79,7 +79,7 @@ def test_run_query_faculty_batch(username, logger, faculty_webpage):
         contact_email=f"{username}@ucsd.edu",
         faculty_list_file=faculty_webpage,
         log=logger,
-        year=2025,
+        year=2026,
     )
     assert isinstance(html, str)
     ReportGenerator.write_html_file(html, output_file)
