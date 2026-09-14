@@ -1,7 +1,8 @@
 import logging
+from enum import Enum
 
 from metapub import PubMedArticle, PubMedAuthor
-from enum import Enum
+
 from src.dfm_research_paper_digest.faculty import Faculty
 
 class HighlightStyle(Enum):
@@ -10,11 +11,11 @@ class HighlightStyle(Enum):
     PLAIN = 3
 
 class ReportGenerator:
-    def __init__(self, faculty: Faculty = None, log: logging.Logger = None):
-        self.__faculty: Faculty = None
-        self.__log: logging.Logger = None
-        self.__highlight_style: HighlightStyle = None
+    __faculty: Faculty = None
+    __highlight_style: HighlightStyle = None
+    __log: logging.Logger | None = None
 
+    def __init__(self, faculty: Faculty = None, log: logging.Logger | None = None): ...
     def __format_authors(
         self, nice_name: str, is_faculty: bool, plain: bool
     ) -> str: ...
@@ -22,6 +23,7 @@ class ReportGenerator:
         self,
         publications: list[PubMedArticle],
         title: str,
+        include_streamlit_link: bool = True,
     ) -> str: ...
     def generate_html_report(
         self,

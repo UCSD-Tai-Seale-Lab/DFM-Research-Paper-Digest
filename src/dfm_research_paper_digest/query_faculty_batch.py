@@ -3,6 +3,7 @@
 Batch Faculty Publications Query
 Queries PubMed for publications from multiple faculty members
 """
+
 from __future__ import annotations
 
 # pylint: disable=import-error, import-outside-toplevel
@@ -43,18 +44,15 @@ def __assemble_article_list(
     -------
     articles: list[PubMedArticle]
     """
-    i: int = 0
     all_results: list[PubMedArticle] = []
-    pct_completion: int = 0
 
     # Query each faculty member
-    for author in faculty.authors:
+    for index, author in enumerate(faculty.authors):
         if progress_bar:
-            pct_completion = int(100.0 * i / faculty.num)
+            pct_completion: int = int(100.0 * index / faculty.num)
             progress_bar.progress(pct_completion, f"Querying {author.original}")
 
-        i += 1
-        log.info(f"[{i}/{faculty.num}] Querying: {author.original}")
+        log.info(f"[{index}/{faculty.num}] Querying: {author.original}")
 
         try:
             articles: list[PubMedArticle] = query.query_by_author(author, year=year)
@@ -63,11 +61,11 @@ def __assemble_article_list(
                 all_results.extend(articles)
                 log.info(f"    Found: {len(articles)} publication(s)")
 
-        except Exception as e:
-            log.exception(f"    Error: {e}")
+        except Exception:
+            log.exception("    Error:")
 
         # Rate limiting: NCBI recommends max 3 requests per second
-        if i < faculty.num:
+        if index < faculty.num:
             time.sleep(0.33)
 
     # Summary
@@ -102,11 +100,12 @@ def __eliminate_duplicates(articles: list[PubMedArticle]) -> list[PubMedArticle]
 
 
 def run_batch_report(
-    contact_email: str = None,
-    faculty_list_file: str | list[str] = None,
-    log: logging.Logger = None,
+    contact_email: str = "",
+    faculty_list_file: str | list[str] = "",
+    log: logging.Logger | None = None,
     progress_bar: streamlit.progress = None,
-    year: int = datetime.now().year,
+    title: str = "",
+    year: int = datetime.now().astimezone().year,
 ) -> str:
     """
     Query PubMed for multiple faculty members and combine results.
@@ -117,6 +116,7 @@ def run_batch_report(
         log: logging.Logger object (default: None, in which case we create our own)
         output_file: Optional CSV filename for output
         progress_bar: streamlit progress object
+        title: str
         year: Publication year (default: current year)
 
     Returns:
@@ -144,11 +144,19 @@ def run_batch_report(
         query, faculty, year, log, progress_bar
     )
 
+    include_streamlit_link: bool = False
+
+    # The default: it's for DFM, so we include the streamlit link.
+    if len(title) == 0:
+        include_streamlit_link = True
+        title = f"DFM Faculty Publications Report ({year})"
+
     log.info("Generating HTML content.")
     report_gen: ReportGenerator = ReportGenerator(faculty, log)
     html: str = report_gen.generate_html_content(
         publications=all_results,
-        title=f"DFM Faculty Publications Report ({year})",
+        title=title,
+        include_streamlit_link=include_streamlit_link,
     )
     return html
 

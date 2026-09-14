@@ -2,23 +2,22 @@
 """
 Author class
 """
+
 from metapub import PubMedAuthor
 from nameparser import HumanName
 
 class Author(HumanName):
-    ALIAS_PREVENTION_LIST: dict = {}
-
-    def __init__(self, name: str | PubMedAuthor, **kwargs) -> None:
-        self.__alias_prevention_dict: dict = {}
-        self.first_initial_only: bool = None
-        self.first_initial: str = None
-        self.middle_initial_only: bool = None
-        self.middle_initial: str = None
-        self.must_show_as: str = None
-        self._original: str = None
-        self.pubmed_style: str = None
-        self.slug: str = None
-
+    ALIAS_PREVENTION_LIST: dict = None
+    __alias_prevention_dict: dict = None
+    first_initial_only: bool = None
+    first_initial: str = None
+    middle_initial_only: bool = None
+    middle_initial: str = None
+    must_show_as: str = None
+    _original: str = None
+    pubmed_style: str = None
+    slug: str = None
+    def __init__(self, name: str | PubMedAuthor, **kwargs) -> None: ...
     def __first_names_or_initials_match(self, other_name: Author) -> bool: ...
     def __middle_names_match_where_present(self, other_name: Author) -> bool: ...
     def matches(

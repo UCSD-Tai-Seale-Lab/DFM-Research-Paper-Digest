@@ -3,7 +3,6 @@ from datetime import datetime
 
 from metapub import PubMedArticle, PubMedAuthor, PubMedFetcher
 
-import dfm_research_paper_digest
 import src.dfm_research_paper_digest
 
 def display_publications(
@@ -16,17 +15,17 @@ def main(argv=None) -> None: ...
 
 class PubMedQuery:
     UCSD_AFFILIATIONS: str = ""
+    __faculty: src.dfm_research_paper_digest.Faculty = None
+    __fetcher: PubMedFetcher = None
+    __log: logging.Logger = None
+    __using_streamlit: bool = None
+
     def __init__(
         self,
         faculty: src.dfm_research_paper_digest.Faculty,
-        email: str = None,
-        log: logging.Logger = None,
-    ):
-        self.__faculty: src.dfm_research_paper_digest.Faculty = None
-        self.__fetcher: PubMedFetcher = None
-        self.__log: logging.Logger = None
-        self.__using_streamlit: bool = None
-
+        email: str = "",
+        log: logging.Logger | None = None,
+    ): ...
     def __fetch_publication_details(
         self, pmids: list[str], author: src.dfm_research_paper_digest.Author
     ) -> list[PubMedArticle]: ...
@@ -35,10 +34,10 @@ class PubMedQuery:
     def query_by_author(
         self,
         author: src.dfm_research_paper_digest.Author,
-        year: int = datetime.now().year,
+        year: int = datetime.now().astimezone().year,
     ) -> list[PubMedArticle]: ...
     def __search_author_publications(
         self,
         author: src.dfm_research_paper_digest.Author,
-        year: int = datetime.now().year,
+        year: int = datetime.now().astimezone().year,
     ) -> list[str]: ...

@@ -54,8 +54,15 @@ def test_faculty_from_list(logger: logging.Logger, sample_faculty_list: list[str
     assert faculty_from_list.num == 4
 
 
-def test_faculty_from_website(logger: logging.Logger, faculty_webpage: str):
-    faculty_from_webpage: Faculty = Faculty(faculty_webpage, logger)
+def test_dbmi_faculty_from_website(logger: logging.Logger, dbmi_faculty_webpage: str):
+    faculty_from_webpage: Faculty = Faculty(dbmi_faculty_webpage, logger)
+    assert isinstance(faculty_from_webpage, Faculty)
+    assert faculty_from_webpage.num > 10
+    assert faculty_from_webpage.is_faculty("Tai-Seale, Ming PhD, MPH")
+
+
+def test_faculty_from_website(logger: logging.Logger, dfm_faculty_webpage: str):
+    faculty_from_webpage: Faculty = Faculty(dfm_faculty_webpage, logger)
     assert isinstance(faculty_from_webpage, Faculty)
     assert faculty_from_webpage.num > 10
     assert faculty_from_webpage.is_faculty("Tai-Seale, Ming PhD, MPH")
@@ -64,15 +71,16 @@ def test_faculty_from_website(logger: logging.Logger, faculty_webpage: str):
 def test_faculty_pathological_I(logger: logging.Logger):
     resource_path = files("data").joinpath("not_there.txt")
 
-    with as_file(resource_path) as filename:
-        with pytest.raises(FileNotFoundError):
-            faculty: Faculty = Faculty(filename, logger)
+    with as_file(resource_path) as filename, pytest.raises(FileNotFoundError):
+        Faculty(filename, logger)
 
 
 def test_faculty_pathological_II(logger: logging.Logger):
-    with patch("builtins.open", side_effect=Exception("Access Denied")):
-        with pytest.raises(Exception):
-            faculty: Faculty = Faculty("not a real file.txt", logger)
+    with (
+        patch("builtins.open", side_effect=FileNotFoundError("Access Denied")),
+        pytest.raises(FileNotFoundError),
+    ):
+        Faculty("not a real file.txt", logger)
 
 
 def test_faculty_pathological_III(logger: logging.Logger):

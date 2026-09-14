@@ -3,6 +3,7 @@
 Report Generator for Faculty Publications
 Creates formatted HTML reports with highlighted faculty members
 """
+
 # pylint: disable=import-error, import-outside-toplevel, too-few-public-methods
 import logging
 import os
@@ -12,8 +13,8 @@ from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from pathlib import Path
 from enum import Enum
+from pathlib import Path
 
 from metapub import PubMedArticle, PubMedAuthor
 
@@ -120,12 +121,14 @@ class ReportGenerator:
         self,
         publications: list[PubMedArticle],
         title: str,
+        include_streamlit_link: bool = True,
     ) -> str:
         """
             Turn a list of articles into html string.
 
         Parameters
         ----------
+        include_streamlit_link: bool (default: True)
         publications: list[PubMedArticle]
         title: str
 
@@ -133,6 +136,13 @@ class ReportGenerator:
         -------
         html: str
         """
+        streamlit_link: str = """
+                <br>
+        		<a href="https://dfm-publications-report.streamlit.app/" style="color: white;">Click here to generate your own specialized report on demand.</a>
+                """
+
+        if not include_streamlit_link:
+            streamlit_link = ""
 
         # HTML header with styling
         html: str = f"""<!DOCTYPE html>
@@ -332,7 +342,7 @@ class ReportGenerator:
 	<script defer>
 	function filterByAuthor(authorName) {{
 	  const pubs = document.querySelectorAll('.publication');
-	  
+
 	  pubs.forEach(pub => {{
 		// Get the authors string stored in our HTML data attribute
 		const authors = pub.getAttribute('data-authors');
@@ -355,9 +365,8 @@ class ReportGenerator:
 <body>
     <div class="header">
         <h1>{title}</h1>
-        <div class="subtitle">Generated on {datetime.now().strftime('%B %d, %Y at %I:%M %p')}</div>
-		<br>
-		<a href="https://dfm-publications-report.streamlit.app/" style="color: white;">Click here to generate your own specialized report on demand.</a>
+        <div class="subtitle">Generated on {datetime.now().astimezone().strftime("%B %d, %Y at %I:%M %p")}</div>
+        {streamlit_link}
     </div>
 """
         # Get unique faculty members in publications
@@ -381,7 +390,7 @@ class ReportGenerator:
 
     <div class="legend">
         <strong>Note:</strong> DFM faculty members are highlighted in <strong>bold with blue background</strong> in the author lists.
-    </div>	
+    </div>
 """
         # Publications
         for i, pub in enumerate(publications, 1):
@@ -406,7 +415,7 @@ class ReportGenerator:
                 <span>{pub.pmid}</span>
             </div>
             <div class="meta-item">
-                <a href="{f'https://pubmed.ncbi.nlm.nih.gov/{pub.pmid}/'}"
+                <a href="{f"https://pubmed.ncbi.nlm.nih.gov/{pub.pmid}/"}"
                    class="pmid-link" target="_blank">View on PubMed</a>
             </div>
         </div>
@@ -505,7 +514,7 @@ class ReportGenerator:
         """
         # Fetch secure credentials from environment variables
         smtp_server = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
-        smtp_port = int(os.environ.get("SMTP_PORT", 587))
+        smtp_port = int(os.environ.get("SMTP_PORT", "587"))
         sender_email = os.environ.get("SENDER_EMAIL")
         sender_password = os.environ.get("APP_PASSWORD")  # Use an App Password!
         recipient_email = os.environ.get("RECIPIENT_EMAIL")
@@ -532,9 +541,9 @@ class ReportGenerator:
             server.login(sender_email, sender_password)
             server.sendmail(sender_email, [recipient_email], msg.as_string())
             log.info("Email report sent successfully!")
-        except Exception as e:
-            log.error(f"Failed to send email: {e}")
-            raise e
+        except Exception:
+            log.exception("Failed to send email:")
+            raise
         finally:
             server.quit()
 
@@ -551,7 +560,7 @@ class ReportGenerator:
         """
         # Fetch secure credentials from environment variables
         smtp_server: str = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
-        smtp_port: int = int(os.environ.get("SMTP_PORT", 587))
+        smtp_port: int = int(os.environ.get("SMTP_PORT", "587"))
         sender_email: str = os.environ.get("SENDER_EMAIL")
 
         if not sender_email:
@@ -602,9 +611,9 @@ class ReportGenerator:
             server.sendmail(sender_email, recipients_list, msg.as_string())
             log.info("Email report sent successfully!")
             server.quit()
-        except Exception as e:
-            log.error(f"Failed to send email: {e}")
-            raise e
+        except Exception:
+            log.error("Failed to send email")
+            raise
 
     @staticmethod
     def write_html_file(html: str, output_file: str) -> None:
