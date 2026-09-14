@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Batch Faculty Publications Query
 Queries PubMed for publications from multiple faculty members
