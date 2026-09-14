@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
-import base64
+
 import streamlit
 from PIL import Image
 
@@ -30,7 +30,9 @@ name_selection: streamlit.selectbox = streamlit.selectbox(
 streamlit.write(f"Report on: {name_selection}")
 
 # What year?
-recent_years: list[int] = [datetime.now().year - delta for delta in [0, 1, 2, 3]]
+recent_years: list[int] = [
+    datetime.now().astimezone().year - delta for delta in [0, 1, 2, 3]
+]
 year_selection: streamlit.selectbox = streamlit.selectbox(
     "Select year of publication.", options=recent_years, index=0
 )
