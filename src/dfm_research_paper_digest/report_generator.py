@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Report Generator for Faculty Publications
 Creates formatted HTML reports with highlighted faculty members

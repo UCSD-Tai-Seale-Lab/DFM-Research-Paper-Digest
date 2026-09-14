@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 PubMed Author Publications Query Tool
 Queries PubMed for publications by a specific author from 2025.
