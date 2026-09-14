@@ -2,10 +2,11 @@
 """
 Author class
 """
+
 from __future__ import annotations
 
 import unicodedata
-from typing import Self
+from typing import ClassVar, Self
 
 from metapub import PubMedAuthor
 from nameparser import HumanName
@@ -35,7 +36,7 @@ class Author(HumanName):
 
     # Link how a name is listed on Faculty webpage with how it's listed in publication.
     # Reason: there's another R Lee at UCSD who publishes physics  papers & we don't want them confused.
-    ALIAS_PREVENTION_LIST: dict = {"Lee, Robert, MD": "Robert Y. Lee"}
+    ALIAS_PREVENTION_LIST: ClassVar[dict] = {"Lee, Robert, MD": "Robert Y. Lee"}
 
     def __init__(self, name: str | PubMedAuthor, **kwargs):
         """
@@ -121,13 +122,10 @@ class Author(HumanName):
         if self.first_initial_only and self.first_initial == other_name.first_initial:
             return True
 
-        if (
+        return (
             other_name.first_initial_only
             and self.first_initial == other_name.first_initial
-        ):
-            return True
-
-        return False
+        )
 
     def __middle_names_match_where_present(self, other_name: Self) -> bool:
         """
@@ -175,13 +173,10 @@ class Author(HumanName):
         ):
             return True
 
-        if (
+        return (
             other_name.middle_initial_only
             and self.middle_initial == other_name.middle_initial
-        ):
-            return True
-
-        return False
+        )
 
     def matches(
         self,
