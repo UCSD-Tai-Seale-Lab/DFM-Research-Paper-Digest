@@ -1,1 +1,1 @@
-import src.dfm_research_paper_digest
+from src import dfm_research_paper_digest as dfm_research_paper_digest
