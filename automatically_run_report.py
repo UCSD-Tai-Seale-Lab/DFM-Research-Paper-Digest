@@ -9,7 +9,7 @@ from src.dfm_research_paper_digest.report_generator import ReportGenerator
 log: logging.Logger = setup_logging()
 
 # Mark report with today's date.
-now: datetime = datetime.now()
+now: datetime = datetime.now().astimezone()
 year_selection: int = now.year
 
 # Faculty list.
@@ -21,6 +21,6 @@ html: str = run_batch_report(
     log=log,
     year=year_selection,
 )
-report_name: str = f"{now.strftime("%Y-%m-%d")} DFM report for {year_selection}.html"
+report_name: str = f"{now.strftime('%Y-%m-%d')} DFM report for {year_selection}.html"
 ReportGenerator.write_html_file(html, report_name)
 ReportGenerator.send_email_attachment(report_name, log)

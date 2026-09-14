@@ -2,9 +2,9 @@
 """
 Faculty class
 """
+
 from __future__ import annotations
 
-import copy
 import logging
 from pathlib import Path
 from urllib.parse import ParseResult, urlparse
@@ -71,6 +71,47 @@ class Faculty:
         self.authors: list[Author] = self.__list
         self.names: list[str] = self.__names()
         self.num: int = len(self.__list)
+
+    def __extract_dbmi_names(self, soup: bs4.BeautifulSoup) -> list[str]:
+        """
+        Handles DBMI-style faculty list.
+
+        Parameters
+        ----------
+        soup: bs4.BeautifulSoup
+
+        Returns
+        -------
+        names: list[str]
+        """
+        tags: bs4.ResultSet = soup.find_all("li", class_="profile-listing-card")
+        names: list[str] = [tag.get_text().strip().split("\n\n")[0] for tag in tags]
+        names.sort()
+        return names
+
+    def __extract_dfm_names(self, soup: bs4.BeautifulSoup) -> list[str]:
+        """
+        Handles DFM-style faculty list.
+
+        Parameters
+        ----------
+        soup: bs4.BeautifulSoup
+
+        Returns
+        -------
+        names_repaired: list[str]
+        """
+        tags: bs4.ResultSet = soup.find_all("td", class_="sorting_1")
+        names: list[str] = [tag.get_text().strip() for tag in tags]
+
+        # The faculty webpage lists Prof. Ming Tai-Seale as just "Tai-Seale, PhD, MPH",
+        # which won't match publication authors. Fix it here until they fix it there.
+        names_repaired: list[str] = [
+            "Tai-Seale, Ming PhD, MPH" if "Tai-Seale" in item else item
+            for item in names
+        ]
+        names_repaired.sort()
+        return names_repaired
 
     def is_faculty(self, var: Author | PubMedAuthor | str) -> bool:
         """
@@ -164,7 +205,7 @@ class Faculty:
             raise TypeError("Expected 'file' to be str or Path, not %s.", type(file))
 
         try:
-            with open(file, "r", encoding="utf-8") as f:
+            with open(file, encoding="utf-8") as f:
                 faculty_lines = [line.strip() for line in f if line.strip()]
 
             self.__log.info(f"Loaded {len(faculty_lines)} faculty members.")
@@ -173,8 +214,6 @@ class Faculty:
 
         except FileNotFoundError:
             self.__log.error(f"Warning: Faculty list file not found: {file}.")
-        except Exception as e:
-            self.__log.exception(f"Error loading faculty list: {e}.")
 
         return []
 
@@ -200,18 +239,10 @@ class Faculty:
 
         response: requests.Response = requests.get(site_address, timeout=5)
         soup: bs4.BeautifulSoup = BeautifulSoup(response.text, "html.parser")
-        names: list[str] = []
 
-        tags: bs4.ResultSet = soup.find_all("td", class_="sorting_1")
+        names: list[str] = self.__extract_dfm_names(soup)
 
-        for tag in tags:
-            names.append(tag.get_text().strip())
+        if not names or len(names) < 1:
+            names = self.__extract_dbmi_names(soup)
 
-        # The faculty webpage lists Prof. Ming Tai-Seale as just "Tai-Seale, PhD, MPH",
-        # which won't match publication authors. Fix it here until they fix it there.
-        names_repaired: list[str] = [
-            "Tai-Seale, Ming PhD, MPH" if "Tai-Seale" in item else item
-            for item in names
-        ]
-        names_repaired.sort()
-        return names_repaired
+        return names

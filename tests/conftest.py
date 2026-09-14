@@ -5,8 +5,13 @@ import sys
 import pytest
 
 
-@pytest.fixture(name="faculty_webpage")
-def faculty_webpage() -> str:
+@pytest.fixture(name="dbmi_faculty_webpage")
+def dbmi_faculty_webpage() -> str:
+    return "https://dbmi.ucsd.edu/people/faculty.html"
+
+
+@pytest.fixture(name="dfm_faculty_webpage")
+def dfm_faculty_webpage() -> str:
     return "https://familymedicine.ucsd.edu/about/faculty.html"
 
 

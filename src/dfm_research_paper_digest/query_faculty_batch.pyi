@@ -7,11 +7,12 @@ from metapub import PubMedArticle
 from dfm_research_paper_digest import Faculty, PubMedQuery
 
 def run_batch_report(
-    contact_email: str = None,
-    faculty_list_file: str | list[str] = None,
-    log: logging.Logger = None,
+    contact_email: str = "",
+    faculty_list_file: str | list[str] = "",
+    log: logging.Logger | None = None,
     progress_bar: streamlit.progress = None,
-    year: int = datetime.now().year,
+    title: str = "",
+    year: int = datetime.now().astimezone().year,
 ) -> str: ...
 def __assemble_article_list(
     query: PubMedQuery,

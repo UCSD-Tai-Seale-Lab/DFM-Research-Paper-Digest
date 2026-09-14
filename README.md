@@ -1,7 +1,5 @@
 # PubMed Author Publications Query Tool
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)
-![Coverage Status](./.github/badges/coverage-badge.svg?dummy=8484744)
-![Pylint](./.github/badges/pylint-badge.svg?dummy=8484744)](https://github.com/psf/black)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 ![GitHub last commit](https://img.shields.io/github/last-commit/UCSD-Tai-Seale-Lab/DFM-Research-Paper-Digest)
 
 A Python tool to query [PubMed](https://pubmed.ncbi.nlm.nih.gov/) for publications by specific authors--or all Department of Family Medicine faculty.

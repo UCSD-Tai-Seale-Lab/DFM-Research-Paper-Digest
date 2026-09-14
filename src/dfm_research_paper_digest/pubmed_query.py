@@ -3,6 +3,7 @@
 PubMed Author Publications Query Tool
 Queries PubMed for publications by a specific author from 2025.
 """
+
 # pylint: disable=import-error, import-outside-toplevel
 from __future__ import annotations
 
@@ -42,8 +43,8 @@ class PubMedQuery:
     def __init__(
         self,
         faculty: src.dfm_research_paper_digest.Faculty,
-        email: str = None,
-        log: logging.Logger = None,
+        email: str = "",
+        log: logging.Logger | None = None,
     ):
         """
         Initialize PubMed query tool.
@@ -110,29 +111,28 @@ class PubMedQuery:
             try:
                 article: PubMedArticle = self.__fetcher.article_by_pmid(pmid)
 
-                if article and len(article.author_list) > 0:
+                if (
+                    article
+                    and len(article.author_list) > 0
+                    and requested_author.matches(article.author_list)
+                ):
                     # Which PubMedAuthor object matches the author
                     # for whom we requested a list of publications?
-                    if requested_author.matches(article.author_list):
-                        matching_author: PubMedAuthor = next(
-                            a
-                            for a in article.author_list
-                            if requested_author.matches(a)
-                        )
+                    matching_author: PubMedAuthor = next(
+                        a for a in article.author_list if requested_author.matches(a)
+                    )
 
-                        if matching_author:
-                            self.__log.debug(
-                                f"Matching author is {str(matching_author)}."
-                            )
+                    if matching_author:
+                        self.__log.debug(f"Matching author is {matching_author!s}.")
 
-                            if self.__faculty.is_faculty(matching_author):
-                                self.__log.debug(f"{str(matching_author)} is faculty.")
+                        if self.__faculty.is_faculty(matching_author):
+                            self.__log.debug(f"{matching_author!s} is faculty.")
 
-                                if PubMedQuery.is_ucsd_affiliated(matching_author):
-                                    self.__log.debug(
-                                        f"{str(matching_author)} is UCSD affiliated."
-                                    )
-                                    articles.append(article)
+                            if PubMedQuery.is_ucsd_affiliated(matching_author):
+                                self.__log.debug(
+                                    f"{matching_author!s} is UCSD affiliated."
+                                )
+                                articles.append(article)
             except metapub.ncbi_errors.NCBIServiceError as e:
                 self.__log.error("NCBI Service Error: %s", e.user_message)
 
@@ -207,7 +207,7 @@ class PubMedQuery:
     def query_by_author(
         self,
         author: src.dfm_research_paper_digest.Author,
-        year: int = datetime.now().year,
+        year: int = datetime.now().astimezone().year,
     ) -> list[PubMedArticle]:
         """
         Complete query for author publications.
@@ -246,7 +246,7 @@ class PubMedQuery:
     def __search_author_publications(
         self,
         author: src.dfm_research_paper_digest.Author,
-        year: int = datetime.now().year,
+        year: int = datetime.now().astimezone().year,
     ) -> list[str]:
         """
         Search for publication IDs by author, year and UCSD affiliation.
