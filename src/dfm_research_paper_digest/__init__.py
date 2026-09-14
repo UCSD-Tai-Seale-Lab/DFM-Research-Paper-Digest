@@ -1,8 +1,3 @@
-#!/usr/bin/env python3
-"""
-Define imports
-"""
-
 from src.dfm_research_paper_digest.author import Author as Author
 from src.dfm_research_paper_digest.faculty import Faculty as Faculty
 from src.dfm_research_paper_digest.my_logging import setup_logging as setup_logging
