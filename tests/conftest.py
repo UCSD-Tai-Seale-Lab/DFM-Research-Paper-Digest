@@ -1,3 +1,4 @@
+import getpass
 import logging
 import os
 import sys
@@ -75,4 +76,4 @@ def sample_faculty_list() -> list[str]:
 
 @pytest.fixture(name="username")
 def user() -> str:
-    return os.getlogin()
+    return getpass.getuser()
