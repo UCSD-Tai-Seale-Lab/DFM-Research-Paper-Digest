@@ -28,7 +28,7 @@ jobs:
           python-version: '3.12'
           cache: 'poetry' # Automatically hashes and caches your poetry.lock
 
-       # 4. Install dependencies defined in pyproject.toml
+       # 4. Install dependencies defined in pyproject orig.toml
       - name: Install Dependencies
         run: poetry install --no-interaction
 
