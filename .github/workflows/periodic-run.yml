@@ -28,11 +28,15 @@ jobs:
           python-version: '3.12'
           cache: 'poetry' # Automatically hashes and caches your poetry.lock
 
-       # 4. Install dependencies defined in pyproject orig.toml
+      # 4. Install dependencies defined in pyproject.toml
       - name: Install Dependencies
         run: poetry install --no-interaction
 
-      # 5. Run the script, securely injecting repository secrets.
+      # 5. Install dependencies defined in pyproject.toml
+      - name: Install specific package
+        run: poetry add metapub==0.7.5
+
+      # 6. Run the script, securely injecting repository secrets.
       - name: Run Python Script
         # This maps the GitHub Secret to an environment variable for this step.
         env:
