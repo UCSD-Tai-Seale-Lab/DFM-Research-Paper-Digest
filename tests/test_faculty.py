@@ -17,7 +17,7 @@ def test_faculty_from_file(logger: logging.Logger):
     with as_file(resource_path) as filename:
         faculty: Faculty = Faculty(filename, logger)
         assert isinstance(faculty, Faculty)
-        assert faculty.num == 3
+        assert faculty.num == 4
 
         # Try with Author object
         author: Author = Author("Tai-Seale, Ming PhD, MPH")
@@ -33,17 +33,17 @@ def test_faculty_from_file(logger: logging.Logger):
         faculty_list: list[str] = faculty.names
         assert isinstance(faculty_list, list)
         assert isinstance(faculty_list[0], str)
-        assert len(faculty_list) == 3
+        assert len(faculty_list) == 4
 
         # These will be in last, first format.
-        assert faculty_list[0] == "Tai-Seale, Ming"
-        assert faculty_list[2] == "Cheng, Terri"
+        assert faculty_list[0] == "Tai-Seale, Ming PhD, MPH"
+        assert faculty_list[2] == "Chen, Alice I., DO"
 
         # Author objects
         author_list: list[Author] = faculty.authors
         assert isinstance(author_list, list)
         assert isinstance(author_list[0], Author)
-        assert len(author_list) == 3
+        assert len(author_list) == 4
         assert author_list[0].matches(Author("Tai-Seale, Ming PhD, MPH"))
 
 
