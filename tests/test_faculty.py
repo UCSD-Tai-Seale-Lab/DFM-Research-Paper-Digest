@@ -89,7 +89,7 @@ def test_faculty_pathological_III(logger: logging.Logger):
     with as_file(resource_path) as filename:
         faculty: Faculty = Faculty(filename, logger)
         assert isinstance(faculty, Faculty)
-        assert faculty.num == 3
+        assert faculty.num == 4
 
         with pytest.raises(TypeError):
             faculty.is_faculty(79)
