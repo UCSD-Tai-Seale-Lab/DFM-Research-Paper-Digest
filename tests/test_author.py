@@ -8,7 +8,7 @@ from dfm_research_paper_digest import Author
 
 
 def test_author():
-    """Tests instantiation of Author object."""
+    """Tests instantiation of Author object in various modes."""
     author: Author = Author("Igor V. Nikiforov")
     assert isinstance(author, Author)
 
