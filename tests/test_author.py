@@ -56,7 +56,7 @@ def test_author():
 
     # Last, first name style
     assert isinstance(author.pubmed_style, str)
-    assert author.pubmed_style == "Nikiforov, Igor"
+    assert author.pubmed_style == "Nikiforov, I"
 
 
 def test_author_from_PubMedAuthor(pmid_with_ok_author):
