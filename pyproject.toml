@@ -1,4 +1,5 @@
 [project]
+name = "dfm-research-paper-digest"
 version = "2026.05.11"
 description = "Create a report of PubMed articles by DFM faculty."
 readme = "README.md"
