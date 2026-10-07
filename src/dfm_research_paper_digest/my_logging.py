@@ -70,6 +70,7 @@ def setup_logging(log_filename: str | Path | None = None) -> logging.Logger:
     logger.addHandler(console_handler)
     logger.addHandler(logfile_handler)
     logger.setLevel(logging.INFO)
+    logger.propagate = False
     return logger
 
 

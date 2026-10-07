@@ -9,7 +9,6 @@ from __future__ import annotations
 import logging
 import time
 from datetime import datetime
-from importlib.resources import as_file, files
 
 import streamlit
 from metapub import PubMedArticle
@@ -17,7 +16,6 @@ from metapub import PubMedArticle
 from src.dfm_research_paper_digest import (
     Faculty,
     PubMedQuery,
-    setup_logging,
 )
 
 
@@ -122,12 +120,6 @@ def run_batch_report(
         html: str
     """
     from src.dfm_research_paper_digest.report_generator import ReportGenerator
-
-    if not log:
-        resource_path = files("logs").joinpath("query_faculty_batch.log")
-
-        with as_file(resource_path) as log_filename:
-            log = setup_logging(log_filename=log_filename)
 
     log.info("Starting batch report.")
 
