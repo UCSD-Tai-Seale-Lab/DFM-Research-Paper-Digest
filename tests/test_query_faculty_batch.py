@@ -2,7 +2,6 @@
 Exercises query_faculty_batch.py
 """
 
-from datetime import datetime
 from importlib.resources import as_file, files
 from pathlib import Path
 
@@ -10,7 +9,7 @@ from dfm_research_paper_digest.query_faculty_batch import run_batch_report
 from dfm_research_paper_digest.report_generator import ReportGenerator
 
 
-def test_query_faculty_batch_I(username):
+def test_query_faculty_batch_I(username, logger):
     """Single faculty name"""
     output_file: str = r"C:\Family Medicine\Publication Output\results\Chen_2026.html"
     Path(output_file).resolve().unlink(missing_ok=True)
@@ -19,6 +18,7 @@ def test_query_faculty_batch_I(username):
     html: str = run_batch_report(
         contact_email=f"{username}@ucsd.edu",
         faculty_list_file=["Chen, Alice, DO"],
+        log=logger,
         year=2026,
     )
     assert isinstance(html, str)
@@ -47,25 +47,6 @@ def test_query_faculty_batch_II(username, logger):
 
     # Check that the file was created.
     assert Path(output_file).resolve().is_file()
-
-
-def test_query_faculty_batch_III(username):
-    output_file: str = "test_results_III.html"
-    Path(output_file).resolve().unlink(missing_ok=True)
-    resource_path = files("data").joinpath("sample_faculty_list.txt")
-
-    # Exercise calling w/o log.
-    with as_file(resource_path) as faculty_filename:
-        html: str = run_batch_report(
-            contact_email=f"{username}@ucsd.edu",
-            faculty_list_file=str(faculty_filename),
-            year=datetime.now().astimezone().year,
-        )
-        assert isinstance(html, str)
-        ReportGenerator.write_html_file(html, output_file)
-
-        # Check that the file was created.
-        assert Path(output_file).resolve().is_file()
 
 
 # Run using live faculty list from DBMI webpage.

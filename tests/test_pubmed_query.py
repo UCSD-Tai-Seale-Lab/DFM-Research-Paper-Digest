@@ -45,18 +45,6 @@ def test_pubmed_query_pathological(logger, username):
         assert len(articles) == 0
 
 
-def test_instantiation_without_log(username, logger):
-    resource_path = files("data").joinpath("sample_faculty_list.txt")
-
-    with as_file(resource_path) as faculty_filename:
-        faculty: Faculty = Faculty(str(faculty_filename), logger)
-        assert isinstance(faculty, Faculty)
-        pubmed_query: PubMedQuery = PubMedQuery(
-            faculty=faculty, email=f"{username}@health.ucsd.com"
-        )
-        assert isinstance(pubmed_query, PubMedQuery)
-
-
 def test_affiliation():
     assert PubMedQuery.is_ucsd_affiliated(["University of California, San Diego"])
     assert PubMedQuery.is_ucsd_affiliated(["UCSD San Diego", "University of San Diego"])

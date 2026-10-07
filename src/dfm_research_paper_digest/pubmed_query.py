@@ -10,7 +10,6 @@ import logging
 import os
 import time
 from datetime import datetime
-from importlib.resources import as_file, files
 
 import metapub.ncbi_errors
 import streamlit
@@ -51,20 +50,8 @@ class PubMedQuery:
         Args:
             email: Your email (recommended by NCBI for API usage tracking)
         """
-        from src.dfm_research_paper_digest import (
-            setup_logging,
-        )
 
-        self.__log: logging.Logger
-
-        if log:
-            self.__log = log
-        else:
-            resource_path = files("logs").joinpath("pubmed_query.log")
-
-            with as_file(resource_path) as log_filename:
-                self.__log = setup_logging(log_filename=log_filename)
-
+        self.__log: logging.Logger = log
         self.__log.info("Instantiating PubMedQuery object.")
         self.__faculty: src.dfm_research_paper_digest.Faculty = faculty
         self.__fetcher: PubMedFetcher
