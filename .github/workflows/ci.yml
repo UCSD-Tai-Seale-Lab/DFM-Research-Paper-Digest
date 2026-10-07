@@ -60,13 +60,29 @@ jobs:
         python-version: ["3.12"]
 
     steps:
+      # 1. Pull down the repository code.
       - name: Checkout code
         uses: actions/checkout@v7
 
+      # 2. Install Poetry before setting up Python so setup-python can find it for caching
+      - name: Install Poetry
+        run: pipx install poetry
+
+      # 3. Set up Python and cache Poetry dependencies
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: 'poetry' # Automatically hashes and caches your poetry.lock
+
+      # 4. Install dependencies defined in pyproject.toml
+      - name: Install Dependencies
+        run: poetry install --no-interaction
       - name: Set up Python Environment
         uses: ./.github/actions/python-poetry-env
         with:
           python-version: ${{ matrix.python-version }}
 
+      # 5. Run tests via poetry.
       - name: Run Pytest
         run: poetry run pytest
