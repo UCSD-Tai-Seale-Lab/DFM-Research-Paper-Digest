@@ -7,7 +7,7 @@ from importlib.resources import as_file, files
 import pytest
 from metapub import PubMedArticle
 
-from dfm_research_paper_digest import Faculty, PubMedQuery
+from dfm_research_paper_digest import Author, Faculty, PubMedQuery
 
 
 def test_pubmed_query(logger, username):
@@ -21,7 +21,7 @@ def test_pubmed_query(logger, username):
         )
         assert isinstance(pubmed_query, PubMedQuery)
         articles: list[PubMedArticle] = pubmed_query.query_by_author(
-            author_name="Ming Tai-Seale", year=2025
+            author=Author("Ming Tai-Seale"), year=2025
         )
     assert isinstance(articles, list)
     first_article: PubMedArticle = articles[0]
@@ -40,7 +40,7 @@ def test_pubmed_query_pathological(logger, username):
         assert isinstance(pubmed_query, PubMedQuery)
 
         # Try query that won't return any articles.
-        articles = pubmed_query.query_by_author(author_name="Nowhere Nothing")
+        articles = pubmed_query.query_by_author(author=Author("Nowhere Nothing"))
         assert isinstance(articles, list)
         assert len(articles) == 0
 
